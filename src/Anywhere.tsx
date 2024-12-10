@@ -5,8 +5,6 @@ import Main from './views/Main';
 import { SIGN_UP_PATH } from './constants';
 import SignUp from 'views/Auth';
 
-
-
 function Anywhere() {
   return (
   <Routes>
