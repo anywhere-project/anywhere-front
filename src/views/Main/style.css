@@ -56,13 +56,17 @@ body {
 }
 
 .sign-in-button {
-    width: 50px;
-    height: 50px;
+    width: 50px; /* 원하는 크기로 설정 */
+    height: 50px; /* 원하는 크기로 설정 */
+    background-image: url(/public/images/로그인버튼.png); /* 경로에 맞게 설정 */
+    background-size: contain; /* 이미지 크기 조절 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    background-position: center; /* 이미지 위치 설정 */
+    cursor: pointer; /* 클릭 가능하도록 설정 */
+}
+
+.sign-in-button {
     background-image: url(/public/images/로그인버튼.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    cursor: pointer;
 }
 
 .main {
@@ -89,10 +93,12 @@ body {
     gap: 50px;
 }
 
+
 .reels {
     display: flex;
     gap: 100px;
 }
+
 
 .reel {
     width: 250px;
@@ -116,6 +122,7 @@ body {
 
 .reel-numbers {
     display: flex;
+    flex-direction: column;
     position: absolute;
     top: 0;
 }
