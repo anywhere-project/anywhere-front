@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
-import { IdCheckRequestDto, SignInResponseDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
+import { IdCheckRequestDto, SignInRequesetDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetRecommendPostListResponseDto } from "./dto/response/recommend";
+import { SignInResponseDto } from "./dto/response/auth";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
