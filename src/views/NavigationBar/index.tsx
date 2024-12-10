@@ -1,15 +1,18 @@
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSignInUserStore } from '../../stores';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
 import SignInRequestDto from '../../apis/dto/request/auth/sign-in.request.dto';
-import { signInRequest } from '../../apis';
-import { SignInResponseDto } from '../../apis/dto/response/auth';
+import { getSignInRequest, signInRequest } from '../../apis';
+import { GetSignInResponseDto, SignInResponseDto } from '../../apis/dto/response/auth';
 import { ResponseDto } from '../../apis/dto/response';
 import './navi.css';
 
 function Dropdown() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [id, setId] = useState<string>('');
@@ -17,9 +20,11 @@ function Dropdown() {
     const [message, setMessage] = useState<string>('');
 
     // state: cookie 상태 관리
-    const [cookies, setCookie, removeCookie] = useCookies([ACCESS_TOKEN]);
+    const [cookies, setCookie, removeCookie] = useCookies();
 
     const navigator = useNavigate();
+    
+    const accessToken = cookies[ACCESS_TOKEN];
 
     const signInResponse = (responseBody: SignInResponseDto | ResponseDto | null) => {
         const message = 
@@ -37,9 +42,32 @@ function Dropdown() {
         const expires = new Date(Date.now() + expiration * 1000);
         setCookie(ACCESS_TOKEN, accessToken, { path: '/', expires});
 
-        setMessage('');
+        setMessage(message);
         navigator(ROOT_PATH);
+        setModalOpen(false);
     }
+
+    // function: get sign in Response 처리 함수 //
+    const getSingInResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' :
+            responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' : '유저 정보 가져오기!';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if (!isSuccessed) {
+            alert(message);
+            removeCookie(ACCESS_TOKEN, { path: ROOT_PATH });
+            setSignInUser(null);
+            navigator(ROOT_PATH);
+            return;
+        }
+
+        const { userId, password, name, nickname, telNumber, profileImage, isAdmin, userStatus } = responseBody as GetSignInResponseDto;
+        setSignInUser({ userId, password, name, nickname, telNumber, profileImage, isAdmin, userStatus });
+    };
     
     const onSignUpClickHandler = () => {
         navigator(SIGN_UP_PATH);
@@ -97,15 +125,26 @@ function Dropdown() {
         setPassword(value);
     };
 
+    // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
+    useEffect(() => {
+        if (accessToken) {
+            getSignInRequest(accessToken).then(getSingInResponse);
+        } else {
+            setSignInUser(null);
+        }
+    }, [accessToken]);
+
     return (
         <div className="dropdown-wrapper">
             <div className="dropdown">
-                <button className="dropdown-item" onClick={onSignInClickHandler}>
-                    로그인
-                </button>
-                <button className="dropdown-item" onClick={onSignUpClickHandler}>
-                    회원가입
-                </button>
+            {signInUser ? (
+                <div className='dropdown-item' onClick={onLogoutButtonClickHandler}>로그아웃</div>
+            ) : (
+                <>
+                    <div className="dropdown-item" onClick={onSignInClickHandler}>로그인</div>
+                    <div className='dropdown-item' onClick={onSignUpClickHandler}>회원가입</div>
+                </>
+            )}
             </div>
             {modalOpen && (
                 <div className="modal-backdrop" onClick={onSignInCloseClickHandler}>
@@ -134,21 +173,10 @@ function Dropdown() {
 // component: Navigation Bar 컴포넌트 //
 export default function NavigationBar() {
 
-    // state: 로그인 유저 정보 상태 //
-    const { signInUser, setSignInUser } = useSignInUserStore();
-
-    // state: Query Parameter 상태 //
-    const [queryParam] = useSearchParams();
-    const accessToken = queryParam.get('accessToken');
-    const expiration = queryParam.get('expiration');
-
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
     // state: path 상태 //
     const { pathname } = useLocation();
-
-    // state: cookie 상태 관리
-    const [cookies, setCookie, removeCookie] = useCookies([ACCESS_TOKEN]);
 
     const isReview = pathname.startsWith(REVIEW_PATH);
     const isRecommend = pathname.startsWith(RECOMMEND_PATH);
@@ -174,11 +202,13 @@ export default function NavigationBar() {
 
     return (
         <div className='navigation-bar'>
-                <div className='logo-name' onClick={onLogoClickHandler}>어디든가</div>
-                <div className={`menu-review ${isReview ? 'review' : ''}`} onClick={onReviewClickHandler}>후기게시판</div>
-                <div className={`menu-recommend ${isRecommend ? 'recommend' : ''}`} onClick={onRecommendClickHandler}>추천게시판</div>
-                <div className='sign-in-button' onClick={toggleDropdown}></div>
+            <div className='logo-name' onClick={onLogoClickHandler}>어디든가</div>
+            <div className={`menu-review ${isReview ? 'review' : ''}`} onClick={onReviewClickHandler}>후기게시판</div>
+            <div className={`menu-recommend ${isRecommend ? 'recommend' : ''}`} onClick={onRecommendClickHandler}>추천게시판</div>
+            <div className="sign-in-wrapper">
+                <div className="sign-in-button" onClick={toggleDropdown}></div>
                 {dropdownOpen && <Dropdown />}
+            </div>
         </div>
     )
 

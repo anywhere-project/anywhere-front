@@ -1,4 +1,6 @@
-export default interface SignInUser {
+import ResponseDto from "../response.dto";
+
+export default interface GetSignInResponseDto extends ResponseDto {
     userId: string;
     password: string;
     name: string;
