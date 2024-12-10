@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './main.css';
+import './style.css';
 import { motion } from 'framer-motion';
 
 interface SlotReelProps {

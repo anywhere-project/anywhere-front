@@ -195,6 +195,17 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
     return responseBody;
 };
 
+const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
+
+const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
+
+export const fileUploadRequest = async (requestBody: FormData, accessToken: string) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart(accessToken))
+        .then(responseDataHandler<string>)
+        .catch(error => null)
+    return url;
+}
+
 // export const getAreaListRequest = async () => {
 //     const responseBody = await axios.get(AREA_MODULE_URL)
 //         .then(responseDataHandler<GetAreaResponseDto>)

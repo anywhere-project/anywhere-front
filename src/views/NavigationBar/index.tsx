@@ -7,7 +7,7 @@ import SignInRequestDto from '../../apis/dto/request/auth/sign-in.request.dto';
 import { getSignInRequest, signInRequest } from '../../apis';
 import { GetSignInResponseDto, SignInResponseDto } from '../../apis/dto/response/auth';
 import { ResponseDto } from '../../apis/dto/response';
-import './navi.css';
+import './style.css';
 
 function Dropdown() {
 

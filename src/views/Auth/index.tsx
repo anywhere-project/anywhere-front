@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "../../apis/dto/request/auth";
 import { idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../apis";
-import './auth.css';
+import './style.css';
 import { ResponseDto } from "../../apis/dto/response";
 import SignUpBox from "../../components/signup";
 
