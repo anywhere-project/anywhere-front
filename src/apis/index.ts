@@ -1,15 +1,14 @@
 import axios, { AxiosResponse } from "axios";
-import { ResponseDto } from "apis/dto/response";
-import { IdCheckRequestDto, SignInResponseDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "apis/dto/request/auth";
-import SignInRequestDto from "apis/dto/request/auth/sign-in.request.dto";
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "apis/dto/request/recommend";
-import { GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
+import { ResponseDto } from "./dto/response";
+import { IdCheckRequestDto, SignInResponseDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
+import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
+import { GetRecommendPostListResponseDto } from "./dto/response/recommend";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
-const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -193,10 +192,3 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
         .catch(responseErrorHandler);
     return responseBody;
 };
-
-// export const getAreaListRequest = async () => {
-//     const responseBody = await axios.get(AREA_MODULE_URL)
-//         .then(responseDataHandler<GetAreaResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
