@@ -9,6 +9,15 @@ interface SlotReelProps {
     delay: number; // 애니메이션 지연
 }
 
+function Dropdown() {
+    return (
+        <div className="dropdown">
+            <button className="dropdown-item">로그인</button>
+            <button className="dropdown-item">회원가입</button>
+        </div>
+    );
+}
+
 function SlotReel({ values, spinning, speed, delay }: SlotReelProps) {
     return (
         <div className="reel">
@@ -101,7 +110,6 @@ export default function Main() {
                         </button>
                     </div>
                 </div>
-
         </div>
     );
 }
