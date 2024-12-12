@@ -1,4 +1,4 @@
-import SignInResponseDto from "./sign-in.request.dto";
+import SignInRequesetDto from "./sign-in.request.dto";
 import SignUpRequestDto from "./sign-up.request.dto";
 import TelAuthRequestDto from "./tel-auth.request.dto";
 import IdCheckRequestDto from "./id-check.request.dto";
@@ -9,5 +9,5 @@ export type {
     TelAuthRequestDto,
     IdCheckRequestDto,
     TelAuthCheckRequestDto,
-    SignInResponseDto
+    SignInRequesetDto
 }

@@ -1,10 +1,10 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "../../apis/dto/request/auth";
-import { idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest,  } from "../../apis";
-import { ResponseDto } from "apis/dto/response";
-import SignUpBox from "components/signup";
+import { idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../apis";
 import './style.css';
+import { ResponseDto } from "../../apis/dto/response";
+import SignUpBox from "../../components/signup";
 
 export default function SignUp() {
 

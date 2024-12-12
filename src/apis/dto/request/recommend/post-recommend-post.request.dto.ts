@@ -4,8 +4,8 @@ import PostRecommendImageRequestDto from "./post-recommend-image.request.dto";
 import PostRecommendMissionRequestDto from "./post-recommend-mission.request.dto";
 
 export default interface PostRecommendPostRequestDto {
-    food: PostRecommendFoodRequestDto;
-    attraction: PostRecommendAttractionRequestDto;
-    mission: PostRecommendMissionRequestDto;
+    food?: PostRecommendFoodRequestDto | null;
+    attraction?: PostRecommendAttractionRequestDto | null;
+    mission?: PostRecommendMissionRequestDto | null;
     images: PostRecommendImageRequestDto[];
 }

@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios";
-import { ResponseDto } from "apis/dto/response";
-import { IdCheckRequestDto, SignInResponseDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "apis/dto/request/auth";
-import SignInRequestDto from "apis/dto/request/auth/sign-in.request.dto";
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "apis/dto/request/recommend";
-import { GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "../request/recommend";
+import { ResponseDto } from "../response";
+import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./auth";
+import SignInRequestDto from "./auth/sign-in.request.dto";
+import { GetRecommendPostListResponseDto } from "../response/recommend";
+import { SignInResponseDto } from "../response/auth";
 import { GetAreaResponseDto } from "../response/area";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
@@ -194,6 +195,17 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
+
+const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
+
+export const fileUploadRequest = async (requestBody: FormData, accessToken: string) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart(accessToken))
+        .then(responseDataHandler<string>)
+        .catch(error => null)
+    return url;
+}
 
 // function: 룰렛 지역 가져오기 요청 함수 //
 export const getAreaListRequest = async () => {

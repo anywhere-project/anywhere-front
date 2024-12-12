@@ -13,15 +13,6 @@ interface SlotReelProps {
     delay: number; // 애니메이션 지연
 }
 
-function Dropdown() {
-    return (
-        <div className="dropdown">
-            <button className="dropdown-item">로그인</button>
-            <button className="dropdown-item">회원가입</button>
-        </div>
-    );
-}
-
 function SlotReel({ values, spinning, speed, delay }: SlotReelProps) {
     return (
         <div className="reel">
@@ -45,6 +36,7 @@ function SlotReel({ values, spinning, speed, delay }: SlotReelProps) {
 }
 
 export default function Main() {
+    
     const [spinning, setSpinning] = useState(false);
     const [results, setResults] = useState<string[][]>([]);
     const [speeds, setSpeeds] = useState<number[]>([]);
@@ -119,32 +111,26 @@ export default function Main() {
 
     return (
         <div id="main-wrapper">
-                <div className='top'>
-                    <div className='title'>어디든가</div>
-                    <div className='review'>후기게시판</div>
-                    <div className='recommend'>추천게시판</div>
-                    <div className='sign-in-button'></div>
-                </div>
-                <div className='main'>
-                    <div className='comment'>어딘가로 떠나고 싶지만</div>
-                    <div className='comment'>어디로 가야할지 모르시겠나요?</div>
-                    <div className='main-bottom'>
-                        <div className="reels">
-                            {results.map((values, index) => (
-                                <SlotReel
-                                    key={index}
-                                    values={values}
-                                    spinning={spinning}
-                                    speed={speeds[index] || 1.5}
-                                    delay={delays[index] || 0}
-                                />
-                            ))}
-                        </div>
-                        <button onClick={handleSpin} disabled={spinning}>
-                            클릭!
-                        </button>
+            <div className='main'>
+                <div className='comment'>어딘가로 떠나고 싶지만</div>
+                <div className='comment'>어디로 가야할지 모르시겠나요?</div>
+                <div className='main-bottom'>
+                    <div className="reels">
+                        {results.map((values, index) => (
+                            <SlotReel
+                                key={index}
+                                values={values}
+                                spinning={spinning}
+                                speed={speeds[index] || 1.5}
+                                delay={delays[index] || 0}
+                            />
+                        ))}
                     </div>
+                    <button onClick={handleSpin} disabled={spinning}>
+                        클릭!
+                    </button>
                 </div>
+            </div>
         </div>
     );
 }
