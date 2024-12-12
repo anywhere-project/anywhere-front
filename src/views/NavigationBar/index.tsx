@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
 import SignInRequestDto from '../../apis/dto/request/auth/sign-in.request.dto';
-import { getSignInRequest, signInRequest } from '../../apis';
+import { signInRequest } from '../../apis';
 import { GetSignInResponseDto, SignInResponseDto } from '../../apis/dto/response/auth';
 import { ResponseDto } from '../../apis/dto/response';
 import './style.css';
@@ -127,11 +127,11 @@ function Dropdown() {
 
     // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
     useEffect(() => {
-        if (accessToken) {
-            getSignInRequest(accessToken).then(getSingInResponse);
-        } else {
-            setSignInUser(null);
-        }
+        // if (accessToken) {
+        //     getSignInRequest(accessToken).then(getSingInResponse);
+        // } else {
+        //     setSignInUser(null);
+        // }
     }, [accessToken]);
 
     return (

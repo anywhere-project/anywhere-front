@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
-import { GetRecommendPostListResponseDto } from "./dto/response/recommend";
+import { PatchRecommendPostRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
+import { GetRecommendPostListResponseDto, GetRecommendPostResponseDto } from "./dto/response/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
@@ -20,19 +20,12 @@ const GET_SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
 const GET_RECOMMNED_POST_LIST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
+const GET_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const DELETE_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 
-const POST_RECOMMEND_MISSION_URL = (recommendId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/mission`;
-const PATCH_RECOMMEND_MISSION_URL = (recommendId: number | string, missionId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_URL = (recommendId: number | string, missionId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
-
-const POST_RECOMMEND_FOOD_URL = (recommendId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/food`;
-const PATCH_RECOMMEND_FOOD_URL = (recommendId: number | string, foodId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/food/${foodId}`;
 const DELETE_RECOMMEND_FOOD_URL = (recommendId: number | string, foodId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/food/${foodId}`;
-
-const POST_RECOMMEND_ATTRACTION_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction`;
-const PATCH_RECOMMEND_ATTRACTION_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
 const DELETE_RECOMMEND_ATTRACTION_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -41,6 +34,7 @@ const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorizatio
 // function: response data 처리 함수 //
 const responseDataHandler = <T>(response: AxiosResponse<T, any>) => {
     const { data } = response;
+    if (Array.isArray(data)) return data[0];
     return data;
 }
 
@@ -92,12 +86,12 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
 };
 
 // function: get sign in 요청 함수 //
-export const getSignInRequest = async (accessToken: string) => {
-    const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
-        .then(responseDataHandler<GetSignInResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
+// export const getSignInRequest = async (accessToken: string) => {
+//     const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
+//         .then(responseDataHandler<GetSignInResponseDto>)
+//         .catch(responseErrorHandler);
+//     return responseBody;
+// };
 
 // function: 추천 게시글 작성 요청 함수 //
 export const postRecommendPostRequest = async (requestBody: PostRecommendPostRequestDto, accessToken: string) => {
@@ -111,6 +105,14 @@ export const postRecommendPostRequest = async (requestBody: PostRecommendPostReq
 export const patchRecommendPostRequest = async (requestBody: PatchRecommendPostRequestDto, recommendId: string | number, accessToken: string) => {
     const responseBody = await axios.patch(PATCH_RECOMMEND_POST_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 추천 게시글 가져오기 요청 함수 //
+export const getRecommendPostRequest = async (recommendId: string | number) => {
+    const responseBody = await axios.get(GET_RECOMMEND_POST_API_URL(recommendId))
+        .then(responseDataHandler<GetRecommendPostResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
@@ -131,41 +133,9 @@ export const getRecommendPostListRequest = async () => {
     return responseBody;
 }
 
-// function: 추천 관광지 작성 요청 함수 //
-export const postRecommendAttractionRequest = async (requestBody: PostRecommendAttractionRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.post(POST_RECOMMEND_ATTRACTION_URL(recommendId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
-
-// function: 추천 관광지 수정 요청 함수 //
-export const patchRecommendAttractionRequest = async (requestBody: PatchRecommendAttractionRequestDto, recommendId: string | number, attractionId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_ATTRACTION_URL(recommendId, attractionId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
-
 // function: 추천 관광지 삭제 요청 함수 //
 export const deleteRecommendAttractionRequest = async (recommendId: string | number, attractionId: string | number, accessToken: string) => {
     const responseBody = await axios.delete(DELETE_RECOMMEND_ATTRACTION_URL(recommendId, attractionId), bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
-
-// function: 추천 먹거리 작성 요청 함수 //
-export const postRecommendFoodRequest = async (requestBody: PostRecommendFoodRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.post(POST_RECOMMEND_FOOD_URL(recommendId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
-
-// function: 추천 먹거리 수정 요청 함수 //
-export const patchRecommendFoodRequest = async (requestBody: PatchRecommendFoodRequestDto, recommendId: string | number, foodId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_FOOD_URL(recommendId, foodId), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
@@ -179,22 +149,6 @@ export const deleteRecommendFoodRequest = async (recommendId: string | number, f
     return responseBody;
 };
 
-// function: 추천 미션 작성 요청 함수 //
-export const postRecommendMissionRequest = async (requestBody: PostRecommendMissionRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.post(POST_RECOMMEND_MISSION_URL(recommendId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
-
-// function: 추천 미션 수정 요청 함수 //
-export const patchRecommendMissionRequest = async (requestBody: PatchRecommendMissionRequestDto, recommendId: string | number, missionId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_MISSION_URL(recommendId, missionId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-};
-
 // function: 추천 미션 삭제 요청 함수 //
 export const deleteRecommendMissionRequest = async (recommendId: string | number, missionId: string | number, accessToken: string) => {
     const responseBody = await axios.delete(DELETE_RECOMMEND_MISSION_URL(recommendId, missionId), bearerAuthorization(accessToken))
@@ -202,3 +156,21 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
+
+const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
+
+export const fileUploadRequest = async (requestBody: FormData, accessToken: string) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart(accessToken))
+        .then(responseDataHandler<string>)
+        .catch(error => null)
+    return url;
+}
+
+// export const getAreaListRequest = async () => {
+//     const responseBody = await axios.get(AREA_MODULE_URL)
+//         .then(responseDataHandler<GetAreaResponseDto>)
+//         .catch(responseErrorHandler);
+//     return responseBody;
+// };

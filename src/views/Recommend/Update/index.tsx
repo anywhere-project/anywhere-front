@@ -2,11 +2,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSignInUserStore } from '../../../stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto } from '../../../apis/dto/request/recommend';
-import { patchRecommendAttractionRequest, patchRecommendMissionRequest } from '../../../apis';
+import { fileUploadRequest, getRecommendPostRequest, patchRecommendPostRequest } from '../../../apis';
 import { ResponseDto } from '../../../apis/dto/response';
-import { useState } from 'react';
-import { ACCESS_TOKEN } from '../../../constants';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
+import { PatchRecommendPostRequestDto } from '../../../apis/dto/request/recommend';
+import { GetRecommendPostResponseDto } from '../../../apis/dto/response/recommend';
 
 export default function RecommendUpdate() {
     
@@ -15,110 +16,317 @@ export default function RecommendUpdate() {
 
     // state: 게시글 번호 경로 변수 상태 //
     const { recommendId } = useParams();
-
-    // state: 추천 게시글 상태 //
-    const [attractionName, setAttractionName] = useState('');
-    const [attractionAddress, setAttractionAddress] = useState('');
-    const [attractionContent, setAttractionContent] = useState('');
-
-    const [foodName, setFoodName] = useState('');
-    const [foodContent, setFoodContent] = useState('');
-
-    const [missionName, setMissionName] = useState('');
-    const [missionContent, setMissionContent] = useState('');
-
+    
     // state: cookie 상태 //
     const [cookies] = useCookies();
+
+    // state: 추천 게시글 상태 //
+    const [attractionName, setAttractionName] = useState<string>('');
+    const [attractionAddress, setAttractionAddress] = useState<string>('');
+    const [attractionContent, setAttractionContent] = useState<string>('');
+    const [foodName, setFoodName] = useState<string>('');
+    const [foodContent, setFoodContent] = useState<string>('');
+    const [missionName, setMissionName] = useState<string>('');
+    const [missionContent, setMissionContent] = useState<string>('');
+    const [imageOrder, setImageOrder] = useState<number[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+    // 현재 선택된 카테고리 //
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    const [startIndex, setStartIndex] = useState<number>(0);
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // function: 추천 관광지 작성 처리 함수 //
-    const patchRecommendAttractionResponse = (responseBody: ResponseDto | null) => {
-        const message = 
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    // functoin: 추천 게시글 수정 요청 함수 //
+    const patchRecommendPostResponse = (responseBody: ResponseDto | null) => {
+        const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
         }
+
+        navigator(RECOMMEND_PATH);
+    };
+
+    // function: 추천 게시글 가져오기 함수 //
+    const getRecommendResponse = (responseBody: GetRecommendPostResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NRC' ? '존재하지 않는 게시물입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            navigator(RECOMMEND_PATH);
+            return;
+        }
+
+        const {  attraction, food, mission, images } = responseBody as GetRecommendPostResponseDto;
+
+        const imageUrls = images.map(image => image.imageUrl);
+        const imageOrders = images.map(image => image.imageOrder);
+
+        setPreviews(imageUrls);
+        setImageOrder(imageOrders);
+        setAttractionName(attraction.attractionName);
+        setAttractionAddress(attraction.attractionAddress);
+        setAttractionContent(attraction.attractionContent);
+        setFoodName(food.foodName);
+        setFoodContent(food.foodContent);
+        setMissionName(mission.missionName);
+        setMissionContent(mission.missionContent);
     }
 
-    // function: 추천 미션 작성 처리 함수 //
-    const patchRecommendMissionResponse = (responseBody: ResponseDto | null) => {
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
+    //  event handler: 추천 게시글 수정 버튼 클릭 핸들러 //
+    const onPatchButtonClickHandler = async () => {
+        if (!accessToken || !recommendId) return;
+    
+        const imageUrls: string[] = [];
+    
+        for (const file of imageFiles) {
+            const formData = new FormData();
+            formData.append('file', file);
+    
+            const uploadedImageUrl = await fileUploadRequest(formData, accessToken);
+            if (uploadedImageUrl) imageUrls.push(uploadedImageUrl); 
         }
+
+        const attraction = attractionName || attractionAddress || attractionContent
+            ? { attractionName, attractionAddress, attractionContent }
+            : null;
+    
+        const food = foodName || foodContent
+            ? { foodName, foodContent }
+            : null;
+    
+        const mission = missionName || missionContent
+            ? { missionName, missionContent }
+            : null;
+    
+        const images = imageUrls.map((imageUrl, index) => ({
+            imageOrder: index,
+            imageUrl
+        }));
+
+        const requestBody: PatchRecommendPostRequestDto = {
+            attraction, food, mission, images
+        };
+    
+        patchRecommendPostRequest(requestBody, recommendId, accessToken).then(patchRecommendPostResponse);
+    }    
+
+    const onCategorySelectHandler = (category: string) => {
+        setSelectedCategory(category);
     };
 
-    // function: 추천 먹거리 작성 처리 함수 //
-    const patchRecommendFoodResponse = (responseBody: ResponseDto | null) => {
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
+    const onAttractionNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setAttractionName(value);
     };
 
-    // const onAttractionButtonClickHandler = () => {
-    //     if (!attractionName || !attractionAddress || !attractionContent) return;
+    const onAttractionAddressChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setAttractionAddress(value);
+    };
 
-    //     const accessToken = cookies[ACCESS_TOKEN];
-    //     if (!accessToken || !recommendId) return;
+    const onAttractionContentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+        setAttractionContent(value);
+    };
 
-    //     const requestBody: PatchRecommendAttractionRequestDto = {
-    //         attractionName, attractionAddress, attractionContent
-    //     }
+    const onFoodNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setFoodName(value);
+    };
 
-    //     patchRecommendAttractionRequest(requestBody, recommendId, accessToken).then(patchRecommendAttractionResponse);
-    // }
+    const onFoodContentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+        setFoodContent(value);
+    };
 
-    // const onFoodButtonClickHandler = () => {
-    //     if (!foodName || !foodContent) return;
+    const onMissionNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setMissionName(value);
+    };
 
-    //     const accessToken = cookies[ACCESS_TOKEN];
-    //     if (!accessToken || !recommendId) return;
+    const onMissionContentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+        setMissionContent(value);
+    };
 
-    //     const requestBody: PatchRecommendFoodRequestDto = {
-    //         foodName, foodContent
-    //     }
-        
-    //     postRecommendFoodRequest(requestBody, recommendId, accessToken).then(patchRecommendFoodResponse);
-    // }
+    // event handler: 이미지 클릭 이벤트 처리 //
+    const onImageClickHandler = () => {
+        const { current } = imageInputRef;
+        if (!current) return;
+        current.click();
+    }
 
-    // const onMissionButtonClickHandler = () => {
-    //     if (!missionName || !missionContent) return;
+    const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        const selectedFiles = [...imageFiles];
+        const selectedPreviews: string[] = [];
+    
+        files.forEach((file) => {
+            selectedFiles.push(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                selectedPreviews.push(reader.result as string);
+                if (selectedPreviews.length === files.length) {
+                    setImageFiles(selectedFiles);
+                    setPreviews(selectedPreviews);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    };
 
-    //     const accessToken = cookies[ACCESS_TOKEN];
-    //     if (!accessToken || !recommendId) return;
+    const goToNextImages = () => {
+        setStartIndex((prevIndex) => Math.min(prevIndex + 3, previews.length - 1));
+    };
 
-    //     const requestBody: PatchRecommendMissionRequestDto = {
-    //         missionName, missionContent
-    //     }
+    const goToPreviousImages = () => {
+        setStartIndex((prevIndex) => Math.max(prevIndex - 3, 0));
+    };
 
-    //     patchRecommendMissionRequest(requestBody, recommendId, accessToken).then(patchRecommendMissionResponse);
-    // }
+    useEffect(() => {
+        if (!recommendId) return;
+        getRecommendPostRequest(recommendId).then(getRecommendResponse);
+    }, [recommendId])
 
     return (
-        <></>
+        <div className="recommend-update">
+            <h1>추천 게시글 작성</h1>
+
+            <div className="category-buttons">
+                <button onClick={() => onCategorySelectHandler('attraction')}>관광지 추천</button>
+                <button onClick={() => onCategorySelectHandler('food')}>먹거리 추천</button>
+                <button onClick={() => onCategorySelectHandler('mission')}>미션 추천</button>
+            </div>
+
+            {selectedCategory === 'attraction' && (
+                <div className="input-section">
+                    <h2>관광지</h2>
+                    <input
+                        type="text"
+                        placeholder="관광지 이름"
+                        value={attractionName}
+                        onChange={onAttractionNameChangeHandler}
+                    />
+                    <input
+                        type="text"
+                        placeholder="관광지 주소"
+                        value={attractionAddress}
+                        onChange={onAttractionAddressChangeHandler}
+                    />
+                    <textarea
+                        placeholder="관광지 내용"
+                        value={attractionContent}
+                        onChange={onAttractionContentChangeHandler}
+                    />
+                </div>
+            )}
+
+            {selectedCategory === 'food' && (
+                <div className="input-section">
+                    <h2>먹거리</h2>
+                    <input
+                        type="text"
+                        placeholder="음식 이름"
+                        value={foodName}
+                        onChange={onFoodNameChangeHandler}
+                    />
+                    <textarea
+                        placeholder="음식 내용"
+                        value={foodContent}
+                        onChange={onFoodContentChangeHandler}
+                    />
+                </div>
+            )}
+
+            {selectedCategory === 'mission' && (
+                <div className="input-section">
+                    <h2>미션</h2>
+                    <input
+                        type="text"
+                        placeholder="미션 이름"
+                        value={missionName}
+                        onChange={onMissionNameChangeHandler}
+                    />
+                    <textarea
+                        placeholder="미션 내용"
+                        value={missionContent}
+                        onChange={onMissionContentChangeHandler}
+                    />
+                </div>
+            )}
+
+            <input
+                type="file"
+                ref={imageInputRef}
+                style={{ display: 'none' }}
+                multiple
+                onChange={onImageInputChangeHandler}
+            />
+            <button onClick={onImageClickHandler}>이미지 선택</button>
+            <div>
+                {imageFiles.map((file, index) => (
+                    <div key={index}>
+                        <span>{file.name}</span>
+                    </div>
+                ))}
+            </div>
+
+            <div className="image-preview">
+                {previews.length > 0 && (
+                    <div className="image-slider">
+                        <button
+                            className="slider-button prev-button"
+                            onClick={goToPreviousImages}
+                            disabled={startIndex === 0}
+                        >
+                            이전
+                        </button>
+
+                        <div className="images">
+                            {previews.slice(startIndex, startIndex + 3).map((src, index) => (
+                                <div key={index} className="image-item">
+                                    <img src={src} alt={`preview-${startIndex + index}`} className="preview-image" />
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            className="slider-button next-button"
+                            onClick={goToNextImages}
+                            disabled={startIndex + 3 >= previews.length}
+                        >
+                            다음
+                        </button>
+                    </div>
+                )}
+                {previews.length === 0 && <p>이미지를 선택해주세요.</p>}
+            </div>
+
+            <button className="submit-button" type="button" onClick={onPatchButtonClickHandler}>
+                수정
+            </button>
+        </div>
     );
 
 }

@@ -1,18 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { useSignInUserStore } from '../../../stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useState, ChangeEvent, useRef } from 'react';
 import { ResponseDto } from '../../../apis/dto/response';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
-import { PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendImageRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from '../../../apis/dto/request/recommend';
 import { postRecommendPostRequest } from '../../../apis';
 import { fileUploadRequest } from '../../../apis/dto/request';
+import { PostRecommendPostRequestDto } from '../../../apis/dto/request/recommend';
 
 export default function RecommendWrite() {
-
-    // 로그인 유저 상태 //
-    const { signInUser } = useSignInUserStore();
 
     // cookie: 쿠키 상태 //
     const [cookies] = useCookies();
@@ -21,13 +17,13 @@ export default function RecommendWrite() {
     const navigator = useNavigate();
 
     // 추천 게시글 상태 //
-    const [attractionName, setAttractionName] = useState('');
-    const [attractionAddress, setAttractionAddress] = useState('');
-    const [attractionContent, setAttractionContent] = useState('');
-    const [foodName, setFoodName] = useState('');
-    const [foodContent, setFoodContent] = useState('');
-    const [missionName, setMissionName] = useState('');
-    const [missionContent, setMissionContent] = useState('');
+    const [attractionName, setAttractionName] = useState<string>('');
+    const [attractionAddress, setAttractionAddress] = useState<string>('');
+    const [attractionContent, setAttractionContent] = useState<string>('');
+    const [foodName, setFoodName] = useState<string>('');
+    const [foodContent, setFoodContent] = useState<string>('');
+    const [missionName, setMissionName] = useState<string>('');
+    const [missionContent, setMissionContent] = useState<string>('');
     const [imageOrder, setImageOrder] = useState<number>(0);
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -62,31 +58,29 @@ export default function RecommendWrite() {
         if (!accessToken) return;
 
         const formData = new FormData();
-
         imageFiles.forEach((file) => {
-            formData.append('images', file);
+            formData.append("file", file);
         });
 
-        const attraction: PostRecommendAttractionRequestDto | null =
-            attractionName || attractionAddress || attractionContent
-                ? { attractionName, attractionAddress, attractionContent } : null;
+        const attraction = attractionName || attractionAddress || attractionContent
+            ? { attractionName, attractionAddress, attractionContent }
+            : null;
 
-        const food: PostRecommendFoodRequestDto | null =
-            foodName || foodContent ? { foodName, foodContent } : null;
+        const food = foodName || foodContent
+            ? { foodName, foodContent }
+            : null;
 
-        const mission: PostRecommendMissionRequestDto | null =
-            missionName || missionContent ? { missionName, missionContent } : null;
-        
-        const images: PostRecommendImageRequestDto[] = imageFiles.map((file, index) => ({
+        const mission = missionName || missionContent
+            ? { missionName, missionContent }
+            : null;
+
+        const images = imageFiles.map((file, index) => ({
             imageOrder: index,
-            imageUrl: URL.createObjectURL(file)
+            imageUrl: URL.createObjectURL(file),
         }));
 
         const requestBody: PostRecommendPostRequestDto = {
-            attraction,
-            food,
-            mission,
-            images
+            attraction, food, mission, images
         };
 
         await fileUploadRequest(formData, accessToken);
@@ -280,8 +274,8 @@ export default function RecommendWrite() {
                 {previews.length === 0 && <p>이미지를 선택해주세요.</p>}
             </div>
 
-            <button className="submit-button" onClick={onPostButtonClickHandler}>
-                게시글 작성
+            <button className="submit-button" type="button" onClick={onPostButtonClickHandler}>
+                작성
             </button>
         </div>
     );
