@@ -1,5 +1,5 @@
-import GetGifticonResponseDto from "./get-area.response.dto"
+import GetAreaResponseDto from "./get-area.response.dto"
 
 export type {
-    GetGifticonResponseDto
+    GetAreaResponseDto
 }
