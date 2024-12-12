@@ -4,6 +4,7 @@ import { IdCheckRequestDto, SignInResponseDto, SignUpRequestDto, TelAuthCheckReq
 import SignInRequestDto from "apis/dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "apis/dto/request/recommend";
 import { GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
+import { GetAreaResponseDto } from "../response/area";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -194,9 +195,10 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
     return responseBody;
 };
 
-// export const getAreaListRequest = async () => {
-//     const responseBody = await axios.get(AREA_MODULE_URL)
-//         .then(responseDataHandler<GetAreaResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
+// function: 룰렛 지역 가져오기 요청 함수 //
+export const getAreaListRequest = async () => {
+    const responseBody = await axios.get(AREA_MODULE_URL)
+        .then(responseDataHandler<GetAreaResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};

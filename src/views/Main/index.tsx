@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css';
 import { motion } from 'framer-motion';
+import { getAreaListRequest } from 'apis/dto/request';
+import { GetAreaResponseDto } from 'apis/dto/response/area';
+import { ResponseDto } from 'apis/dto/response';
+import { Area } from 'types';
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들
@@ -46,8 +50,39 @@ export default function Main() {
     const [speeds, setSpeeds] = useState<number[]>([]);
     const [delays, setDelays] = useState<number[]>([]);
 
+    const [areaNames, setAreaNames] = useState<string[]>([]);
+
+      // state: 원본 리스트 상태 //
+    const [originalList, setOriginalList] = useState<Area[]>([]);
+
+    const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { areas } = responseBody as GetAreaResponseDto;
+        setOriginalList(areas);
+        setAreaNames(areas.map((area) => area.areaName));
+
+    }
+
+    const getAreaNames = () => {
+        getAreaListRequest().then(getAreaListResponse);
+    };
+
+    useEffect(() => {
+        getAreaNames();
+    }, []);
+
     // 각 릴의 데이터
-    const regions = ['서울', '부산', '제주', '광주', '대구'];
+    // const regions = ['서울', '부산', '제주', '광주', '대구'];
     const attractions = ['경복궁', '부산타워', '한라산', '전주한옥마을', '대구엑스코'];
     const foods = ['김밥', '치킨', '비빔밥', '떡볶이', '순두부찌개'];
     const missions = ['사진 찍기', '음식 먹기', '기념품 사기', '무지개 찾기', '명소 방문하기'];
@@ -64,7 +99,7 @@ export default function Main() {
 
         // 각 릴의 내용을 랜덤하게 설정
         const newResults = [
-            regions.sort(() => Math.random() - 0.5).slice(0, 5),
+            areaNames.sort(() => Math.random() - 0.5).slice(0, 5),
             attractions.sort(() => Math.random() - 0.5).slice(0, 5),
             foods.sort(() => Math.random() - 0.5).slice(0, 5),
             missions.sort(() => Math.random() - 0.5).slice(0, 5),
