@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import './style.css';
 import { motion } from 'framer-motion';
-import { getAreaListRequest } from 'apis/dto/request';
+import { Area } from 'types';
 import { GetAreaResponseDto } from 'apis/dto/response/area';
 import { ResponseDto } from 'apis/dto/response';
-import { Area } from 'types';
+import { getAreaListRequest } from 'apis/dto/request';
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들

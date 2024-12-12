@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSignInUserStore } from '../../../stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
-import { fileUploadRequest, getRecommendPostRequest, patchRecommendPostRequest } from '../../../apis';
-import { ResponseDto } from '../../../apis/dto/response';
+import { useSignInUserStore } from 'stores';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ResponseDto } from 'apis/dto/response';
+import { GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
+import { fileUploadRequest, getRecommendPostRequest, patchRecommendPostRequest } from 'apis';
+import { PatchRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
-import { PatchRecommendPostRequestDto } from '../../../apis/dto/request/recommend';
-import { GetRecommendPostResponseDto } from '../../../apis/dto/response/recommend';
 
 export default function RecommendUpdate() {
     
