@@ -1,4 +1,4 @@
-import { RecommendAttraction, RecommendFood, RecommendImage, RecommendMission } from "../../../../types";
+import { RecommendAttraction, RecommendFood, RecommendImage, RecommendMission } from "types";
 import ResponseDto from "../response.dto";
 
 export default interface GetRecommendPostResponseDto extends ResponseDto {
@@ -6,8 +6,8 @@ export default interface GetRecommendPostResponseDto extends ResponseDto {
     recommendCreatedAt: string;
     recommendWriter: string;
     recommendLikeCount: number;
-    attraction: RecommendAttraction;
-    food: RecommendFood;
-    mission: RecommendMission;
+    attraction?: RecommendAttraction | null;
+    food?: RecommendFood | null;
+    mission?: RecommendMission | null;
     images: RecommendImage[];
 }

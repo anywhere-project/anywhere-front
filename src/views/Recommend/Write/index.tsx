@@ -2,11 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useState, ChangeEvent, useRef } from 'react';
-import { ResponseDto } from '../../../apis/dto/response';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
-import { postRecommendPostRequest } from '../../../apis';
-import { fileUploadRequest } from '../../../apis/dto/request';
-import { PostRecommendPostRequestDto } from '../../../apis/dto/request/recommend';
+import { ResponseDto } from 'apis/dto/response';
+import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
+import { fileUploadRequest, postRecommendPostRequest } from 'apis';
 
 export default function RecommendWrite() {
 
@@ -16,7 +15,7 @@ export default function RecommendWrite() {
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // 추천 게시글 상태 //
+    // state: 추천 게시글 상태 //
     const [attractionName, setAttractionName] = useState<string>('');
     const [attractionAddress, setAttractionAddress] = useState<string>('');
     const [attractionContent, setAttractionContent] = useState<string>('');
@@ -57,10 +56,15 @@ export default function RecommendWrite() {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
 
-        const formData = new FormData();
-        imageFiles.forEach((file) => {
-            formData.append("file", file);
-        });
+        const imageUrls: string[] = [];
+    
+        for (const file of imageFiles) {
+            const formData = new FormData();
+            formData.append('file', file);
+    
+            const uploadedImageUrl = await fileUploadRequest(formData, accessToken);
+            if (uploadedImageUrl) imageUrls.push(uploadedImageUrl); 
+        }
 
         const attraction = attractionName || attractionAddress || attractionContent
             ? { attractionName, attractionAddress, attractionContent }
@@ -74,22 +78,23 @@ export default function RecommendWrite() {
             ? { missionName, missionContent }
             : null;
 
-        const images = imageFiles.map((file, index) => ({
+        const images = imageUrls.map((imageUrl, index) => ({
             imageOrder: index,
-            imageUrl: URL.createObjectURL(file),
+            imageUrl
         }));
 
         const requestBody: PostRecommendPostRequestDto = {
             attraction, food, mission, images
         };
 
-        await fileUploadRequest(formData, accessToken);
         postRecommendPostRequest(requestBody, accessToken).then(postRecommendPostResponse);
     };
 
     const onCategorySelectHandler = (category: string) => {
-        setSelectedCategory(category);
-    };
+        setSelectedCategory(prevCategory =>
+        prevCategory === category ? null : category
+    )};
+    
 
     const onAttractionNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -133,24 +138,33 @@ export default function RecommendWrite() {
         current.click();
     }
 
-    const onImageInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files || []);
-        const selectedFiles = [...imageFiles];
-        const selectedPreviews: string[] = [];
-
+    const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        const newImageFiles = [...imageFiles];
+        const newPreviews = [...previews]; 
+    
         files.forEach((file) => {
-            selectedFiles.push(file);
+            if (newImageFiles.find((f) => f.name === file.name)) return;
+            newImageFiles.push(file);
+
             const reader = new FileReader();
             reader.onloadend = () => {
-                selectedPreviews.push(reader.result as string); // 읽은 결과를 미리보기 배열에 추가
-                if (selectedPreviews.length === files.length) {
-                    setImageFiles(selectedFiles); // 모든 파일을 상태에 저장
-                    setPreviews(selectedPreviews); // 미리보기 이미지 상태에 저장
+                newPreviews.push(reader.result as string);
+                if (newPreviews.length === newImageFiles.length) {
+                    setImageFiles(newImageFiles);
+                    setPreviews(newPreviews);
                 }
             };
+    
             reader.readAsDataURL(file);
         });
     };
+    
+
+    const onRemoveImageClickHandler = (index: number) => {
+        setImageFiles((prev) => prev.filter((_, i) => i !== index));
+        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    }
 
     const goToNextImages = () => {
         setStartIndex((prevIndex) => Math.min(prevIndex + 3, previews.length - 1));
@@ -243,6 +257,7 @@ export default function RecommendWrite() {
                 ))}
             </div>
 
+            {/* 이미지 미리보기 */}
             <div className="image-preview">
                 {previews.length > 0 && (
                     <div className="image-slider">
@@ -258,6 +273,7 @@ export default function RecommendWrite() {
                             {previews.slice(startIndex, startIndex + 3).map((src, index) => (
                                 <div key={index} className="image-item">
                                     <img src={src} alt={`preview-${startIndex + index}`} className="preview-image" />
+                                    <div className="remove-button" onClick={() => onRemoveImageClickHandler(startIndex + index)}>×</div>
                                 </div>
                             ))}
                         </div>
