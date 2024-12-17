@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import './style.css';
 import { motion } from 'framer-motion';
-import { getAreaListRequest } from 'apis/dto/request';
-import { GetAreaResponseDto } from 'apis/dto/response/area';
-import { ResponseDto } from 'apis/dto/response';
-import { Area } from 'types';
+import { GetAreaResponseDto } from '../../apis/dto/response/area';
+import { ResponseDto } from '../../apis/dto/response';
+import { Area, Attraction } from '../../types';
+import { getAreaListRequest, getAttractionListRequest } from '../../apis/dto/request';
+import { GetAttractionResponseDto } from '../../apis/dto/response/attraction';
+
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들
@@ -43,9 +45,12 @@ export default function Main() {
     const [delays, setDelays] = useState<number[]>([]);
 
     const [areaNames, setAreaNames] = useState<string[]>([]);
+    const [attractionNames, setAttractionNames] = useState<string[]>([]);
 
       // state: 원본 리스트 상태 //
-    const [originalList, setOriginalList] = useState<Area[]>([]);
+    const [areaList, setArealList] = useState<Area[]>([]);
+    const [attractionList, setAttractionList] = useState<Attraction[]>([]);
+    const [areaAttractionsMap, setAreaAttractionsMap] = useState<Map<number, string[]>>(new Map());
 
     const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
@@ -60,22 +65,58 @@ export default function Main() {
             return;
         }
         const { areas } = responseBody as GetAreaResponseDto;
-        setOriginalList(areas);
+        setArealList(areas);
         setAreaNames(areas.map((area) => area.areaName));
-
     }
+
+    const getAttractionListResponse = (responseBody: GetAttractionResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody
+                ? '서버에 문제가 있습니다.' : responseBody.code === 'VF'
+                ? '잘못된 접근입니다.' : responseBody.code === 'AF'
+                ? '잘못된 접근입니다.' : responseBody.code === 'DBE'
+                ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { attractions } = responseBody as GetAttractionResponseDto;
+        setAttractionList(attractions);
+
+        // areaId별 attractionName 리스트 맵핑
+        const areaAttractions = new Map<number, string[]>();
+        attractions.forEach((attraction) => {
+            const areaId = attraction.areaId; // areaId는 number 타입
+            const attractionName = attraction.attractionName;
+            if (!areaAttractions.has(areaId)) {
+                areaAttractions.set(areaId, []);
+            }
+            areaAttractions.get(areaId)?.push(attractionName);
+        });
+
+        setAreaAttractionsMap(areaAttractions);
+        setAttractionNames(attractions.map((attraction) => attraction.attractionName));
+    };
 
     const getAreaNames = () => {
         getAreaListRequest().then(getAreaListResponse);
     };
 
+    const getAttractionNames = () => {
+        getAttractionListRequest().then(getAttractionListResponse);
+    };
+
     useEffect(() => {
         getAreaNames();
+        getAttractionNames();
     }, []);
 
     // 각 릴의 데이터
     // const regions = ['서울', '부산', '제주', '광주', '대구'];
-    const attractions = ['경복궁', '부산타워', '한라산', '전주한옥마을', '대구엑스코'];
+    // const attractions = ['경복궁', '부산타워', '한라산', '전주한옥마을', '대구엑스코'];
     const foods = ['김밥', '치킨', '비빔밥', '떡볶이', '순두부찌개'];
     const missions = ['사진 찍기', '음식 먹기', '기념품 사기', '무지개 찾기', '명소 방문하기'];
 
@@ -89,10 +130,22 @@ export default function Main() {
         setSpeeds(newSpeeds);
         setDelays(newDelays);
 
+        const areaResults = areaNames.sort(() => Math.random() - 0.5).slice(0, 5);
+
+        const attractionResults = areaResults.map((areaName) => {
+            const area = areaList.find((a) => a.areaName === areaName);
+            if (area) {
+                const attractionNamesForArea = areaAttractionsMap.get(area.areaId) || [];
+                // attractionNamesForArea에서 랜덤하게 5개 선택
+                return attractionNamesForArea.sort(() => Math.random() - 0.5).slice(0, 5);
+            }
+            return [];
+        });
+
         // 각 릴의 내용을 랜덤하게 설정
         const newResults = [
-            areaNames.sort(() => Math.random() - 0.5).slice(0, 5),
-            attractions.sort(() => Math.random() - 0.5).slice(0, 5),
+            areaResults, // 첫 번째 룰렛: areaNames
+            attractionResults[0] || [],
             foods.sort(() => Math.random() - 0.5).slice(0, 5),
             missions.sort(() => Math.random() - 0.5).slice(0, 5),
         ];
