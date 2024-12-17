@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import './style.css';
 import { useCookies } from 'react-cookie';
-import { useSignInUserStore } from 'stores';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ResponseDto } from 'apis/dto/response';
 import { GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
@@ -10,9 +9,6 @@ import { PatchRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
 
 export default function RecommendUpdate() {
-    
-    // state: 로그인 유저 상태 //
-    const { signInUser } = useSignInUserStore();
 
     // state: 게시글 번호 경로 변수 상태 //
     const { recommendId } = useParams();
@@ -77,20 +73,20 @@ export default function RecommendUpdate() {
             return;
         }
 
-        const {  attraction, food, mission, images } = responseBody as GetRecommendPostResponseDto;
+        const { attraction, food, mission, images } = responseBody as GetRecommendPostResponseDto;
 
         const imageUrls = images.map(image => image.imageUrl);
         const imageOrders = images.map(image => image.imageOrder);
 
         setPreviews(imageUrls);
         setImageOrder(imageOrders);
-        setAttractionName(attraction.attractionName);
-        setAttractionAddress(attraction.attractionAddress);
-        setAttractionContent(attraction.attractionContent);
-        setFoodName(food.foodName);
-        setFoodContent(food.foodContent);
-        setMissionName(mission.missionName);
-        setMissionContent(mission.missionContent);
+        setAttractionName(attraction?.attractionName || '');
+        setAttractionAddress(attraction?.attractionAddress || '');
+        setAttractionContent(attraction?.attractionContent || '');
+        setFoodName(food?.foodName || '');
+        setFoodContent(food?.foodContent || '');
+        setMissionName(mission?.missionName || '');
+        setMissionContent(mission?.missionContent || '');
     }
 
     //  event handler: 추천 게시글 수정 버튼 클릭 핸들러 //
@@ -129,7 +125,7 @@ export default function RecommendUpdate() {
         };
     
         patchRecommendPostRequest(requestBody, recommendId, accessToken).then(patchRecommendPostResponse);
-    }    
+    };    
 
     const onCategorySelectHandler = (category: string) => {
         setSelectedCategory(category);
@@ -179,22 +175,30 @@ export default function RecommendUpdate() {
 
     const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
-        const selectedFiles = [...imageFiles];
-        const selectedPreviews: string[] = [];
+        const newImageFiles = [...imageFiles];
+        const newPreviews = [...previews]; 
     
         files.forEach((file) => {
-            selectedFiles.push(file);
+            if (newImageFiles.find((f) => f.name === file.name)) return;
+            newImageFiles.push(file);
+
             const reader = new FileReader();
             reader.onloadend = () => {
-                selectedPreviews.push(reader.result as string);
-                if (selectedPreviews.length === files.length) {
-                    setImageFiles(selectedFiles);
-                    setPreviews(selectedPreviews);
+                newPreviews.push(reader.result as string);
+                if (newPreviews.length === newImageFiles.length) {
+                    setImageFiles(newImageFiles);
+                    setPreviews(newPreviews);
                 }
             };
+    
             reader.readAsDataURL(file);
         });
     };
+    
+    const onRemoveImageClickHandler = (index: number) => {
+        setImageFiles((prev) => prev.filter((_, i) => i !== index));
+        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    }
 
     const goToNextImages = () => {
         setStartIndex((prevIndex) => Math.min(prevIndex + 3, previews.length - 1));
@@ -307,6 +311,7 @@ export default function RecommendUpdate() {
                             {previews.slice(startIndex, startIndex + 3).map((src, index) => (
                                 <div key={index} className="image-item">
                                     <img src={src} alt={`preview-${startIndex + index}`} className="preview-image" />
+                                    <div className="remove-button" onClick={() => onRemoveImageClickHandler(startIndex + index)}>×</div>
                                 </div>
                             ))}
                         </div>

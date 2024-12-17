@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
-import { PatchRecommendPostRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
+import { PatchRecommendImageRequestDto, PatchRecommendPostRequestDto, PostRecommendImageRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetRecommendPostListResponseDto, GetRecommendPostResponseDto } from "./dto/response/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 
@@ -23,6 +23,10 @@ const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const GET_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const DELETE_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
+
+const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
+const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
+const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
 
 const DELETE_RECOMMEND_MISSION_URL = (recommendId: number | string, missionId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_FOOD_URL = (recommendId: number | string, foodId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/food/${foodId}`;
@@ -156,6 +160,30 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+// function: 추천 게시글 사진 작성 요청 함수 //
+export const postRecommendImageRequest = async (requestBody: PostRecommendImageRequestDto, recommendId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_RECOMMEND_IMAGE_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 추천 게시글 사진 수정 요청 함수 //
+export const patchRecommendImageRequest = async (requestBody: PatchRecommendImageRequestDto, recommendId: string | number, imageId: string | number, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_RECOMMEND_IMAGE_API_URL(recommendId, imageId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 추천 게시글 사진 삭제 요청 함수 //
+export const deleteRecommendImageRequest = async (recommendId: string | number, imageId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_RECOMMEND_IMAGE_API_URL(recommendId, imageId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 

@@ -6,8 +6,8 @@ export default interface GetRecommendPostResponseDto extends ResponseDto {
     recommendCreatedAt: string;
     recommendWriter: string;
     recommendLikeCount: number;
-    attraction: RecommendAttraction;
-    food: RecommendFood;
-    mission: RecommendMission;
+    attraction?: RecommendAttraction | null;
+    food?: RecommendFood | null;
+    mission?: RecommendMission | null;
     images: RecommendImage[];
 }
