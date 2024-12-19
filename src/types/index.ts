@@ -7,6 +7,9 @@ import RecommendAttraction from "./recommend-attraction.interface";
 import RecommendFood from "./recommend-food.interface";
 import RecommendImage from "./recommend-image.interface";
 import RecommendMission from "./recommend-mission.interface";
+import RecommendFoodPost from "./recommend-food-post.interface";
+import RecommendMissionPost from "./recommend-mission.interface";
+import RecommendAttractionPost from "./recommend-attraction-post.interface";
 
 export type {
     Area,
@@ -17,5 +20,8 @@ export type {
     RecommendAttraction,
     RecommendFood,
     RecommendMission,
-    RecommendImage
+    RecommendImage,
+    RecommendFoodPost,
+    RecommendMissionPost,
+    RecommendAttractionPost
 }

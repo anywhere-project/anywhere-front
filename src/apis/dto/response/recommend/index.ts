@@ -1,7 +1,9 @@
-import GetRecommendPostResponseDto from "./get-recommend-post.response.dto"
-import GetRecommendPostListResponseDto from "./get-recommend-post-list.response.dto"
+import GetRecommendAttractionResponseDto from "./get-recommend-attraction.response.dto"
+import GetRecommendFoodResponseDto from "./get-recommend-food.response.dto"
+import GetRecommendMissionResponseDto from "./get-recommend-mission.response.dto"
 
 export type {
-    GetRecommendPostResponseDto,
-    GetRecommendPostListResponseDto
+    GetRecommendAttractionResponseDto,
+    GetRecommendFoodResponseDto,
+    GetRecommendMissionResponseDto
 }
