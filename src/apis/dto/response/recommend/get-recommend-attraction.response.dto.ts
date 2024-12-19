@@ -6,6 +6,7 @@ export default interface GetRecommendAttractionResponseDto extends ResponseDto {
     recommendCreatedAt: string;
     recommendWriter: string;
     recommendLikeCount: number;
+    recommendCategory: string;
     attractions: RecommendAttraction[];
     images: RecommendImage[];
 }

@@ -116,8 +116,8 @@ export const postRecommendPostRequest = async (requestBody: PostRecommendPostReq
 }
 
 // function: 추천 게시글 수정 요청 함수 //
-export const patchRecommendPostRequest = async (requestBody: PatchRecommendPostRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_POST_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
+export const patchRecommendPostRequest = async (recommendId: string | number, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_RECOMMEND_POST_API_URL(recommendId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;

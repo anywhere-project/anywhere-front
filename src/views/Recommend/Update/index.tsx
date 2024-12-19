@@ -3,9 +3,7 @@ import './style.css';
 import { useCookies } from 'react-cookie';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ResponseDto } from 'apis/dto/response';
-import { GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
-import { fileUploadRequest, getRecommendPostRequest, patchRecommendPostRequest } from 'apis';
-import { PatchRecommendPostRequestDto } from 'apis/dto/request/recommend';
+import { fileUploadRequest, patchRecommendPostRequest } from 'apis';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
 
 export default function RecommendUpdate() {
@@ -57,38 +55,6 @@ export default function RecommendUpdate() {
         navigator(RECOMMEND_PATH);
     };
 
-    // function: 추천 게시글 가져오기 함수 //
-    const getRecommendResponse = (responseBody: GetRecommendPostResponseDto | ResponseDto | null) => {
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'NRC' ? '존재하지 않는 게시물입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            navigator(RECOMMEND_PATH);
-            return;
-        }
-
-        const { attraction, food, mission, images } = responseBody as GetRecommendPostResponseDto;
-
-        const imageUrls = images.map(image => image.imageUrl);
-        const imageOrders = images.map(image => image.imageOrder);
-
-        setPreviews(imageUrls);
-        setImageOrder(imageOrders);
-        setAttractionName(attraction?.attractionName || '');
-        setAttractionAddress(attraction?.attractionAddress || '');
-        setAttractionContent(attraction?.attractionContent || '');
-        setFoodName(food?.foodName || '');
-        setFoodContent(food?.foodContent || '');
-        setMissionName(mission?.missionName || '');
-        setMissionContent(mission?.missionContent || '');
-    }
-
     //  event handler: 추천 게시글 수정 버튼 클릭 핸들러 //
     const onPatchButtonClickHandler = async () => {
         if (!accessToken || !recommendId) return;
@@ -102,29 +68,8 @@ export default function RecommendUpdate() {
             const uploadedImageUrl = await fileUploadRequest(formData, accessToken);
             if (uploadedImageUrl) imageUrls.push(uploadedImageUrl); 
         }
-
-        const attraction = attractionName || attractionAddress || attractionContent
-            ? { attractionName, attractionAddress, attractionContent }
-            : null;
     
-        const food = foodName || foodContent
-            ? { foodName, foodContent }
-            : null;
-    
-        const mission = missionName || missionContent
-            ? { missionName, missionContent }
-            : null;
-    
-        const images = imageUrls.map((imageUrl, index) => ({
-            imageOrder: index,
-            imageUrl
-        }));
-
-        const requestBody: PatchRecommendPostRequestDto = {
-            attraction, food, mission, images
-        };
-    
-        patchRecommendPostRequest(requestBody, recommendId, accessToken).then(patchRecommendPostResponse);
+        patchRecommendPostRequest(recommendId, accessToken).then(patchRecommendPostResponse);
     };    
 
     const onCategorySelectHandler = (category: string) => {
@@ -210,7 +155,6 @@ export default function RecommendUpdate() {
 
     useEffect(() => {
         if (!recommendId) return;
-        getRecommendPostRequest(recommendId).then(getRecommendResponse);
     }, [recommendId])
 
     return (

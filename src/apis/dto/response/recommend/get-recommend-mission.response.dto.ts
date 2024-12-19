@@ -6,6 +6,7 @@ export default interface GetRecommendMissionResponseDto extends ResponseDto {
     recommendCreatedAt: string;
     recommendWriter: string;
     recommendLikeCount: number;
+    recommendCategory: string;
     missions: RecommendMission[];
     images: RecommendImage[];
 }

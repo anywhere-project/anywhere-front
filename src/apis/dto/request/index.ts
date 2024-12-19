@@ -3,7 +3,6 @@ import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, Patch
 import { ResponseDto } from "../response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./auth";
 import SignInRequestDto from "./auth/sign-in.request.dto";
-import { GetRecommendPostListResponseDto } from "../response/recommend";
 import { SignInResponseDto } from "../response/auth";
 import { GetAreaResponseDto } from "../response/area";
 import { GetAttractionResponseDto } from "../response/attraction";
@@ -21,7 +20,6 @@ const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
-const GET_RECOMMNED_POST_LIST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const DELETE_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
@@ -114,14 +112,6 @@ export const patchRecommendPostRequest = async (requestBody: PatchRecommendPostR
 export const deleteRecommendPostRequest = async (recommendId: string | number, accessToken: string) => {
     const responseBody = await axios.delete(DELETE_RECOMMEND_POST_API_URL(recommendId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
-
-// function: 추천 게시글 리스트 가져오기 요청 함수 //
-export const getRecommendPostListRequest = async () => {
-    const responseBody = await axios.get(GET_RECOMMNED_POST_LIST_API_URL)
-        .then(responseDataHandler<GetRecommendPostListResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
