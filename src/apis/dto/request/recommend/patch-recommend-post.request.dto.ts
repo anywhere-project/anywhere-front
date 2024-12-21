@@ -1,11 +1,11 @@
-import PatchRecommendAttractionRequestDto from "./patch-recommend-attraction.request.dto";
-import PatchRecommendFoodRequestDto from "./patch-recommend-food.request.dto";
-import PatchRecommendImageRequestDto from "./patch-recommend-image.request.dto";
-import PatchRecommendMissionRequestDto from "./patch-recommend-mission.request.dto";
+import PostRecommendAttractionRequestDto from "./post-recommend-attraction.request.dto";
+import PostRecommendFoodRequestDto from "./post-recommend-food.request.dto";
+import PostRecommendImageRequestDto from "./post-recommend-image.request.dto";
+import PostRecommendMissionRequestDto from "./post-recommend-mission.request.dto";
 
 export default interface PatchRecommendPostRequestDto {
-    food?: PatchRecommendFoodRequestDto | null;
-    attraction?: PatchRecommendAttractionRequestDto | null;
-    mission?: PatchRecommendMissionRequestDto | null;
-    images: PatchRecommendImageRequestDto[];
+    foods: PostRecommendFoodRequestDto[] | null;
+    attractions: PostRecommendAttractionRequestDto[] | null;
+    missions: PostRecommendMissionRequestDto[] | null;
+    images: PostRecommendImageRequestDto[];
 }

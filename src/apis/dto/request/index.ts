@@ -21,7 +21,7 @@ const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
-const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
+const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string, category: string) => `${RECOMMEND_MODULE_URL}/${recommendId}/${category}`;
 const DELETE_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 
 const POST_RECOMMEND_MISSION_URL = (recommendId: number | string) =>`${RECOMMEND_MODULE_URL}/${recommendId}/mission`;
@@ -101,8 +101,8 @@ export const postRecommendPostRequest = async (requestBody: PostRecommendPostReq
 }
 
 // function: 추천 게시글 수정 요청 함수 //
-export const patchRecommendPostRequest = async (requestBody: PatchRecommendPostRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_POST_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
+export const patchRecommendPostRequest = async (requestBody: PatchRecommendPostRequestDto, recommendId: string | number, category: string,  accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_RECOMMEND_POST_API_URL(recommendId, category), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
