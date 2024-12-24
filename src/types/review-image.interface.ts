@@ -1,6 +1,6 @@
-export default interface RecommendImage {
+export default interface ReviewImages {
     imageId: number;
-    recommendId: number;
+    reviewId: number;
     imageUrl: string;
     imageOrder: number;
 }

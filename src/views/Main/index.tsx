@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import './style.css';
-import { motion } from 'framer-motion';
+
 import { GetAreaResponseDto } from '../../apis/dto/response/area';
 import { ResponseDto } from '../../apis/dto/response';
 import { Area, Attraction } from '../../types';
 import { getAreaListRequest, getAttractionListRequest } from '../../apis/dto/request';
 import { GetAttractionResponseDto } from '../../apis/dto/response/attraction';
+import { motion } from 'framer-motion';
 
 
 interface SlotReelProps {
