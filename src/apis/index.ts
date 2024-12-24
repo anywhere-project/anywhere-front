@@ -4,7 +4,7 @@ import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthReq
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendImageRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendImageRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { SignInResponseDto } from "./dto/response/auth";
-import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto } from "./dto/response/recommend";
+import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendImageListResponseDto, GetRecommendMissionListResponseDto } from "./dto/response/recommend";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
@@ -42,6 +42,7 @@ const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 
 const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
+const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
 const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
 const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
 
@@ -266,6 +267,14 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
 export const postRecommendImageRequest = async (requestBody: PostRecommendImageRequestDto, recommendId: string | number, accessToken: string) => {
     const responseBody = await axios.post(POST_RECOMMEND_IMAGE_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 추천 게시글 사진 가져오기 요청 함수 //
+export const getRecommendImageListRequest = async (recommendId: string | number) => {
+    const responseBody = await axios.get(GET_RECOMMEND_IMAGE_LIST_API_URL(recommendId))
+        .then(responseDataHandler<GetRecommendImageListResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }

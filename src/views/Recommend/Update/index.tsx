@@ -2,12 +2,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ResponseDto } from 'apis/dto/response';
-import { deleteRecommendAttractionRequest, deleteRecommendFoodRequest, deleteRecommendMissionRequest, fileUploadRequest, getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostRequest, patchRecommendAttractionRequest, patchRecommendFoodRequest, patchRecommendMissionRequest, patchRecommendPostRequest, postRecommendFoodRequest, postRecommendMissionRequest } from 'apis';
+import { deleteRecommendAttractionRequest, deleteRecommendFoodRequest, deleteRecommendImageRequest, deleteRecommendMissionRequest, fileUploadRequest, getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendImageListRequest, getRecommendMissionListRequest, getRecommendPostRequest, patchRecommendAttractionRequest, patchRecommendFoodRequest, patchRecommendMissionRequest, patchRecommendPostRequest } from 'apis';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
-import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
-import './style.css';
+import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendImageListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
 import { RecommendAttraction, RecommendFood, RecommendImage, RecommendMission } from 'types';
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto } from 'apis/dto/request/recommend';
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendMissionRequestDto } from 'apis/dto/request/recommend';
+import './style.css';
 
 interface Attractions {
     recommendAttraction: RecommendAttraction;
@@ -19,6 +19,10 @@ interface Foods {
 
 interface Missions {
     recommendMission: RecommendMission;
+}
+
+interface Images {
+    recommendImage: RecommendImage;
 }
 
 function AttractionRow({ recommendAttraction }: Attractions) {
@@ -87,8 +91,11 @@ function AttractionRow({ recommendAttraction }: Attractions) {
         );
     };
 
-    const onDeleteButtonClickHandler = (index: number) => {
+    const onDeleteButtonClickHandler = () => {
         if (!accessToken || !recommendId) return;
+
+        const confirm = window.confirm('정말로 삭제하시겠습니까?');
+        if (!confirm) return;
 
         deleteRecommendAttractionRequest(recommendId, recommendAttraction.attractionId, accessToken).then(deleteRecommendAttractionResponse);
     }
@@ -119,7 +126,7 @@ function AttractionRow({ recommendAttraction }: Attractions) {
                 <div key={index} className="attraction-field box-container">
                     <div
                         className="remove-field-btn"
-                        onClick={() => onDeleteButtonClickHandler(index)}
+                        onClick={() => onDeleteButtonClickHandler()}
                     >
                         ×
                     </div>
@@ -167,79 +174,67 @@ function FoodRow({ recommendFood }: Foods) {
 
     // state: 추천 음식 상태
     const [foodFields, setFoodFields] = useState([
-        { 
-            foodName: recommendFood.foodName, 
-            foodContent: recommendFood.foodContent, 
-            isNew: false 
-        }
+        {
+            foodName: recommendFood.foodName,
+            foodContent: recommendFood.foodContent,
+            isEditable: false
+        },
     ]);
 
-    const postRecommendFoodResponse = (responseBody: ResponseDto | null) => {
-        const message =
-        !responseBody ? '서버에 문제가 있습니다.' :
-        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-    }
-
     const deleteRecommendFoodResponse = (responseBody: ResponseDto | null) => {
-        const message = 
+        const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-            responseBody.code === 'NRA' ? '존재하지 않는 관광지입니다.' :
+            responseBody.code === 'NRA' ? '존재하지 않는 음식입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
         }
-    }
+    };
 
-    const patchRecommendFoodResponse = (responseBody: ResponseDto | null) => {
+    const patchRecommendFoodResponse = (responseBody: ResponseDto | null, index: number) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-            responseBody.code === 'NRA' ? '존재하지 않는 관광지입니다.' :
+            responseBody.code === 'NRA' ? '존재하지 않는 음식입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
         }
-    }
 
-    const onFoodNameChangeHandler = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+        toggleEditState(index);
+    };
+
+    const handleFoodChange = (index: number, field: 'foodName' | 'foodContent', value: string) => {
         const updatedFields = [...foodFields];
-        updatedFields[index].foodName = event.target.value;
+        updatedFields[index][field] = value;
         setFoodFields(updatedFields);
     };
 
-    const onFoodDescriptionChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>, index: number) => {
-        const updatedFields = [...foodFields];
-        updatedFields[index].foodContent = event.target.value;
-        setFoodFields(updatedFields);
+    const toggleEditState = (index: number) => {
+        setFoodFields((prevFields) =>
+            prevFields.map((field, i) =>
+                i === index ? { ...field, isEditable: !field.isEditable } : field
+            )
+        );
     };
 
     const onDeleteButtonClickHandler = (index: number) => {
         if (!accessToken || !recommendId) return;
 
-        if (foodFields[index].isNew) {
-            setFoodFields(foodFields.filter((_, i) => i !== index));
-        } else {
-            deleteRecommendFoodRequest(recommendId, recommendFood.foodId, accessToken).then(deleteRecommendFoodResponse);
-        }
+        const confirm = window.confirm('정말로 삭제하시겠습니까?');
+        if (!confirm) return;
+
+        deleteRecommendFoodRequest(recommendId, recommendFood.foodId, accessToken).then(deleteRecommendFoodResponse);
     };
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -257,60 +252,39 @@ function FoodRow({ recommendFood }: Foods) {
             foodContent,
         };
 
-        patchRecommendFoodRequest(requestBody, recommendId, recommendFood.foodId, accessToken).then(patchRecommendFoodResponse);
-    };
-
-    const onPostButtonClickHandler = (index: number) => {
-        if (!accessToken || !recommendId) return;
-
-        const { foodName, foodContent } = foodFields[index];
-
-        if (!foodName || !foodContent) {
-            alert('내용을 입력해주세요.');
-            return;
-        }
-
-        const requestBody: PostRecommendFoodRequestDto = {
-            foodName,
-            foodContent
-        };
-
-        postRecommendFoodRequest(requestBody, recommendId, accessToken).then(postRecommendFoodResponse);
+        patchRecommendFoodRequest(requestBody, recommendId, recommendFood.foodId, accessToken).then((responseBody) =>
+            patchRecommendFoodResponse(responseBody, index)
+        );
     };
 
     return (
-        <div className="recommend-update">
+        <div>
             {foodFields.map((field, index) => (
-                <div className="food-field box-container" key={index}>
+                <div key={index} className="food-field box-container">
+                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(index)}>
+                        ×
+                    </div>
                     <div className="box">
                         <div className="field-content">
                             <input
                                 type="text"
                                 placeholder="음식 이름"
                                 value={field.foodName}
-                                onChange={(e) => onFoodNameChangeHandler(e, index)}
+                                readOnly={!field.isEditable}
+                                onChange={(e) => handleFoodChange(index, 'foodName', e.target.value)}
                             />
                             <textarea
                                 placeholder="음식 설명"
                                 value={field.foodContent}
-                                onChange={(e) => onFoodDescriptionChangeHandler(e, index)}
+                                readOnly={!field.isEditable}
+                                onChange={(e) => handleFoodChange(index, 'foodContent', e.target.value)}
                             />
                         </div>
-                        <div className="button-group">
-                            <button
-                                className="delete-button"
-                                onClick={() => onDeleteButtonClickHandler(index)}
-                            >
-                                x
-                            </button>
-                            {!field.isNew && (
-                                <button
-                                    className="update-button"
-                                    onClick={() => onUpdateButtonClickHandler(index)}
-                                >
-                                    수정
-                                </button>
-                            )}
+                        <div
+                            className="update-field-btn"
+                            onClick={() => (field.isEditable ? onUpdateButtonClickHandler(index) : toggleEditState(index))}
+                        >
+                            {field.isEditable ? '저장' : '✏️'}
                         </div>
                     </div>
                 </div>
@@ -329,85 +303,69 @@ function MissionRow({ recommendMission }: Missions) {
 
     // state: 추천 미션 상태
     const [missionFields, setMissionFields] = useState([
-        { 
-            missionName: recommendMission.missionName, 
+        {
+            missionName: recommendMission.missionName,
             missionContent: recommendMission.missionContent,
-            isNew: false 
-        }
+            isEditable: false,
+        },
     ]);
 
-    const postRecommendMissionResponse = (responseBody: ResponseDto | null) => {
-        const message =
-        !responseBody ? '서버에 문제가 있습니다.' :
-        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-    }
-
     const deleteRecommendMissionResponse = (responseBody: ResponseDto | null) => {
-        const message = 
+        const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-            responseBody.code === 'NRA' ? '존재하지 않는 관광지입니다.' :
+            responseBody.code === 'NRA' ? '존재하지 않는 미션입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
         }
-    }
+    };
 
-    const patchRecommendMissionResponse = (responseBody: ResponseDto | null) => {
+    const patchRecommendMissionResponse = (responseBody: ResponseDto | null, index: number) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
-            responseBody.code === 'NRA' ? '존재하지 않는 관광지입니다.' :
+            responseBody.code === 'NRA' ? '존재하지 않는 미션입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-        
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
         }
-    }
 
-    // 미션 이름 변경 핸들러
-    const onMissionNameChangeHandler = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+        toggleEditState(index);
+    };
+
+    const handleMissionChange = (index: number, field: 'missionName' | 'missionContent', value: string) => {
         const updatedFields = [...missionFields];
-        updatedFields[index].missionName = event.target.value;
+        updatedFields[index][field] = value;
         setMissionFields(updatedFields);
     };
 
-    // 미션 설명 변경 핸들러
-    const onMissionDescriptionChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>, index: number) => {
-        const updatedFields = [...missionFields];
-        updatedFields[index].missionContent = event.target.value;
-        setMissionFields(updatedFields);
+    const toggleEditState = (index: number) => {
+        setMissionFields((prevFields) =>
+            prevFields.map((field, i) =>
+                i === index ? { ...field, isEditable: !field.isEditable } : field
+            )
+        );
     };
 
-    // 미션 삭제 버튼 핸들러
     const onDeleteButtonClickHandler = (index: number) => {
         if (!accessToken || !recommendId) return;
 
-        if (missionFields[index].isNew) {
-            setMissionFields(missionFields.filter((_, i) => i !== index));
-        } else {
-            deleteRecommendMissionRequest(recommendId, recommendMission.missionId, accessToken).then(deleteRecommendMissionResponse);
-        }
+        const confirm = window.confirm('정말로 삭제하시겠습니까?');
+        if (!confirm) return;
+
+        deleteRecommendMissionRequest(recommendId, recommendMission.missionId, accessToken).then(deleteRecommendMissionResponse);
     };
 
-    // 미션 수정 버튼 핸들러
     const onUpdateButtonClickHandler = (index: number) => {
         if (!accessToken || !recommendId) return;
 
@@ -423,67 +381,97 @@ function MissionRow({ recommendMission }: Missions) {
             missionContent,
         };
 
-        patchRecommendMissionRequest(requestBody, recommendId, recommendMission.missionId, accessToken).then(patchRecommendMissionResponse);
-    };
-
-    // 미션 작성 버튼 핸들러
-    const onPostButtonClickHandler = (index: number) => {
-        if (!accessToken || !recommendId) return;
-
-        const { missionName, missionContent } = missionFields[index];
-
-        if (!missionName || !missionContent) {
-            alert('내용을 입력해주세요.');
-            return;
-        }
-
-        const requestBody: PostRecommendMissionRequestDto = {
-            missionName,
-            missionContent,
-        };
-
-        postRecommendMissionRequest(requestBody, recommendId, accessToken).then(postRecommendMissionResponse);
+        patchRecommendMissionRequest(requestBody, recommendId, recommendMission.missionId, accessToken).then((responseBody) =>
+            patchRecommendMissionResponse(responseBody, index)
+        );
     };
 
     return (
-        <div className="recommend-update">
+        <div>
             {missionFields.map((field, index) => (
-                <div className="mission-field box-container" key={index}>
+                <div key={index} className="mission-field box-container">
+                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(index)}>
+                        ×
+                    </div>
                     <div className="box">
                         <div className="field-content">
                             <input
                                 type="text"
                                 placeholder="미션 이름"
                                 value={field.missionName}
-                                onChange={(e) => onMissionNameChangeHandler(e, index)}
+                                readOnly={!field.isEditable}
+                                onChange={(e) => handleMissionChange(index, 'missionName', e.target.value)}
                             />
                             <textarea
                                 placeholder="미션 설명"
                                 value={field.missionContent}
-                                onChange={(e) => onMissionDescriptionChangeHandler(e, index)}
+                                readOnly={!field.isEditable}
+                                onChange={(e) => handleMissionChange(index, 'missionContent', e.target.value)}
                             />
                         </div>
-                        <div className="button-group">
-                            <button
-                                className="delete-button"
-                                onClick={() => onDeleteButtonClickHandler(index)}
-                            >
-                                x
-                            </button>
-                            {!field.isNew && (
-                                <button
-                                    className="update-button"
-                                    onClick={() => onUpdateButtonClickHandler(index)}
-                                >
-                                    수정
-                                </button>
-                            )}
+                        <div
+                            className="update-field-btn"
+                            onClick={() => (field.isEditable ? onUpdateButtonClickHandler(index) : toggleEditState(index))}
+                        >
+                            {field.isEditable ? '저장' : '✏️'}
                         </div>
                     </div>
                 </div>
             ))}
         </div>
     );
+}
+
+function ImageRow({ recommendImage }: Images) {
+    // state: 게시글 번호 경로 변수 상태
+    const { recommendId } = useParams();
+
+    // state: cookie 상태
+    const [cookies] = useCookies();
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    // state: 추천 음식 상태
+    const [imageField, setImageFields] = useState([
+        {
+            imageId: recommendImage.imageId,
+            imageOrder: recommendImage.imageOrder,
+            imageUrl: recommendImage.imageUrl
+        }
+    ]);
+
+    // function: 추천 게시글 사진 삭제 요청 함수 //
+    const deleteRecommendImageResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
+            responseBody.code === 'NRI' ? '존재하지 않는 사진입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+    }
+
+    const handleImageRemove = (imageId: number) => {
+        if (!recommendId) return;
+        deleteRecommendImageRequest(recommendId, imageId, accessToken).then(deleteRecommendImageResponse);
+
+        setImageFields((prevImages) => prevImages.filter((image) => image.imageId !== imageId));
+    };
+
+    return (
+        <div className="image-previews">
+            {imageField.map((field, index) => (
+                <div key={field.imageId} className="preview">
+                    <img src={field.imageUrl} alt={`preview-${index}`} />
+                    <div className="remove-image-btn" onClick={() => handleImageRemove(field.imageId)}>×</div>
+                </div>
+            ))}
+        </div>
+    )
 }
 
 export default function RecommendUpdate() {
@@ -532,6 +520,7 @@ export default function RecommendUpdate() {
         navigator(RECOMMEND_PATH);
     };
 
+    // function: 추천 게시글 가져오기 요청 함수 //
     const getRecommendPostResponse = (responseBody: GetRecommendPostResponseDto | ResponseDto | null) => {
         const message =     
             !responseBody ? '서버에 문제가 있습니다.' :
@@ -547,6 +536,24 @@ export default function RecommendUpdate() {
 
         const { recommendCategory } = responseBody as GetRecommendPostResponseDto;
         setCategory(recommendCategory);
+    }
+
+    // function: 추천 게시글 사진 가져오기 요청 함수 //
+    const getRecommendImageListResponse = (responseBody: GetRecommendImageListResponseDto | ResponseDto | null)  => {
+        const message =
+        !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'NAP' ? '존재하지 않는 게시물입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { images } = responseBody as GetRecommendImageListResponseDto;
+        setImages(images);
     }
 
     // function: 추천 관광지 가져오기 요청 함수 //
@@ -698,6 +705,7 @@ export default function RecommendUpdate() {
         if (!recommendId) return;
     
         getRecommendPostRequest(recommendId).then(getRecommendPostResponse);
+        getRecommendImageListRequest(recommendId).then(getRecommendImageListResponse);
     
         switch (category) {
             case 'attraction':
@@ -759,7 +767,6 @@ export default function RecommendUpdate() {
                     <div className='attraction-field add-button' onClick={handleAddAttractionField}>+</div>
                 </div>
             )}
-
 
             {category === 'food' && (
                 <div>
@@ -851,6 +858,11 @@ export default function RecommendUpdate() {
                 />
                 <div onClick={() => imageInputRef.current?.click()} className="upload-button">이미지 업로드</div>
                 <div className="image-previews">
+                    {images.map((image, index) => (
+                        <div className='preview' key={index}>
+                            <ImageRow recommendImage={image} />
+                        </div>
+                    ))}
                     {previews.map((preview, index) => (
                         <div key={index} className="preview">
                             <img src={preview} alt={`preview-${index}`} />

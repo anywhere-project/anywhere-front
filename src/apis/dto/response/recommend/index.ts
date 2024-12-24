@@ -5,6 +5,7 @@ import GetRecommendAttractionListResponseDto from "./get-recommend-attraction-li
 import GetRecommendFoodListResponseDto from "./get-recommend-food-list.response.dto"
 import GetRecommendMissionListResponseDto from "./get-recommend-mission-list.response.dto"
 import GetRecommendPostResponseDto from "./get-recommend-post.response.dto"
+import GetRecommendImageListResponseDto from "./get-recommend-image-list.response.dto"
 
 export type {
     GetRecommendAttractionResponseDto,
@@ -13,5 +14,6 @@ export type {
     GetRecommendAttractionListResponseDto,
     GetRecommendFoodListResponseDto,
     GetRecommendMissionListResponseDto,
-    GetRecommendPostResponseDto
+    GetRecommendPostResponseDto,
+    GetRecommendImageListResponseDto
 }
