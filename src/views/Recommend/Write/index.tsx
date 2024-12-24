@@ -1,14 +1,11 @@
 import { useState, ChangeEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { useState, ChangeEvent, useRef } from 'react';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
 import { ResponseDto } from 'apis/dto/response';
 import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
-import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { PostRecommendMissionRequestDto } from 'apis/dto/request/recommend';
-import { ResponseDto } from 'apis/dto/response';
 import './style.css';
 
 
