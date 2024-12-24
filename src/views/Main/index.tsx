@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import './style.css';
 import { motion } from 'framer-motion';
-
 import { GetAreaResponseDto } from '../../apis/dto/response/area';
 import { ResponseDto } from '../../apis/dto/response';
 import { Area, Attraction } from '../../types';
 import { getAreaListRequest, getAttractionListRequest } from '../../apis/dto/request';
 import { GetAttractionResponseDto } from '../../apis/dto/response/attraction';
+
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들
@@ -136,7 +136,7 @@ export default function Main() {
             const area = areaList.find((a) => a.areaName === areaName);
             if (area) {
                 const attractionNamesForArea = areaAttractionsMap.get(area.areaId) || [];
-                // attractionNamesForArea에서 랜덤하게 5개 선택
+                // attractionNamesForArea에서 랜덤하게 선택
                 return attractionNamesForArea.sort(() => Math.random() - 0.5).slice(0, 5);
             }
             return [];
@@ -145,7 +145,7 @@ export default function Main() {
         // 각 릴의 내용을 랜덤하게 설정
         const newResults = [
             areaResults, // 첫 번째 룰렛: areaNames
-            attractionResults[0] || [],
+            attractionResults.flat(), // 두 번째 룰렛: 선택된 area의 attractionNames
             foods.sort(() => Math.random() - 0.5).slice(0, 5),
             missions.sort(() => Math.random() - 0.5).slice(0, 5),
         ];
