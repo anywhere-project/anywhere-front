@@ -10,7 +10,7 @@ import RecommendMission from "./recommend-mission.interface";
 import RecommendFoodPost from "./recommend-food-post.interface";
 import RecommendMissionPost from "./recommend-mission.interface";
 import RecommendAttractionPost from "./recommend-attraction-post.interface";
-import Review from "./review-post.interface"
+import Review from "./review-post.interface";
 import ReviewImage from "./review-image.interface"
 
 export type {
@@ -25,7 +25,7 @@ export type {
     RecommendImage,
     RecommendFoodPost,
     RecommendMissionPost,
-    RecommendAttractionPost
+    RecommendAttractionPost,
     Review,
     ReviewImage
 }
