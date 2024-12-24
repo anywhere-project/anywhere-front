@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import './style.css';
-import { useCookies } from 'react-cookie';
+
 import { useState, ChangeEvent, useRef } from 'react';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
+
 import { ResponseDto } from 'apis/dto/response';
 import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
+
 
 export default function RecommendWrite() {
 

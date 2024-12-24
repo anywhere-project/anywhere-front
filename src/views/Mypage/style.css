@@ -1,0 +1,68 @@
+#mypage-wrapper{
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    top: 100px;
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+}
+#mypage-wrapper .mypage{
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin: 0 auto;
+    background-color: rgb(229, 247, 247);
+    height: 100vh;
+
+    
+    
+
+    
+}
+#mypage-wrapper .mypage-container{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 60%;
+
+}
+
+#mypage-wrapper .mypage-top{
+
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(187, 250, 250);
+    margin-top: 10px;
+    height: 50px;
+}
+
+#mypage-wrapper .mypage-top .mypage-nickname{
+    display: flex;
+    width: 200px;
+    background-color: bisque;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#mypage-wrapper .mypage-middle{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(182, 218, 218);
+    width: 100%;
+    height: 200px;
+}
+
+
+#mypage-wrapper .mypage-middle .mypage-profile{
+    width: 200px;
+    height: 200px;
+
+    background-image: url(https://i.pinimg.com/236x/cf/e6/81/cfe681bfad23c73d4dbb42c8502d5829.jpg);
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
