@@ -6,12 +6,14 @@ import SignInRequestDto from "./auth/sign-in.request.dto";
 import { GetRecommendPostListResponseDto } from "../response/recommend";
 import { SignInResponseDto } from "../response/auth";
 import { GetAreaResponseDto } from "../response/area";
+import { GetAttractionResponseDto } from "../response/attraction";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
+const ATTRACTION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/attraction`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -211,6 +213,13 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
 export const getAreaListRequest = async () => {
     const responseBody = await axios.get(AREA_MODULE_URL)
         .then(responseDataHandler<GetAreaResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+export const getAttractionListRequest = async () => {
+    const responseBody = await axios.get(ATTRACTION_MODULE_URL)
+        .then(responseDataHandler<GetAttractionResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 };
