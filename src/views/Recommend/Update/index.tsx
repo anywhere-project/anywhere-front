@@ -175,6 +175,7 @@ function FoodRow({ recommendFood }: Foods) {
     // state: 추천 음식 상태
     const [foodFields, setFoodFields] = useState([
         {
+            foodId: recommendFood.foodId,
             foodName: recommendFood.foodName,
             foodContent: recommendFood.foodContent,
             isEditable: false
@@ -234,7 +235,7 @@ function FoodRow({ recommendFood }: Foods) {
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteRecommendFoodRequest(recommendId, recommendFood.foodId, accessToken).then(deleteRecommendFoodResponse);
+        deleteRecommendFoodRequest(recommendId, index, accessToken).then(deleteRecommendFoodResponse);
     };
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -260,8 +261,8 @@ function FoodRow({ recommendFood }: Foods) {
     return (
         <div>
             {foodFields.map((field, index) => (
-                <div key={index} className="food-field box-container">
-                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(index)}>
+                <div key={field.foodId} className="food-field box-container">
+                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(field.foodId)}>
                         ×
                     </div>
                     <div className="box">
@@ -304,6 +305,7 @@ function MissionRow({ recommendMission }: Missions) {
     // state: 추천 미션 상태
     const [missionFields, setMissionFields] = useState([
         {
+            missionId: recommendMission.missionId,
             missionName: recommendMission.missionName,
             missionContent: recommendMission.missionContent,
             isEditable: false,
@@ -363,7 +365,7 @@ function MissionRow({ recommendMission }: Missions) {
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteRecommendMissionRequest(recommendId, recommendMission.missionId, accessToken).then(deleteRecommendMissionResponse);
+        deleteRecommendMissionRequest(recommendId, index, accessToken).then(deleteRecommendMissionResponse);
     };
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -390,7 +392,7 @@ function MissionRow({ recommendMission }: Missions) {
         <div>
             {missionFields.map((field, index) => (
                 <div key={index} className="mission-field box-container">
-                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(index)}>
+                    <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(field.missionId)}>
                         ×
                     </div>
                     <div className="box">
