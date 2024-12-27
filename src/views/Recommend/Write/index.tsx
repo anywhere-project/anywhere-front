@@ -240,6 +240,7 @@ export default function RecommendWrite() {
                             </div>
                         </div>
                     ))}
+                    
                     <div className='attraction-filed add-button' onClick={handleAddAttractionField}>+</div>
                 </div>
             )}

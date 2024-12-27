@@ -37,6 +37,7 @@ function AttractionRow({ recommendAttraction }: Attractions) {
 
     const [attractionFields, setAttractionFields] = useState([
         { 
+            attractionId: recommendAttraction.attractionId,
             attractionName: recommendAttraction.attractionName, 
             attractionAddress: recommendAttraction.attractionAddress, 
             attractionContent: recommendAttraction.attractionContent,
@@ -91,13 +92,15 @@ function AttractionRow({ recommendAttraction }: Attractions) {
         );
     };
 
-    const onDeleteButtonClickHandler = () => {
+    const onDeleteButtonClickHandler = (attractionId: number) => {
         if (!accessToken || !recommendId) return;
 
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteRecommendAttractionRequest(recommendId, recommendAttraction.attractionId, accessToken).then(deleteRecommendAttractionResponse);
+        deleteRecommendAttractionRequest(recommendId, attractionId, accessToken).then(deleteRecommendAttractionResponse);
+        setAttractionFields((prevFields) => prevFields.filter((field) => field.attractionId !== attractionId));
+
     }
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -126,7 +129,7 @@ function AttractionRow({ recommendAttraction }: Attractions) {
                 <div key={index} className="attraction-field box-container">
                     <div
                         className="remove-field-btn"
-                        onClick={() => onDeleteButtonClickHandler()}
+                        onClick={() => onDeleteButtonClickHandler(field.attractionId)}
                     >
                         ×
                     </div>
@@ -229,13 +232,14 @@ function FoodRow({ recommendFood }: Foods) {
         );
     };
 
-    const onDeleteButtonClickHandler = (index: number) => {
+    const onDeleteButtonClickHandler = (foodId: number) => {
         if (!accessToken || !recommendId) return;
 
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteRecommendFoodRequest(recommendId, index, accessToken).then(deleteRecommendFoodResponse);
+        deleteRecommendFoodRequest(recommendId, foodId, accessToken).then(deleteRecommendFoodResponse);
+        setFoodFields((prevFields) => prevFields.filter((field) => field.foodId !== foodId));
     };
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -261,7 +265,7 @@ function FoodRow({ recommendFood }: Foods) {
     return (
         <div>
             {foodFields.map((field, index) => (
-                <div key={field.foodId} className="food-field box-container">
+                <div key={index} className="food-field box-container">
                     <div className="remove-field-btn" onClick={() => onDeleteButtonClickHandler(field.foodId)}>
                         ×
                     </div>
@@ -359,13 +363,14 @@ function MissionRow({ recommendMission }: Missions) {
         );
     };
 
-    const onDeleteButtonClickHandler = (index: number) => {
+    const onDeleteButtonClickHandler = (missionId: number) => {
         if (!accessToken || !recommendId) return;
 
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteRecommendMissionRequest(recommendId, index, accessToken).then(deleteRecommendMissionResponse);
+        deleteRecommendMissionRequest(recommendId, missionId, accessToken).then(deleteRecommendMissionResponse);
+        setMissionFields((prevFields) => prevFields.filter((field) => field.missionId !== missionId));
     };
 
     const onUpdateButtonClickHandler = (index: number) => {
@@ -460,7 +465,6 @@ function ImageRow({ recommendImage }: Images) {
     const handleImageRemove = (imageId: number) => {
         if (!recommendId) return;
         deleteRecommendImageRequest(recommendId, imageId, accessToken).then(deleteRecommendImageResponse);
-
         setImageFields((prevImages) => prevImages.filter((image) => image.imageId !== imageId));
     };
 
