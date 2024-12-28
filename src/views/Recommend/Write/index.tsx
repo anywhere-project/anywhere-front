@@ -5,9 +5,14 @@ import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
 import { ResponseDto } from 'apis/dto/response';
 import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
-import { PostRecommendMissionRequestDto } from 'apis/dto/request/recommend';
 import './style.css';
 
+interface AttractionField {
+    attractionName: string;
+    attractionAddress: string;
+    attractionContent: string;
+    images: string[];
+}
 
 export default function RecommendWrite() {
     const [cookies] = useCookies();
@@ -16,16 +21,16 @@ export default function RecommendWrite() {
     const [category, setCategory] = useState<string>('attraction');
     const [foodFields, setFoodFields] = useState([{ foodName: '', foodContent: '' }]);
     const [missionFields, setMissionFields] = useState([{ missionName: '', missionContent: '' }]);
-    const [attractionFields, setAttractionFields] = useState([{ attractionName: '', attractionAddress: '', attractionContent: '' }]);
+    const [attractionFields, setAttractionFields] = useState<AttractionField[]>([{ attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const imageInputRef = useRef<(HTMLInputElement | null)[]>([]);
 
     const handleCategoryChange = (category: string) => {
         setCategory(category);
     };
 
-    const handleMissionChange = (index: number, field: keyof PostRecommendMissionRequestDto, value: string) => {
+    const handleMissionChange = (index: number, field: 'missionName' | 'missionContent', value: string) => {
         const updatedFields = [...missionFields];
         updatedFields[index][field] = value;
         setMissionFields(updatedFields);
@@ -62,7 +67,7 @@ export default function RecommendWrite() {
     };
 
     const handleAddAttractionField = () => {
-        setAttractionFields([...attractionFields, { attractionName: '', attractionAddress: '', attractionContent: '' }]);
+        setAttractionFields([...attractionFields, { attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
     };
 
     const handleRemoveAttractionField = (index: number) => {
@@ -70,25 +75,55 @@ export default function RecommendWrite() {
         setAttractionFields(updatedFields);
     };
 
-    const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleAttractionImageUpload = (index: number, event: ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
+        
+        // 기존 상태에서 이미지 파일과 미리보기 데이터를 처리하기 위한 변수
+        const updatedAttractionFields = [...attractionFields];
+        const newImageFiles = [...imageFiles];
         const newPreviews = [...previews];
-        const newImages = [...imageFiles, ...files];
-
+    
         files.forEach((file) => {
             const reader = new FileReader();
             reader.onloadend = () => {
+                // 해당 관광지의 images에 이미지를 추가
+                updatedAttractionFields[index] = {
+                    ...updatedAttractionFields[index],  // 현재 관광지 데이터를 복사
+                    images: [...updatedAttractionFields[index].images, reader.result as string], // 새 이미지를 추가
+                };
+    
+                // 이미지 파일과 미리보기 배열에 새로운 값 추가
+                newImageFiles.push(file);
                 newPreviews.push(reader.result as string);
+    
+                // 상태 업데이트: AttractionFields의 해당 인덱스만 업데이트
+                setAttractionFields(updatedAttractionFields);
+                setImageFiles(newImageFiles);
                 setPreviews(newPreviews);
-                setImageFiles(newImages);
             };
             reader.readAsDataURL(file);
         });
     };
+    
+    const handleAttractionImageRemove = (index: number, imgIndex: number) => {
+        const updatedFields = [...attractionFields];
+        const updatedImages = updatedFields[index].images.filter((_, i) => i !== imgIndex);
+    
+        updatedFields[index].images = updatedImages; 
+    
+        const newImageFiles = imageFiles.filter((_, i) => i !== imgIndex);
+        const newPreviews = previews.filter((_, i) => i !== imgIndex);
+    
+        setAttractionFields(updatedFields); 
+        setImageFiles(newImageFiles); 
+        setPreviews(newPreviews); 
+    };
 
-    const handleImageRemove = (index: number) => {
-        setImageFiles((prev) => prev.filter((_, i) => i !== index));
-        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    const onImageClickHandler = (index: number) => {
+        const inputRef = imageInputRef.current[index]; // index에 해당하는 input을 찾음
+        if (inputRef) {
+            inputRef.click();
+        }
     };
 
     const postRecommendPostResponse = (responseBody: ResponseDto | null) => {
@@ -110,8 +145,8 @@ export default function RecommendWrite() {
     const postRecommendPostButtonClickHandler = async () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
-
-        const uploadedImages = [];
+    
+        const uploadedImages: string[] = [];
         for (const file of imageFiles) {
             const formData = new FormData();
             formData.append('file', file);
@@ -119,16 +154,21 @@ export default function RecommendWrite() {
             if (uploadedImage) uploadedImages.push(uploadedImage);
         }
 
+        console.log(uploadedImages);
+    
         const requestBody: PostRecommendPostRequestDto = {
             recommendCategory: category,
-            foods: category === 'food' ? foodFields : null,
-            missions: category === 'mission' ? missionFields : null,
-            attractions: category === 'attraction' ? attractionFields : null,
-            images: uploadedImages.map((url, index) => ({ imageOrder: index, imageUrl: url })),
+            foods: category === 'food'
+                ? foodFields.map((field) => ({...field, images: uploadedImages})) : null,
+            missions: category === 'mission'
+                ? missionFields.map((field) => ({...field, images: uploadedImages})) : null,
+            attractions: category === 'attraction'
+                ? attractionFields.map((field) => ({...field, images: uploadedImages})) : null
         };
-
+    
         postRecommendPostRequest(requestBody, accessToken).then(postRecommendPostResponse);
-    };
+    }; 
+    
 
     return (
         <div className="recommend-write">
@@ -237,32 +277,31 @@ export default function RecommendWrite() {
                                         onChange={(e) => handleAttractionChange(index, 'attractionContent', e.target.value)}
                                     />
                                 </div>
+
+                                <div className="image-uploader">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        ref={(el) => (imageInputRef.current[index] = el)}
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => handleAttractionImageUpload(index, e)}
+                                    />
+                                    <div onClick={() => onImageClickHandler(index)} className="upload-button">이미지 업로드</div>
+                                    <div className="image-previews">
+                                        {field.images.map((preview, imgIndex) => (
+                                            <div key={imgIndex} className="preview">
+                                                <img src={preview} alt={`preview-${imgIndex}`} />
+                                                <div className="remove-image-btn" onClick={() => handleAttractionImageRemove(index, imgIndex)}>×</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}
-                    
                     <div className='attraction-filed add-button' onClick={handleAddAttractionField}>+</div>
                 </div>
             )}
-
-            <div className="image-uploader">
-                <input
-                    type="file"
-                    multiple
-                    ref={imageInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleImageUpload}
-                />
-                <div onClick={() => imageInputRef.current?.click()} className="upload-button">이미지 업로드</div>
-                <div className="image-previews">
-                    {previews.map((preview, index) => (
-                        <div key={index} className="preview">
-                            <img src={preview} alt={`preview-${index}`} />
-                            <div className="remove-image-btn" onClick={() => handleImageRemove(index)}>×</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
 
             <div className="submit-button" onClick={postRecommendPostButtonClickHandler}>게시글 작성</div>
         </div>

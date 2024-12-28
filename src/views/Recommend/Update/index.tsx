@@ -6,7 +6,7 @@ import { deleteRecommendAttractionRequest, deleteRecommendFoodRequest, deleteRec
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
 import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendImageListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
 import { RecommendAttraction, RecommendFood, RecommendImage, RecommendMission } from 'types';
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendMissionRequestDto } from 'apis/dto/request/recommend';
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import './style.css';
 
 interface Attractions {
@@ -496,8 +496,7 @@ export default function RecommendUpdate() {
     const [foodFields, setFoodFields] = useState([{ foodName: '', foodContent: '' }]);
     const [missionFields, setMissionFields] = useState([{ missionName: '', missionContent: '' }]);
     const [attractionFields, setAttractionFields] = useState([{ attractionName: '', attractionAddress: '', attractionContent: '' }]);
-
-    const [imageOrder, setImageOrder] = useState<number[]>([]);
+    
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -619,7 +618,7 @@ export default function RecommendUpdate() {
         setMissions(missions);
     }
 
-    const handleMissionChange = (index: number, field: keyof PostRecommendMissionRequestDto, value: string) => {
+    const handleMissionChange = (index: number, field: 'missionName' | 'missionContent', value: string) => {
         const updatedFields = [...missionFields];
         updatedFields[index][field] = value;
         setMissionFields(updatedFields);
@@ -668,7 +667,7 @@ export default function RecommendUpdate() {
     const onPatchButtonClickHandler = async () => {
         if (!accessToken || !recommendId) return;
     
-        const uploadedImages = [];
+        const uploadedImages: string[] = [];
         for (const file of imageFiles) {
             const formData = new FormData();
             formData.append('file', file);
@@ -677,11 +676,13 @@ export default function RecommendUpdate() {
         }
 
         const requestBody: PatchRecommendPostRequestDto = {
-            foods: category === 'food' ? foodFields : null,
-            missions: category === 'mission' ? missionFields : null,
-            attractions: category === 'attraction' ? attractionFields : null,
-            images: uploadedImages.map((url, index) => ({ imageOrder: index, imageUrl: url })),
-        }
+            foods: category === 'food' 
+                ? foodFields.map((field) => ({...field, images: uploadedImages})) : null,
+            missions: category === 'mission' 
+                ? missionFields.map((field) => ({...field, images: uploadedImages})) : null,
+            attractions: category === 'attraction'
+                ? attractionFields.map((field) => ({...field, images: uploadedImages})) : null
+        };
 
         patchRecommendPostRequest(requestBody, recommendId, category, accessToken).then(patchRecommendPostResponse);
     };
