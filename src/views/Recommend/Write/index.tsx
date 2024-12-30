@@ -14,13 +14,25 @@ interface AttractionField {
     images: string[];
 }
 
+interface FoodField {
+    foodName: string;
+    foodContent: string;
+    images: string[];
+}
+
+interface MissionField {
+    missionName: string;
+    missionContent: string;
+    images: string[];
+}
+
 export default function RecommendWrite() {
     const [cookies] = useCookies();
     const navigator = useNavigate();
 
     const [category, setCategory] = useState<string>('attraction');
-    const [foodFields, setFoodFields] = useState([{ foodName: '', foodContent: '' }]);
-    const [missionFields, setMissionFields] = useState([{ missionName: '', missionContent: '' }]);
+    const [foodFields, setFoodFields] = useState<FoodField[]>([{ foodName: '', foodContent: '', images: [] }]);
+    const [missionFields, setMissionFields] = useState<MissionField[]>([{ missionName: '', missionContent: '', images: [] }]);
     const [attractionFields, setAttractionFields] = useState<AttractionField[]>([{ attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -37,7 +49,7 @@ export default function RecommendWrite() {
     };
 
     const handleAddMissionField = () => {
-        setMissionFields([...missionFields, { missionName: '', missionContent: '' }]);
+        setMissionFields([...missionFields, { missionName: '', missionContent: '', images: [] }]);
     };
 
     const handleRemoveMissionField = (index: number) => {
@@ -52,7 +64,7 @@ export default function RecommendWrite() {
     };
 
     const handleAddFoodField = () => {
-        setFoodFields([...foodFields, { foodName: '', foodContent: '' }]);
+        setFoodFields([...foodFields, { foodName: '', foodContent: '', images: [] }]);
     };
 
     const handleRemoveFoodField = (index: number) => {
@@ -75,10 +87,89 @@ export default function RecommendWrite() {
         setAttractionFields(updatedFields);
     };
 
+    const handleFoodImageUpload = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        
+        const updatedFoodFields = [...foodFields];
+        const newImageFiles = [...imageFiles];
+        const newPreviews = [...previews];
+    
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                updatedFoodFields[index] = {
+                    ...updatedFoodFields[index], 
+                    images: [...updatedFoodFields[index].images, reader.result as string]
+                };
+    
+                newImageFiles.push(file);
+                newPreviews.push(reader.result as string);
+    
+                setFoodFields(updatedFoodFields);
+                setImageFiles(newImageFiles);
+                setPreviews(newPreviews);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+    
+    const handleFoodImageRemove = (index: number, imgIndex: number) => {
+        const updatedFields = [...foodFields];
+        const updatedImages = updatedFields[index].images.filter((_, i) => i !== imgIndex);
+    
+        updatedFields[index].images = updatedImages; 
+    
+        const newImageFiles = imageFiles.filter((_, i) => i !== imgIndex);
+        const newPreviews = previews.filter((_, i) => i !== imgIndex);
+    
+        setFoodFields(updatedFields); 
+        setImageFiles(newImageFiles); 
+        setPreviews(newPreviews); 
+    };
+
+    const handleMissionImageUpload = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        
+        const updatedMissionFields = [...missionFields];
+        const newImageFiles = [...imageFiles];
+        const newPreviews = [...previews];
+    
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                updatedMissionFields[index] = {
+                    ...updatedMissionFields[index], 
+                    images: [...updatedMissionFields[index].images, reader.result as string]
+                };
+    
+                newImageFiles.push(file);
+                newPreviews.push(reader.result as string);
+    
+                setMissionFields(updatedMissionFields);
+                setImageFiles(newImageFiles);
+                setPreviews(newPreviews);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+    
+    const handleMissionImageRemove = (index: number, imgIndex: number) => {
+        const updatedFields = [...missionFields];
+        const updatedImages = updatedFields[index].images.filter((_, i) => i !== imgIndex);
+    
+        updatedFields[index].images = updatedImages; 
+    
+        const newImageFiles = imageFiles.filter((_, i) => i !== imgIndex);
+        const newPreviews = previews.filter((_, i) => i !== imgIndex);
+    
+        setMissionFields(updatedFields); 
+        setImageFiles(newImageFiles); 
+        setPreviews(newPreviews); 
+    };
+
     const handleAttractionImageUpload = (index: number, event: ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
         
-        // 기존 상태에서 이미지 파일과 미리보기 데이터를 처리하기 위한 변수
         const updatedAttractionFields = [...attractionFields];
         const newImageFiles = [...imageFiles];
         const newPreviews = [...previews];
@@ -86,17 +177,14 @@ export default function RecommendWrite() {
         files.forEach((file) => {
             const reader = new FileReader();
             reader.onloadend = () => {
-                // 해당 관광지의 images에 이미지를 추가
                 updatedAttractionFields[index] = {
-                    ...updatedAttractionFields[index],  // 현재 관광지 데이터를 복사
-                    images: [...updatedAttractionFields[index].images, reader.result as string], // 새 이미지를 추가
+                    ...updatedAttractionFields[index], 
+                    images: [...updatedAttractionFields[index].images, reader.result as string]
                 };
     
-                // 이미지 파일과 미리보기 배열에 새로운 값 추가
                 newImageFiles.push(file);
                 newPreviews.push(reader.result as string);
     
-                // 상태 업데이트: AttractionFields의 해당 인덱스만 업데이트
                 setAttractionFields(updatedAttractionFields);
                 setImageFiles(newImageFiles);
                 setPreviews(newPreviews);
@@ -120,7 +208,7 @@ export default function RecommendWrite() {
     };
 
     const onImageClickHandler = (index: number) => {
-        const inputRef = imageInputRef.current[index]; // index에 해당하는 input을 찾음
+        const inputRef = imageInputRef.current[index];
         if (inputRef) {
             inputRef.click();
         }
@@ -138,7 +226,7 @@ export default function RecommendWrite() {
             alert(message);
             return;
         }
-
+        
         navigator(RECOMMEND_PATH);
     };
 
@@ -153,8 +241,6 @@ export default function RecommendWrite() {
             const uploadedImage = await fileUploadRequest(formData, accessToken);
             if (uploadedImage) uploadedImages.push(uploadedImage);
         }
-
-        console.log(uploadedImages);
     
         const requestBody: PostRecommendPostRequestDto = {
             recommendCategory: category,
@@ -209,6 +295,24 @@ export default function RecommendWrite() {
                                         onChange={(e) => handleMissionChange(index, 'missionContent', e.target.value)}
                                     />
                                 </div>
+                                <div className="image-uploader">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        ref={(el) => (imageInputRef.current[index] = el)}
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => handleMissionImageUpload(index, e)}
+                                    />
+                                    <div onClick={() => onImageClickHandler(index)} className="upload-button">이미지 업로드</div>
+                                    <div className="image-previews">
+                                        {field.images.map((preview, imgIndex) => (
+                                            <div key={imgIndex} className="preview">
+                                                <img src={preview} alt={`preview-${imgIndex}`} />
+                                                <div className="remove-image-btn" onClick={() => handleMissionImageRemove(index, imgIndex)}>×</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -239,6 +343,24 @@ export default function RecommendWrite() {
                                         value={field.foodContent}
                                         onChange={(e) => handleFoodChange(index, 'foodContent', e.target.value)}
                                     />
+                                </div>
+                                <div className="image-uploader">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        ref={(el) => (imageInputRef.current[index] = el)}
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => handleFoodImageUpload(index, e)}
+                                    />
+                                    <div onClick={() => onImageClickHandler(index)} className="upload-button">이미지 업로드</div>
+                                    <div className="image-previews">
+                                        {field.images.map((preview, imgIndex) => (
+                                            <div key={imgIndex} className="preview">
+                                                <img src={preview} alt={`preview-${imgIndex}`} />
+                                                <div className="remove-image-btn" onClick={() => handleFoodImageRemove(index, imgIndex)}>×</div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
