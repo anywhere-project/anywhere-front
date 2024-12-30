@@ -2,9 +2,9 @@ import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendImageRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendImageRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { SignInResponseDto } from "./dto/response/auth";
-import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendImageListResponseDto, GetRecommendMissionListResponseDto } from "./dto/response/recommend";
+import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto } from "./dto/response/recommend";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
@@ -24,27 +24,19 @@ const GET_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEN
 const DELETE_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 
 const POST_RECOMMEND_ATTRACTION_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction`;
-// const GET_RECOMMEND_ATTRACTION_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction`;
 const GET_RECOMMEND_ATTRACTION_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attractions`;
 const PATCH_RECOMMEND_ATTRACTION_API_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
 const DELETE_RECOMMEND_ATTRACTION_API_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
 
 const POST_RECOMMEND_FOOD_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/food`;
-// const GET_RECOMMEND_FOOD_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/food`;
 const GET_RECOMMEND_FOOD_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/foods`;
 const PATCH_RECOMMEND_FOOD_API_URL = (recommendId: number | string, foodId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/food/${foodId}`;
 const DELETE_RECOMMEND_FOOD_API_URL = (recommendId: number | string, foodId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/food/${foodId}`;
 
 const POST_RECOMMEND_MISSION_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission`;
-// const GET_RECOMMEND_MISSION_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission`;
 const GET_RECOMMEND_MISSION_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/missions`;
 const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
-
-const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
-const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
-const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
-const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -159,14 +151,6 @@ export const patchRecommendAttractionRequest = async (requestBody: PatchRecommen
     return responseBody;
 }
 
-// function: 추천 관광지 가져오기 요청 함수 //
-// export const getRecommendAttractionRequest = async (recommendId: string | number) => {
-//     const responseBody = await axios.get(GET_RECOMMEND_ATTRACTION_API_URL(recommendId))
-//         .then(responseDataHandler<ResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// }
-
 // function: 추천 관광지 리스트 가져오기 요청 함수 //
 export const getRecommendAttractionListRequest = async (recommendId: string | number) => {
     const responseBody = await axios.get(GET_RECOMMEND_ATTRACTION_LIST_API_URL(recommendId))
@@ -198,14 +182,6 @@ export const patchRecommendFoodRequest = async (requestBody: PatchRecommendFoodR
         .catch(responseErrorHandler);
     return responseBody;
 };
-
-// function: 추천 먹거리 가져오기 요청 함수 //
-// export const getRecommendFoodRequest = async (recommendId: number | string, foodId: number | string) => {
-//     const responseBody = await axios.get(GET_RECOMMEND_FOOD_API_URL(recommendId))
-//         .then(responseDataHandler<ResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
 
 // function: 추천 먹거리 리스트 가져오기 요청 함수 //
 export const getRecommendFoodListRequest = async (recommendId: number | string) => {
@@ -239,14 +215,6 @@ export const patchRecommendMissionRequest = async (requestBody: PatchRecommendMi
     return responseBody;
 };
 
-// function: 추천 미션 가져오기 요청 함수 //
-// export const getRecommendMissionRequest = async (recommendId: number | string, missionId: number | string) => {
-//     const responseBody = await axios.get(GET_RECOMMEND_MISSION_API_URL(recommendId))
-//         .then(responseDataHandler<ResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
-
 // function: 추천 미션 리스트 가져오기 요청 함수 //
 export const getRecommendMissionListRequest = async (recommendId: number | string) => {
     const responseBody = await axios.get(GET_RECOMMEND_MISSION_LIST_API_URL(recommendId))
@@ -262,38 +230,6 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
         .catch(responseErrorHandler);
     return responseBody;
 };
-
-// function: 추천 게시글 사진 작성 요청 함수 //
-export const postRecommendImageRequest = async (requestBody: PostRecommendImageRequestDto, recommendId: string | number, accessToken: string) => {
-    const responseBody = await axios.post(POST_RECOMMEND_IMAGE_API_URL(recommendId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
-
-// function: 추천 게시글 사진 가져오기 요청 함수 //
-export const getRecommendImageListRequest = async (recommendId: string | number) => {
-    const responseBody = await axios.get(GET_RECOMMEND_IMAGE_LIST_API_URL(recommendId))
-        .then(responseDataHandler<GetRecommendImageListResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
-
-// function: 추천 게시글 사진 수정 요청 함수 //
-export const patchRecommendImageRequest = async (requestBody: PatchRecommendImageRequestDto, recommendId: string | number, imageId: string | number, accessToken: string) => {
-    const responseBody = await axios.patch(PATCH_RECOMMEND_IMAGE_API_URL(recommendId, imageId), requestBody, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
-
-// function: 추천 게시글 사진 삭제 요청 함수 //
-export const deleteRecommendImageRequest = async (recommendId: string | number, imageId: string | number, accessToken: string) => {
-    const responseBody = await axios.delete(DELETE_RECOMMEND_IMAGE_API_URL(recommendId, imageId), bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
 
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 
