@@ -8,6 +8,9 @@ import PatchRecommendFoodRequestDto from "./patch-recommend-food.request.dto";
 import PatchRecommendMissionRequestDto from "./patch-recommend-mission.request.dto";
 import PatchRecommendPostRequestDto from "./patch-recommend-post.request.dto";
 import PatchRecommendImageRequestDto from "./patch-recommend-image.request.dto";
+import PostAttractionImageRequestDto from "./post-attraction-image.request.dto";
+import PostFoodImageRequestDto from "./post-food-image.request.dto";
+import PostMissionImageRequestDto from "./post-mission-image.request.dto";
 
 export type {
     PostRecommendAttractionRequestDto,
@@ -19,5 +22,8 @@ export type {
     PatchRecommendFoodRequestDto,
     PatchRecommendMissionRequestDto,
     PatchRecommendPostRequestDto,
-    PatchRecommendImageRequestDto
+    PatchRecommendImageRequestDto,
+    PostAttractionImageRequestDto,
+    PostFoodImageRequestDto,
+    PostMissionImageRequestDto
 }

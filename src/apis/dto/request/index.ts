@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "../request/recommend";
+import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostAttractionImageRequestDto, PostFoodImageRequestDto, PostMissionImageRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "../request/recommend";
 import { ResponseDto } from "../response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./auth";
 import SignInRequestDto from "./auth/sign-in.request.dto";
@@ -13,6 +13,7 @@ const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
 const ATTRACTION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/attraction`
+const FOOD_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/food`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -35,6 +36,15 @@ const DELETE_RECOMMEND_FOOD_URL = (recommendId: number | string, foodId: number 
 const POST_RECOMMEND_ATTRACTION_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction`;
 const PATCH_RECOMMEND_ATTRACTION_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
 const DELETE_RECOMMEND_ATTRACTION_URL = (recommendId: number | string, attractionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/attraction/${attractionId}`;
+
+const POST_ATTRACTION_IMAGE_API_URL = (attractionId: string | number) => `${RECOMMEND_MODULE_URL}/attraction/${attractionId}`;
+const DELETE_ATTRACTION_IMAGE_API_URL = (attractionId: string | number, imageId: string | number) => `${RECOMMEND_MODULE_URL}/attraction/${attractionId}/image/${imageId}`;
+
+const POST_FOOD_IMAGE_API_URL = (foodId: string | number) => `${RECOMMEND_MODULE_URL}/food/${foodId}`;
+const DELETE_FOOD_IMAGE_API_URL = (foodId: string | number, imageId: string | number) => `${RECOMMEND_MODULE_URL}/food/${foodId}/image/${imageId}`;
+
+const POST_MISSION_IMAGE_API_URL = (missionId: string | number) => `${RECOMMEND_MODULE_URL}/mission/${missionId}`;
+const DELETE_MISSION_IMAGE_API_URL = (missionId: string | number, imageId: string | number) => `${RECOMMEND_MODULE_URL}/mission/${missionId}/image/${imageId}`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -188,6 +198,54 @@ export const deleteRecommendMissionRequest = async (recommendId: string | number
     return responseBody;
 };
 
+// function: 추천 관광지 사진 작성 요청 함수 // 
+export const postAttractionImageRequest = async (requestBody: PostAttractionImageRequestDto, attractionId: string | number, accessToken: string) => {
+    const resopnseBody = await axios.post(POST_ATTRACTION_IMAGE_API_URL(attractionId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return resopnseBody;
+}
+
+// function: 추천 관광지 사진 삭제 요청 함수 //
+export const deleteAttractionImageRequest = async (attractionId: string | number, imageId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_ATTRACTION_IMAGE_API_URL(attractionId, imageId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 추천 음식 사진 작성 요청 함수 //
+export const postFoodImageRequest = async (requestBody: PostFoodImageRequestDto, foodId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_FOOD_IMAGE_API_URL(foodId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 추천 음식 사진 삭제 요청 함수 //
+export const deleteFoodImageRequest = async (foodId: string | number, imageId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_FOOD_IMAGE_API_URL(foodId, imageId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 추천 미션 사진 작성 요청 함수 //
+export const postMissionImageRequest = async (requestBody: PostMissionImageRequestDto, missionId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_MISSION_IMAGE_API_URL(missionId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 추천 미션 사진 삭제 요청 함수 //
+export const deleteMissionImageRequest = async (missionId: string | number, imageId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_MISSION_IMAGE_API_URL(missionId, imageId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 
 const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
@@ -209,6 +267,13 @@ export const getAreaListRequest = async () => {
 
 export const getAttractionListRequest = async () => {
     const responseBody = await axios.get(ATTRACTION_MODULE_URL)
+        .then(responseDataHandler<GetAttractionResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+export const getFoodListRequest = async () => {
+    const responseBody = await axios.get(FOOD_MODULE_URL)
         .then(responseDataHandler<GetAttractionResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
