@@ -12,7 +12,7 @@ import Mypage from './views/Mypage';
 function Anywhere() {
   return (
     <>
-      {/* <NavigationBar/> */}
+      <NavigationBar/>
       <Routes>
         <Route index element={<Main />} />
         <Route path={SIGN_UP_PATH} element={<SignUp />} />
