@@ -6,11 +6,13 @@ import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, Patch
 import { SignInResponseDto } from "./dto/response/auth";
 import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendImageListResponseDto, GetRecommendMissionListResponseDto } from "./dto/response/recommend";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
+import { PostReviewRequestDto } from "./dto/request/review";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
+const REVIEW_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/review`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -45,6 +47,8 @@ const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMM
 const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
 const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
 const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
+
+const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -312,3 +316,11 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
 //         .catch(responseErrorHandler);
 //     return responseBody;
 // };
+
+// function: 추천 게시글 작성 요청 함수 //
+export const postRevjewPostRequest = async (requestBody: PostReviewRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_REVIEW_POST_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
