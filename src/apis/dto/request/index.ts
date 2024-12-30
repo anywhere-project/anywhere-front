@@ -13,6 +13,7 @@ const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
 const ATTRACTION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/attraction`
+const FOOD_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/food`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -266,6 +267,13 @@ export const getAreaListRequest = async () => {
 
 export const getAttractionListRequest = async () => {
     const responseBody = await axios.get(ATTRACTION_MODULE_URL)
+        .then(responseDataHandler<GetAttractionResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+export const getFoodListRequest = async () => {
+    const responseBody = await axios.get(FOOD_MODULE_URL)
         .then(responseDataHandler<GetAttractionResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
