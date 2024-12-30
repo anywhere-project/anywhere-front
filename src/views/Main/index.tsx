@@ -4,9 +4,11 @@ import './style.css';
 import { GetAreaResponseDto } from '../../apis/dto/response/area';
 import { ResponseDto } from '../../apis/dto/response';
 import { Area, Attraction } from '../../types';
-import { getAreaListRequest, getAttractionListRequest } from '../../apis/dto/request';
+import { getAreaListRequest, getAttractionListRequest, getFoodListRequest } from '../../apis/dto/request';
 import { GetAttractionResponseDto } from '../../apis/dto/response/attraction';
 import { motion } from 'framer-motion';
+import Food from 'types/food-get.interface';
+import { GetFoodResponseDto } from 'apis/dto/response/food';
 
 
 interface SlotReelProps {
@@ -47,10 +49,12 @@ export default function Main() {
 
     const [areaNames, setAreaNames] = useState<string[]>([]);
     const [attractionNames, setAttractionNames] = useState<string[]>([]);
+    const [foodNames, setFoodNames] = useState<string[]>([]);
 
       // state: 원본 리스트 상태 //
     const [areaList, setArealList] = useState<Area[]>([]);
     const [attractionList, setAttractionList] = useState<Attraction[]>([]);
+    const [foodList, setFoodList] = useState<Food[]>([]);
     const [areaAttractionsMap, setAreaAttractionsMap] = useState<Map<number, string[]>>(new Map());
 
     const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
@@ -102,6 +106,23 @@ export default function Main() {
         setAttractionNames(attractions.map((attraction) => attraction.attractionName));
     };
 
+    const getFoodListResponse = (responseBody: GetFoodResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { foods } = responseBody as GetFoodResponseDto;
+        setFoodList(foods);
+        setFoodNames(foods.map((food) => food.foodName));
+    }
+
     const getAreaNames = () => {
         getAreaListRequest().then(getAreaListResponse);
     };
@@ -110,15 +131,20 @@ export default function Main() {
         getAttractionListRequest().then(getAttractionListResponse);
     };
 
+    const getFoodNames = () => {
+        getFoodListRequest().then(getFoodListResponse);
+    };
+
     useEffect(() => {
         getAreaNames();
         getAttractionNames();
+        getFoodNames();
     }, []);
 
     // 각 릴의 데이터
     // const regions = ['서울', '부산', '제주', '광주', '대구'];
     // const attractions = ['경복궁', '부산타워', '한라산', '전주한옥마을', '대구엑스코'];
-    const foods = ['김밥', '치킨', '비빔밥', '떡볶이', '순두부찌개'];
+    // const foods = ['김밥', '치킨', '비빔밥', '떡볶이', '순두부찌개'];
     const missions = ['사진 찍기', '음식 먹기', '기념품 사기', '무지개 찾기', '명소 방문하기'];
 
     const handleSpin = () => {
@@ -143,11 +169,13 @@ export default function Main() {
             return [];
         });
 
+        const foodResults = foodNames.sort(() => Math.random() - 0.5).slice(0, 5);
+
         // 각 릴의 내용을 랜덤하게 설정
         const newResults = [
             areaResults, // 첫 번째 룰렛: areaNames
             attractionResults.flat(), // 두 번째 룰렛: 선택된 area의 attractionNames
-            foods.sort(() => Math.random() - 0.5).slice(0, 5),
+            foodResults.sort(() => Math.random() - 0.5).slice(0, 5),
             missions.sort(() => Math.random() - 0.5).slice(0, 5),
         ];
 
