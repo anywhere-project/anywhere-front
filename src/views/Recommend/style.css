@@ -128,3 +128,8 @@
     background-color: white !important;
     opacity: 1;
 }
+
+.recommend-post .loading-spinner {
+    margin: 0 auto;
+    font-size: 20px;
+}

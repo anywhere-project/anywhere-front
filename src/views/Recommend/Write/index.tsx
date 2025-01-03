@@ -7,7 +7,6 @@ import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
 import './style.css';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
-import { Address } from 'cluster';
 
 interface AttractionField {
     attractionName: string;
@@ -32,15 +31,15 @@ export default function RecommendWrite() {
     const [cookies] = useCookies();
     const navigator = useNavigate();
 
-    console.log('asdff');
-
     const [category, setCategory] = useState<string>('attraction');
     const [foodFields, setFoodFields] = useState<FoodField[]>([{ foodName: '', foodContent: '', images: [] }]);
     const [missionFields, setMissionFields] = useState<MissionField[]>([{ missionName: '', missionContent: '', images: [] }]);
     const [attractionFields, setAttractionFields] = useState<AttractionField[]>([{ attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
     const [previews, setPreviews] = useState<string[]>([]);
-    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[][]>([]);
     const imageInputRef = useRef<(HTMLInputElement | null)[]>([]);
+
+    const daumPostcodePopup = useDaumPostcodePopup();
 
     const handleCategoryChange = (category: string) => {
         setCategory(category);
@@ -76,8 +75,6 @@ export default function RecommendWrite() {
         setFoodFields(updatedFields);
     };
 
-    const daumPostcodePopup = useDaumPostcodePopup();
-
     const handleAttractionChange = (index: number, field: 'attractionName' | 'attractionAddress' | 'attractionContent', value: string) => {
         const updatedFields = [...attractionFields];
         updatedFields[index][field] = value;
@@ -87,10 +84,8 @@ export default function RecommendWrite() {
     const handleAddAttractionField = () => {
         setAttractionFields([...attractionFields, { attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
     };
-    
 
     const daumPostcodeComplete = (address: any) => {
-
         const updatedAttractionFields = [...attractionFields];
         const index = updatedAttractionFields.length - 1; 
         handleAttractionChange(index, 'attractionAddress', address.address);
@@ -119,8 +114,12 @@ export default function RecommendWrite() {
                     ...updatedFoodFields[index], 
                     images: [...updatedFoodFields[index].images, reader.result as string]
                 };
+
+                if (!newImageFiles[index]) {
+                    newImageFiles[index] = [];
+                }
     
-                newImageFiles.push(file);
+                newImageFiles[index].push(file);
                 newPreviews.push(reader.result as string);
     
                 setFoodFields(updatedFoodFields);
@@ -159,8 +158,12 @@ export default function RecommendWrite() {
                     ...updatedMissionFields[index], 
                     images: [...updatedMissionFields[index].images, reader.result as string]
                 };
+
+                if (!newImageFiles[index]) {
+                    newImageFiles[index] = [];
+                }
     
-                newImageFiles.push(file);
+                newImageFiles[index].push(file);
                 newPreviews.push(reader.result as string);
     
                 setMissionFields(updatedMissionFields);
@@ -189,7 +192,7 @@ export default function RecommendWrite() {
         const files = Array.from(event.target.files || []);
         
         const updatedAttractionFields = [...attractionFields];
-        const newImageFiles = [...imageFiles];
+        const newImageFiles: File[][] = [...imageFiles];  
         const newPreviews = [...previews];
     
         files.forEach((file) => {
@@ -197,14 +200,18 @@ export default function RecommendWrite() {
             reader.onloadend = () => {
                 updatedAttractionFields[index] = {
                     ...updatedAttractionFields[index], 
-                    images: [...updatedAttractionFields[index].images, reader.result as string]
+                    images: [...updatedAttractionFields[index].images, reader.result as string] // base64 이미지
                 };
-    
-                newImageFiles.push(file);
-                newPreviews.push(reader.result as string);
-    
+
+                if (!newImageFiles[index]) {
+                    newImageFiles[index] = [];
+                }
+
+                newImageFiles[index].push(file);     
+                newPreviews.push(reader.result as string); 
+                
                 setAttractionFields(updatedAttractionFields);
-                setImageFiles(newImageFiles);
+                setImageFiles(newImageFiles); 
                 setPreviews(newPreviews);
             };
             reader.readAsDataURL(file);
@@ -252,24 +259,29 @@ export default function RecommendWrite() {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
     
-        const uploadedImages: string[] = [];
-        for (const file of imageFiles) {
-            const formData = new FormData();
-            formData.append('file', file);
-            const uploadedImage = await fileUploadRequest(formData, accessToken);
-            if (uploadedImage) uploadedImages.push(uploadedImage);
-        }
+        const uploadedImages: string[][] = await Promise.all(imageFiles.map(async (fileArray, index) => {
+            const uploadedImageUrls: string[] = [];
+    
+            for (const file of fileArray) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const uploadedImage = await fileUploadRequest(formData, accessToken);
+                if (uploadedImage) uploadedImageUrls.push(uploadedImage);
+            }
+    
+            return uploadedImageUrls;
+        }));
     
         const requestBody: PostRecommendPostRequestDto = {
             recommendCategory: category,
             foods: category === 'food'
-                ? foodFields.map((field) => ({...field, images: uploadedImages})) : null,
+                ? foodFields.map((field, index) => ({ ...field, images: uploadedImages[index] })) : null,
             missions: category === 'mission'
-                ? missionFields.map((field) => ({...field, images: uploadedImages})) : null,
+                ? missionFields.map((field, index) => ({ ...field, images: uploadedImages[index] })) : null,
             attractions: category === 'attraction'
-                ? attractionFields.map((field) => ({...field, images: uploadedImages})) : null
+                ? attractionFields.map((field, index) => ({ ...field, images: uploadedImages[index] })) : null
         };
-    
+
         postRecommendPostRequest(requestBody, accessToken).then(postRecommendPostResponse);
     }; 
     
