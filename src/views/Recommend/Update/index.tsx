@@ -2,9 +2,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ResponseDto } from 'apis/dto/response';
-import { deleteRecommendAttractionRequest, deleteRecommendFoodRequest, deleteRecommendMissionRequest, fileUploadRequest, getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostRequest, patchRecommendAttractionRequest, patchRecommendFoodRequest, patchRecommendMissionRequest, patchRecommendPostRequest } from 'apis';
+import { deleteRecommendAttractionRequest, deleteRecommendFoodRequest, deleteRecommendMissionRequest, fileUploadRequest, getRecommendAttractionRequest, getRecommendFoodRequest, getRecommendMissionRequest, getRecommendPostRequest, patchRecommendAttractionRequest, patchRecommendFoodRequest, patchRecommendMissionRequest, patchRecommendPostRequest } from 'apis';
 import { ACCESS_TOKEN, RECOMMEND_PATH } from '../../../constants';
-import { GetRecommendAttractionListResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
+import { GetRecommendAttractionPostResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostResponseDto } from 'apis/dto/response/recommend';
 import { AttractionImage, RecommendAttraction, RecommendFood, RecommendMission } from 'types';
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostAttractionImageRequestDto } from 'apis/dto/request/recommend';
 import { deleteAttractionImageRequest, postAttractionImageRequest } from 'apis/dto/request';
@@ -228,12 +228,12 @@ function AttractionRow({ recommendAttraction }: Attractions) {
             const formData = new FormData();
             formData.append('file', file);
             const uploadedImage = await fileUploadRequest(formData, accessToken);
-            if (uploadedImage) uploadedImages.push(uploadedImage); // 서버에서 반환된 이미지 URL을 배열에 추가
+            if (uploadedImage) uploadedImages.push(uploadedImage);
         }
     
-        const existingImageUrls = images.map((image) => image.imageUrl); // 기존 이미지 URL 추출
+        const existingImageUrls = images.map((image) => image.imageUrl); 
     
-        const allImageUrls = [...existingImageUrls, ...uploadedImages]; // 기존 이미지와 업로드된 이미지 URL을 합침
+        const allImageUrls = [...existingImageUrls, ...uploadedImages]; 
     
         const requestBody: PatchRecommendAttractionRequestDto = {
             attractionName,
@@ -640,10 +640,11 @@ export default function RecommendUpdate() {
 
         const { recommendCategory } = responseBody as GetRecommendPostResponseDto;
         setCategory(recommendCategory);
+        console.log(category);
     }
 
     // function: 추천 관광지 가져오기 요청 함수 //
-    const getRecommendAttractionListResponse = (responseBody: GetRecommendAttractionListResponseDto | ResponseDto | null) => {
+    const getRecommendAttractionListResponse = (responseBody: GetRecommendAttractionPostResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -657,12 +658,12 @@ export default function RecommendUpdate() {
             return;
         }
 
-        const { attractions } = responseBody as GetRecommendAttractionListResponseDto;
+        const { attractions } = responseBody as GetRecommendAttractionPostResponseDto;
         setAttractions(attractions);
     }
 
     // function: 추천 먹거리 가져오기 요청 함수 //
-    const getRecommendFoodListResponse = (responseBody: GetRecommendFoodListResponseDto | ResponseDto | null) => {
+    const getRecommendFoodListResponse = (responseBody: GetRecommendFoodPostResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -676,12 +677,12 @@ export default function RecommendUpdate() {
             return;
         }
 
-        const { foods } = responseBody as GetRecommendFoodListResponseDto;
+        const { foods } = responseBody as GetRecommendFoodPostResponseDto;
         setFoods(foods);
     }
 
     // function: 추천 미션 가져오기 요청 함수 //
-    const getRecommendMissionListResponse = (responseBody: GetRecommendMissionListResponseDto | ResponseDto | null) => {
+    const getRecommendMissionListResponse = (responseBody: GetRecommendMissionPostResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -695,7 +696,7 @@ export default function RecommendUpdate() {
             return;
         }
 
-        const { missions } = responseBody as GetRecommendMissionListResponseDto;
+        const { missions } = responseBody as GetRecommendMissionPostResponseDto;
         setMissions(missions);
     }
 
@@ -902,13 +903,13 @@ export default function RecommendUpdate() {
     
         switch (category) {
             case 'attraction':
-                getRecommendAttractionListRequest(recommendId).then(getRecommendAttractionListResponse);
+                getRecommendAttractionRequest(recommendId).then(getRecommendAttractionListResponse);
                 break;
             case 'food':
-                getRecommendFoodListRequest(recommendId).then(getRecommendFoodListResponse);
+                getRecommendFoodRequest(recommendId).then(getRecommendFoodListResponse);
                 break;
             case 'mission':
-                getRecommendMissionListRequest(recommendId).then(getRecommendMissionListResponse);
+                getRecommendMissionRequest(recommendId).then(getRecommendMissionListResponse);
                 break;
         }
     }, [recommendId, category]);

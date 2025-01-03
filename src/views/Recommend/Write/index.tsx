@@ -6,6 +6,8 @@ import { ResponseDto } from 'apis/dto/response';
 import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
 import './style.css';
+import { useDaumPostcodePopup } from 'react-daum-postcode';
+import { Address } from 'cluster';
 
 interface AttractionField {
     attractionName: string;
@@ -29,6 +31,8 @@ interface MissionField {
 export default function RecommendWrite() {
     const [cookies] = useCookies();
     const navigator = useNavigate();
+
+    console.log('asdff');
 
     const [category, setCategory] = useState<string>('attraction');
     const [foodFields, setFoodFields] = useState<FoodField[]>([{ foodName: '', foodContent: '', images: [] }]);
@@ -72,6 +76,8 @@ export default function RecommendWrite() {
         setFoodFields(updatedFields);
     };
 
+    const daumPostcodePopup = useDaumPostcodePopup();
+
     const handleAttractionChange = (index: number, field: 'attractionName' | 'attractionAddress' | 'attractionContent', value: string) => {
         const updatedFields = [...attractionFields];
         updatedFields[index][field] = value;
@@ -80,6 +86,18 @@ export default function RecommendWrite() {
 
     const handleAddAttractionField = () => {
         setAttractionFields([...attractionFields, { attractionName: '', attractionAddress: '', attractionContent: '', images: [] }]);
+    };
+    
+
+    const daumPostcodeComplete = (address: any) => {
+
+        const updatedAttractionFields = [...attractionFields];
+        const index = updatedAttractionFields.length - 1; 
+        handleAttractionChange(index, 'attractionAddress', address.address);
+    };
+
+    const onAddressButtonClickHandler = () => {
+        daumPostcodePopup({ onComplete: daumPostcodeComplete });
     };
 
     const handleRemoveAttractionField = (index: number) => {
@@ -387,12 +405,26 @@ export default function RecommendWrite() {
                                         value={field.attractionName}
                                         onChange={(e) => handleAttractionChange(index, 'attractionName', e.target.value)}
                                     />
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <input
                                         type="text"
                                         placeholder="관광지 주소"
                                         value={field.attractionAddress}
                                         onChange={(e) => handleAttractionChange(index, 'attractionAddress', e.target.value)}
+                                        style={{ flex: 1 }}
                                     />
+                                    <div 
+                                        onClick={onAddressButtonClickHandler} 
+                                        style={{
+                                            cursor: 'pointer',
+                                            color: 'blue',
+                                            textDecoration: 'underline',
+                                            marginLeft: '10px'
+                                        }}
+                                    >
+                                        우편번호 찾기
+                                    </div>
+                                </div>
                                     <textarea
                                         placeholder="관광지 설명"
                                         value={field.attractionContent}
