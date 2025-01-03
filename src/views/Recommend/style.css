@@ -1,0 +1,130 @@
+.recommend-post {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px; 
+    margin: 0 auto;
+}
+
+.recommend-post .share-banner {
+    background-color: #c6edf7;
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    height: 500px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 100px;
+}
+
+.recommend-post .recommend-post-content {
+    width: 1270px;
+    margin: 0 auto;
+}
+
+.recommend-post-item {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    padding: 10px;
+}
+
+.recommend-post-item-header {
+    display: flex;
+    gap: 10px;
+}
+
+.recommend-post .recommend-writer {
+    font-size: 25px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.recommend-post .recommend-created-at {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #777;
+}
+
+.attraction-box {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 400px;
+    margin-bottom: 10px;
+}
+
+.recommend-post-item .attraction-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.recommend-post .recommend-attraction-item {
+    display: flex;
+    gap: 20px;
+    border-radius: 8px;
+}
+
+.recommend-post-item .attraction-image {
+    width: 400px;
+}
+
+.recommend-post-item .attraction-image img {
+    width: 400px;
+    height: 300px;
+}
+
+.recommend-post .attraction-details {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.recommend-post .attraction-number {
+    font-size: 90px;
+    font-style: italic;
+}
+
+.attraction-details .attraction-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.attraction-details .attraction-address {
+    font-size: 14px;
+    color: #777;
+    margin-top: 10px;
+}
+
+.attraction-details .attraction-content {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+}
+
+.recommend-post .post-divider {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+.swiper-pagination {
+    bottom: 10px;
+}
+
+.swiper-pagination-bullet {
+    background-color: white !important;
+    opacity: 0.6;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: white !important;
+    opacity: 1;
+}
