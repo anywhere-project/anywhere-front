@@ -3,7 +3,7 @@ import { ResponseDto } from "./dto/response";
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
-import { SignInResponseDto } from "./dto/response/auth";
+import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 
@@ -11,12 +11,14 @@ const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
+const MYPAGE_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mypage`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
 const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
+const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
 
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string, category: string) => `${RECOMMEND_MODULE_URL}/${recommendId}/${category}`;
@@ -100,12 +102,12 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
 };
 
 // function: get sign in 요청 함수 //
-// export const getSignInRequest = async (accessToken: string) => {
-//     const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
-//         .then(responseDataHandler<GetSignInResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
+export const getSignInRequest = async (accessToken: string) => {
+    const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetSignInResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
 
 // function: 추천 게시글 작성 요청 함수 //
 export const postRecommendPostRequest = async (requestBody: PostRecommendPostRequestDto, accessToken: string) => {
