@@ -6,8 +6,8 @@ import { ResponseDto } from 'apis/dto/response';
 import { PostRecommendPostRequestDto } from 'apis/dto/request/recommend';
 import { fileUploadRequest, postRecommendPostRequest } from 'apis';
 import './style.css';
-import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { Address } from 'cluster';
+import { useDaumPostcodePopup } from 'react-daum-postcode';
 
 interface AttractionField {
     attractionName: string;
