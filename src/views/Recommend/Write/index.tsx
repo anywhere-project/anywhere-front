@@ -302,7 +302,7 @@ export default function RecommendWrite() {
                 <div className="category-selector">
                     <div className="category-select">
                         <div className="category-selector-ment">
-                            추천 경로 작성하기
+                            추천 루트 작성
                         </div>
                         <div className='category-selector-subment'>
                             추천 카테고리를 선택한 후, 당신의 비밀장소를 공유하고 모두에게 영감을 주세요!

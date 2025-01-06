@@ -9,11 +9,13 @@ import RecommendWrite from './views/Recommend/Write';
 import RecommendUpdate from './views/Recommend/Update';
 import Mypage from './views/Mypage';
 import Recommend from 'views/Recommend';
+import SideBar from 'views/SideBar';
 
 function Anywhere() {
   return (
     <>
       <NavigationBar/>
+      {/* <SideBar /> */}
       <Routes>
         <Route index element={<Main />} />
         <Route path={SIGN_UP_PATH} element={<SignUp />} />

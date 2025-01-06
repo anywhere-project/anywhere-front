@@ -9,6 +9,20 @@
     margin-top: 100px;
 }
 
+.recommend-update .category-selector-ment {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.recommend-update .category-selector-subment {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 50px;
+    line-height: 1.5;
+}
+
 .recommend-update .box-container {
     position: relative;
     margin-bottom: 20px;

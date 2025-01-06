@@ -1150,6 +1150,13 @@ export default function RecommendUpdate() {
     return (
         <div className="recommend-update">
             <div className='recommend-update-container'>
+                <div className="category-selector-ment">
+                    추천 루트 수정
+                </div>
+                <div className='category-selector-subment'>
+                    각 항목은 개별적으로 수정 가능합니다. 수정 버튼을 눌러 원하는 내용을 수정한 후, 반드시 저장 버튼을 클릭해주세요. <br />
+                    사진은 삭제 즉시 반영되며, 저장 버튼과 관계없이 즉시 삭제되니 주의해주세요!
+                </div>
 
                 {category === 'mission' && (
                     <div className="recommend-mission">
@@ -1363,7 +1370,7 @@ export default function RecommendUpdate() {
                         취소
                     </div>
                     <div className="submit-button" onClick={onPatchButtonClickHandler}>
-                        등록
+                        수정
                     </div>
                 </div>
             </div>
