@@ -121,8 +121,9 @@ function Dropdown({ onDropdownButtonClick }: { onDropdownButtonClick: () => void
     }
 
     const onMypageButtonClickHandler = () => {
+        if (!signInUser) return;
         onDropdownButtonClick();
-        navigator(MYPAGE_PATH);
+        navigator(MYPAGE_PATH(signInUser?.userId));
     }
 
     // event handler: 아이디 입력 시 처리 //
