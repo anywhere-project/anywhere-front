@@ -128,3 +128,21 @@
     background-color: white !important;
     opacity: 1;
 }
+
+.recommend-post .loading-spinner {
+    margin: 0 auto;
+    font-size: 20px;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    color: white;
+}
+
+.swiper-button-next::after {
+    right: 10px;
+}
+
+.swiper-button-prev::after {
+    left: 10px; 
+}
