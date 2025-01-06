@@ -6,6 +6,8 @@ import SignInRequestDto from "./auth/sign-in.request.dto";
 import { SignInResponseDto } from "../response/auth";
 import { GetAreaResponseDto } from "../response/area";
 import { GetAttractionResponseDto } from "../response/attraction";
+import { GetFoodResponseDto } from "../response/food";
+import GetMissionResponseDto from "../response/mission/get-mission.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -14,6 +16,7 @@ const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
 const ATTRACTION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/attraction`
 const FOOD_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/food`
+const MISSION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mission`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -274,7 +277,14 @@ export const getAttractionListRequest = async () => {
 
 export const getFoodListRequest = async () => {
     const responseBody = await axios.get(FOOD_MODULE_URL)
-        .then(responseDataHandler<GetAttractionResponseDto>)
+        .then(responseDataHandler<GetFoodResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+export const getMissionListRequest = async () => {
+    const responseBody = await axios.get(MISSION_MODULE_URL)
+        .then(responseDataHandler<GetMissionResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 };

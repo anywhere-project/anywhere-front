@@ -1,4 +1,5 @@
 import Area from "./area-get.interface";
+import Mission from "./mission-get.interface";
 import Attraction from "./attraction-get.interface";
 import HashTag from "./hash-tag.interface";
 import SignInUser from "./sign-in-user.interface";
@@ -19,6 +20,7 @@ import AttractionImage from "./attraction-image.interface";
 export type {
     Area,
     HashTag,
+    Mission,
     SignInUser,
     Attraction,
     RecommendPost,
