@@ -14,7 +14,7 @@
     width: 60%;
     margin: 0 auto;
     background-color: rgb(229, 247, 247);
-    height: 100vh;
+    height: 100%;
 
     
     
@@ -32,7 +32,7 @@
 #mypage-wrapper .mypage-top{
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     background-color: rgb(187, 250, 250);
     margin-top: 10px;
     height: 50px;
@@ -42,7 +42,13 @@
     display: flex;
     width: 200px;
     background-color: bisque;
-    height: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+#mypage-wrapper .mypage-top .mypage-tool{
+    display: flex;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
 }
@@ -50,10 +56,10 @@
 
 #mypage-wrapper .mypage-middle{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     background-color: rgb(182, 218, 218);
     width: 100%;
-    height: 200px;
+    flex-grow: 1;
 }
 
 
@@ -66,3 +72,38 @@
     background-size: cover;
     background-repeat: no-repeat;
 }
+
+#mypage-wrapper .mypage-board{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    height: 100%;
+}
+
+#mypage-wrapper .mypage-board .board-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+}
+
+
+#mypage-wrapper  .mypage-gallery{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    
+}
+
+#mypage-wrapper  .mypage-gallery img{
+    width: 220px;
+    height: auto;
+    object-fit: cover;
+    
+}
+

@@ -22,7 +22,7 @@ function Anywhere() {
         <Route path={RECOMMEND_CATEGORY_PATH(':category')} element={<Recommend />} />
         <Route path={RECOMMEND_WRITE_PATH} element={<RecommendWrite />} />
         <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
-        <Route path={MYPAGE_PATH} element={<Mypage />} />
+        <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
       </Routes>
     </>
 
