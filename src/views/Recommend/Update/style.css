@@ -1,21 +1,26 @@
 .recommend-update {
     font-family: Arial, sans-serif;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    max-width: 800px;
+    width: 1067px;
     margin: 0 auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.recommend-update .category-selector .category-select {
-    font-size: 16px;
-    padding: 10px;
-    margin-bottom: 20px;
+.recommend-update .recommend-update-container {
+    margin-top: 100px;
 }
 
-.recommend-update .category-select option {
-    padding: 10px;
+.recommend-update .category-selector-ment {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.recommend-update .category-selector-subment {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 50px;
+    line-height: 1.5;
 }
 
 .recommend-update .box-container {
@@ -27,7 +32,15 @@
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #aaa; 
+    margin-bottom: 30px;
+}
+
+.recommend-update .field-label {
+    font-size: 18px;
+    color: #333;
+    display: block;
+    margin-bottom: 15px;
 }
 
 .recommend-update .remove-field-btn {
@@ -52,52 +65,76 @@
 
 .recommend-update .field-content input,
 .recommend-update .field-content textarea {
-    width: 100%;
-    padding: 10px;
+    padding: 13px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 1000px;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+.recommend-update .field-content input {
+    height: 30px;
+}
+
+.recommend-update .field-content input:focus,
+.recommend-update .field-content textarea:focus {
+    background: #ffffff; 
+    border: #000000;
+    box-shadow: 0 0 5px rgba(26, 30, 32, 0.5); 
+}
+
+.recommend-update .address-container {
+    display: flex;
+    gap: 15px;
+}
+
+.recommend-update .address-container input {
+    background-color: white;
+}
+
+.recommend-update .attraction-address {
+    padding: 10px 20px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #4ba9f7;
+    width: 120px;
+    height: 40px;
+    color: white;
+    border-radius: 8px;
 }
 
 .recommend-update .field-content textarea {
-    resize: vertical;
+    resize: none;
     height: 150px;
 }
 
-.recommend-update .add-button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 20px;
-    line-height: 30px;
-    margin-top: 10px;
-    text-decoration: none;
-}
-
-.recommend-update .add-button:hover {
-    background-color: #0056b3;
-}
-
 .recommend-update .image-uploader {
-    margin-top: 20px;
     text-align: center;
+    display: flex;
 }
 
-.recommend-update .image-uploader .upload-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
+.upload-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
     cursor: pointer;
+    color: #333;
+    font-size: 50px;
+    object-fit: cover;
+    margin-top: 15px;
+    transition: background-color 0.3s;
 }
 
-.recommend-update .image-uploader .upload-button:hover {
-    background-color: #45a049;
+.upload-button:hover {
+    background-color: #e0e0e0;
 }
 
 .recommend-update .image-previews {
@@ -105,7 +142,8 @@
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
-    gap: 10px;
+    gap: 5px;
+    margin-right: 10px;
 }
 
 .recommend-update .preview {
@@ -118,7 +156,6 @@
     height: 100px;
     object-fit: cover;
     border-radius: 8px;
-    border: 2px solid #ddd;
 }
 
 .recommend-update .remove-image-btn {
@@ -140,18 +177,58 @@
     background-color: #e60000;
 }
 
-.recommend-update .submit-button {
-    background-color: #007BFF;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+.recommend-update .button-container {
+    display: flex;
+    justify-content: flex-end;
     margin-top: 20px;
-    text-align: center;
+    gap: 10px;
+}
+
+.recommend-update .submit-button,
+.recommend-update .cancel-button {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-items: center;
+    font-size: 20px;
+    width: 80px;
+    height: 40px;
+}
+
+.recommend-update .submit-button {
+    background-color: #4ba9f7 ;
+    color: white;
 }
 
 .recommend-update .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #4286bd;
+}
+
+.recommend-update .cancel-button {
+    color: black;
+    background-color: white;
+    border: 1px solid #aaa; 
+}
+
+.recommend-update .cancel-button:hover {
+    background-color: #ccc;
+}
+
+.recommend-update .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+    border-radius: 8px;
+    height: 50px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.recommend-update .add-button:hover {
+    background-color: black;
 }

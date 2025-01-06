@@ -1,21 +1,44 @@
 .recommend-write {
     font-family: Arial, sans-serif;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    max-width: 800px;
+    width: 1067px;
     margin: 0 auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.recommend-write .category-selector .category-select {
-    font-size: 16px;
-    padding: 10px;
+.recommend-write .recommend-write-container {
+    margin-top: 100px;
+}
+
+.recommend-write .category-selector-ment {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.recommend-write .category-selector-subment {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 50px;
+    line-height: 1.5;
+}
+
+.recommend-write .category-select select {
+    padding: 15px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
-.recommend-write .category-select option {
-    padding: 10px;
+.recommend-write .category-select select:focus {
+    outline: none;
+    border-color: #000000;
+}
+
+.recommend-write .category-select {
+    position: relative;
 }
 
 .recommend-write .box-container {
@@ -27,7 +50,8 @@
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #aaa; 
+    margin-bottom: 30px;
 }
 
 .recommend-write .remove-field-btn {
@@ -50,54 +74,85 @@
     background-color: #e60000;
 }
 
+.recommend-write .field-label {
+    font-size: 18px;
+    color: #333;
+    display: block;
+    margin-bottom: 15px;
+}
+
 .recommend-write .field-content input,
 .recommend-write .field-content textarea {
-    width: 100%;
-    padding: 10px;
+    padding: 13px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 1000px;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+.recommend-write .field-content input {
+    height: 30px;
+}
+
+.recommend-write .field-content input:focus,
+.recommend-write .field-content textarea:focus {
+    background: #ffffff; 
+    border: #000000;
+    box-shadow: 0 0 5px rgba(26, 30, 32, 0.5); 
+}
+
+.recommend-write .address-container {
+    display: flex;
+    gap: 15px;
+}
+
+.recommend-write .address-container input {
+    background-color: white;
+}
+
+.recommend-write .attraction-address {
+    padding: 10px 20px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #4ba9f7;
+    width: 120px;
+    height: 40px;
+    color: white;
+    border-radius: 8px;
 }
 
 .recommend-write .field-content textarea {
-    resize: vertical;
+    resize: none;
     height: 150px;
 }
 
-.recommend-write .add-button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 20px;
-    line-height: 30px;
-    margin-top: 10px;
-    text-decoration: none;
-}
-
-.recommend-write .add-button:hover {
-    background-color: #0056b3;
-}
-
 .recommend-write .image-uploader {
-    margin-top: 20px;
     text-align: center;
+    display: flex;
 }
 
-.recommend-write .image-uploader .upload-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
+.upload-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
     cursor: pointer;
+    color: #333;
+    font-size: 50px;
+    object-fit: cover;
+    margin-top: 15px;
+    transition: background-color 0.3s;
 }
 
-.recommend-write .image-uploader .upload-button:hover {
-    background-color: #45a049;
+.upload-button:hover {
+    background-color: #e0e0e0;
 }
 
 .recommend-write .image-previews {
@@ -105,7 +160,8 @@
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
-    gap: 10px;
+    gap: 5px;
+    margin-right: 10px;
 }
 
 .recommend-write .preview {
@@ -118,7 +174,6 @@
     height: 100px;
     object-fit: cover;
     border-radius: 8px;
-    border: 2px solid #ddd;
 }
 
 .recommend-write .remove-image-btn {
@@ -140,18 +195,58 @@
     background-color: #e60000;
 }
 
-.recommend-write .submit-button {
-    background-color: #007BFF;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+.recommend-write .button-container {
+    display: flex;
+    justify-content: flex-end;
     margin-top: 20px;
-    text-align: center;
+    gap: 10px;
+}
+
+.recommend-write .submit-button,
+.recommend-write .cancel-button {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-items: center;
+    font-size: 20px;
+    width: 80px;
+    height: 40px;
+}
+
+.recommend-write .submit-button {
+    background-color: #4ba9f7 ;
+    color: white;
 }
 
 .recommend-write .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #4286bd;
+}
+
+.recommend-write .cancel-button {
+    color: black;
+    background-color: white;
+    border: 1px solid #aaa; 
+}
+
+.recommend-write .cancel-button:hover {
+    background-color: #ccc;
+}
+
+.recommend-write .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+    border-radius: 8px;
+    height: 50px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.recommend-write .add-button:hover {
+    background-color: black;
 }

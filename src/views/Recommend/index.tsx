@@ -1,7 +1,7 @@
 import { getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostListRequest } from "apis";
 import { ResponseDto } from "apis/dto/response";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSignInUserStore } from "stores";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -75,6 +75,10 @@ export default function Recommend() {
     const [foods, setFoods] = useState<RecommendFood[]>([]);
     const [mission, setMissions] = useState<RecommendMission[]>([]);
 
+    const [visiblePosts, setVisiblePosts] = useState<number>(5); 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const observerRef = useRef(null);
+
     const getRecommendPostListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
@@ -139,6 +143,14 @@ export default function Recommend() {
         setMissions(missions);
     }
 
+    const loadMorePosts = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setVisiblePosts((prev) => prev + 5); 
+            setIsLoading(false);
+        }, 1000);
+    };
+
     useEffect(() => {
         if (!category) return;
         getRecommendPostListRequest(category).then(getRecommendPostListResponse);
@@ -150,6 +162,25 @@ export default function Recommend() {
         } else if (category === 'mission') {
             getRecommendMissionListRequest().then(getRecommendMissionListResponse); 
         }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    loadMorePosts();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerRef.current) {
+            observer.observe(observerRef.current);
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observer.unobserve(observerRef.current);
+            }
+        };
     }, [category]);
     
 
@@ -164,30 +195,39 @@ export default function Recommend() {
             </div>
 
             <div className="recommend-post-content">
-                {posts.map((post) => {
-                    const matchedAttractions = filteredAttractions.filter(attraction => attraction.recommendId === post.recommendId);
+                {posts.slice(0, visiblePosts).map((post) => {
+                    const matchedAttractions = filteredAttractions.filter(
+                        (attraction) => attraction.recommendId === post.recommendId
+                    );
                     const attractionsCount = matchedAttractions.length;
-                    
+
                     return (
                         <div key={post.recommendId} className="recommend-post-item">
                             <PostRow recommendPost={post} />
                             <div className="recommend-attraction-item">
-                                {attractionsCount >= 3 ? (
+                                {attractionsCount > 3 ? (
                                     <Swiper
                                         spaceBetween={15}
                                         slidesPerView={3}
                                         navigation={true}
-                                        loop={true}
+                                        loop={false}
                                     >
                                         {matchedAttractions.map((attraction, index) => (
                                             <SwiperSlide key={attraction.attractionId}>
-                                                <AttractionRow recommendAttraction={attraction} index={index} />
+                                                <AttractionRow
+                                                    recommendAttraction={attraction}
+                                                    index={index}
+                                                />
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>
                                 ) : (
                                     matchedAttractions.map((attraction, index) => (
-                                        <AttractionRow key={attraction.attractionId} recommendAttraction={attraction} index={index} />
+                                        <AttractionRow
+                                            key={attraction.attractionId}
+                                            recommendAttraction={attraction}
+                                            index={index}
+                                        />
                                     ))
                                 )}
                             </div>
@@ -196,8 +236,12 @@ export default function Recommend() {
                     );
                 })}
             </div>
+
+            {isLoading && <div className="loading-spinner">Loading...</div>}
+
+            <div ref={observerRef} style={{ height: "1px" }}></div>
         </div>
     );
-    
+
 }
 

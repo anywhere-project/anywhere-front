@@ -1,18 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-
-import { ACCESS_TOKEN, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
-import './style.css';
-
+import { ACCESS_TOKEN, MYPAGE_PATH, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
 import { useCookies } from 'react-cookie';
 import { useSignInUserStore } from 'stores';
 import { GetSignInResponseDto, SignInResponseDto } from 'apis/dto/response/auth';
 import { ResponseDto } from 'apis/dto/response';
 import SignInRequestDto from 'apis/dto/request/auth/sign-in.request.dto';
-import { signInRequest } from 'apis';
+import { getSignInRequest, signInRequest } from 'apis';
+import './style.css';
 
-
-function Dropdown() {
+function Dropdown({ onDropdownButtonClick }: { onDropdownButtonClick: () => void }) {
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
@@ -45,6 +42,8 @@ function Dropdown() {
         const expires = new Date(Date.now() + expiration * 1000);
         setCookie(ACCESS_TOKEN, accessToken, { path: '/', expires});
 
+        setId('');
+        setPassword('');
         setMessage(message);
         navigator(ROOT_PATH);
         setModalOpen(false);
@@ -73,6 +72,7 @@ function Dropdown() {
     };
     
     const onSignUpClickHandler = () => {
+        onDropdownButtonClick();
         navigator(SIGN_UP_PATH);
     }
 
@@ -81,6 +81,7 @@ function Dropdown() {
     }
 
     const onSignInCloseClickHandler = () => {
+        onDropdownButtonClick();
         setModalOpen(false);
     }
 
@@ -103,17 +104,25 @@ function Dropdown() {
         }
 
         signInRequest(requestBody).then(signInResponse);
+        onDropdownButtonClick();
     }
 
     // event handler: 로그아웃 버튼 클릭 이벤트 처리 //
     const onLogoutButtonClickHandler = () => {
         removeCookie('accessToken', { path: ROOT_PATH });
 
+        setSignInUser(null);
         navigator(ROOT_PATH);
-        
+
         setId('');       
         setPassword(''); 
-        setMessage('');  
+        setMessage('');
+        onDropdownButtonClick();
+    }
+
+    const onMypageButtonClickHandler = () => {
+        onDropdownButtonClick();
+        navigator(MYPAGE_PATH);
     }
 
     // event handler: 아이디 입력 시 처리 //
@@ -130,18 +139,17 @@ function Dropdown() {
 
     // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
     useEffect(() => {
-        // if (accessToken) {
-        //     getSignInRequest(accessToken).then(getSingInResponse);
-        // } else {
-        //     setSignInUser(null);
-        // }
+        if (accessToken) getSignInRequest(accessToken).then(getSingInResponse);
     }, [accessToken]);
 
     return (
         <div className="dropdown-wrapper">
             <div className="dropdown">
             {signInUser ? (
-                <div className='dropdown-item' onClick={onLogoutButtonClickHandler}>로그아웃</div>
+                <>
+                    <div className="dropdown-item" onClick={onMypageButtonClickHandler}>마이페이지</div>
+                    <div className='dropdown-item' onClick={onLogoutButtonClickHandler}>로그아웃</div>
+                </>
             ) : (
                 <>
                     <div className="dropdown-item" onClick={onSignInClickHandler}>로그인</div>
@@ -198,9 +206,12 @@ export default function NavigationBar() {
     const onRecommendClickHandler = () => {
         navigator(RECOMMEND_PATH);
     }
-
     const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
+        setDropdownOpen(prevState => !prevState);
+    };
+
+    const onDropdownButtonClick = () => {
+        setDropdownOpen(false);
     };
 
     return (
@@ -210,9 +221,13 @@ export default function NavigationBar() {
             <div className={`menu-recommend ${isRecommend ? 'recommend' : ''}`} onClick={onRecommendClickHandler}>추천게시판</div>
             <div className="sign-in-wrapper">
                 <div className="sign-in-button" onClick={toggleDropdown}></div>
-                {dropdownOpen && <Dropdown />}
+                {dropdownOpen && (
+                    <div className="dropdown-wrapper">
+                        <Dropdown onDropdownButtonClick={onDropdownButtonClick} />
+                    </div>
+                )}
             </div>
         </div>
-    )
+    );
 
 }

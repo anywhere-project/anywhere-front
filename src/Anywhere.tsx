@@ -10,11 +10,13 @@ import Mypage from './views/Mypage';
 import Recommend from 'views/Recommend';
 import SideBar from 'views/SideBar';
 import NavigationBar from 'views/NavigationBar';
+import HashTagBar from 'views/HashTagBar';
 
 function Anywhere() {
   return (
     <div className="app-container">
       <SideBar />
+      <HashTagBar />
       <NavigationBar />
       <div className="main-content">
         <Routes>

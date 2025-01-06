@@ -4,20 +4,20 @@
     margin-bottom: 20px;
 }
 
-.signup-label {
+.signup-form-input .signup-label {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 8px;
     color: #333;
 }
 
-.signup-input-area {
+.signup-form-input .signup-input-area {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.signup-input-area input {
+.signup-form-input .signup-input-area input {
     flex: 1;
     padding: 10px;
     font-size: 14px;
@@ -27,12 +27,12 @@
     transition: border-color 0.2s;
 }
 
-.signup-input-area input:focus {
+.signup-form-input .signup-input-area input:focus {
     border-color: #007BFF;
 }
 
-.signup-button {
-    font-size: 12px; 
+.signup-form-input .signup-button {
+    font-size: 12px;
     color: white;
     background-color: #007BFF;
     border: none;
@@ -40,21 +40,21 @@
     transition: background-color 0.2s;
 }
 
-.signup-button:hover {
+.signup-form-input .signup-button:hover {
     background-color: #0056b3;
 }
 
-.signup-button:active {
+.signup-form-input .signup-button:active {
     background-color: #003f7f;
 }
 
-.signup-message {
+.signup-form-input .signup-message {
     margin-top: 8px;
     font-size: 12px;
     color: #666;
 }
 
-.signup-message.error {
+.signup-form-input .signup-message.error {
     color: red;
     font-weight: bold;
 }
