@@ -14,21 +14,19 @@ import HashTagBar from 'views/HashTagBar';
 
 function Anywhere() {
   return (
-    <div className="app-container">
-      <SideBar />
+    <>
+      {/* <SideBar /> */}
       <HashTagBar />
       <NavigationBar />
-      <div className="main-content">
-        <Routes>
-          <Route index element={<Main />} />
-          <Route path={SIGN_UP_PATH} element={<SignUp />} />
-          <Route path={RECOMMEND_CATEGORY_PATH(':category')} element={<Recommend />} />
-          <Route path={RECOMMEND_WRITE_PATH} element={<RecommendWrite />} />
-          <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
-          <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
-        </Routes>
-      </div>
-    </div>
+      <Routes>
+        <Route index element={<Main />} />
+        <Route path={SIGN_UP_PATH} element={<SignUp />} />
+        <Route path={RECOMMEND_CATEGORY_PATH(':category')} element={<Recommend />} />
+        <Route path={RECOMMEND_WRITE_PATH} element={<RecommendWrite />} />
+        <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
+        <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
+      </Routes>
+    </>
   );
 }
 

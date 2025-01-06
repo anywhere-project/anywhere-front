@@ -2,8 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 10px; 
-    margin: 0 auto;
+    overflow-x: hidden;
 }
 
 .recommend-post .share-banner {
@@ -27,13 +26,13 @@
 .recommend-post-item {
     display: flex;
     flex-direction: column;
-    gap: 15px; 
     padding: 10px;
 }
 
 .recommend-post-item-header {
     display: flex;
     gap: 10px;
+    margin-bottom: 15px;
 }
 
 .recommend-post .recommend-writer {
@@ -145,4 +144,112 @@
 
 .swiper-button-prev::after {
     left: 10px; 
+}
+
+.mission-box {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 400px;
+    margin-bottom: 10px;
+}
+
+.recommend-post-item .mission-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.recommend-post .recommend-mission-item {
+    display: flex;
+    gap: 20px;
+    border-radius: 8px;
+}
+
+.recommend-post-item .mission-image {
+    width: 400px;
+}
+
+.recommend-post-item .mission-image img {
+    width: 400px;
+    height: 300px;
+}
+
+.recommend-post .mission-details {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.recommend-post .mission-number {
+    font-size: 90px;
+    font-style: italic;
+}
+
+.attraction-details .mission-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.attraction-details .mission-content {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+}
+
+.food-box {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 400px;
+    margin-bottom: 10px;
+}
+
+.recommend-post-item .food-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.recommend-post .recommend-food-item {
+    display: flex;
+    gap: 20px;
+    border-radius: 8px;
+}
+
+.recommend-post-item .food-image {
+    width: 400px;
+}
+
+.recommend-post-item .food-image img {
+    width: 400px;
+    height: 300px;
+}
+
+.recommend-post .food-details {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.recommend-post .food-number {
+    font-size: 90px;
+    font-style: italic;
+}
+
+.food-details .food-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.food-details .food-content {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
 }

@@ -13,10 +13,10 @@ const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
-const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`
+const AREA_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/area`;
 const ATTRACTION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/attraction`
-const FOOD_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/food`
-const MISSION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mission`
+const FOOD_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/food`;
+const MISSION_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mission`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;

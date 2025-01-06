@@ -7,6 +7,7 @@ import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
+import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -21,6 +22,7 @@ const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
+const GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/user/${userId}`;
 
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string, category: string) => `${RECOMMEND_MODULE_URL}/${recommendId}/${category}`;
@@ -112,6 +114,14 @@ export const getSignInRequest = async (accessToken: string) => {
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+// function: 게시글 유저 정보 리스트 요청 함수 //
+export const getUserInfoRequest = async (userId: string) => {
+    const responseBody = await axios.get(GET_USER_INFO_API_URL(userId))
+        .then(responseDataHandler<GetUserInfoResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 추천 게시글 작성 요청 함수 //
 export const postRecommendPostRequest = async (requestBody: PostRecommendPostRequestDto, accessToken: string) => {
