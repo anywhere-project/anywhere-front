@@ -3,12 +3,14 @@ import './style.css';
 
 import { GetAreaResponseDto } from '../../apis/dto/response/area';
 import { ResponseDto } from '../../apis/dto/response';
-import { Area, Attraction } from '../../types';
-import { getAreaListRequest, getAttractionListRequest, getFoodListRequest } from '../../apis/dto/request';
+import { Area, Attraction, Mission } from '../../types';
+import { getAreaListRequest, getAttractionListRequest, getFoodListRequest, getMissionListRequest } from '../../apis/dto/request';
 import { GetAttractionResponseDto } from '../../apis/dto/response/attraction';
 import { motion } from 'framer-motion';
 import Food from 'types/food-get.interface';
 import { GetFoodResponseDto } from 'apis/dto/response/food';
+import GetMissionResponseDto from 'apis/dto/response/mission/get-mission.response.dto';
+import NavigationBar from 'views/NavigationBar';
 
 
 interface SlotReelProps {
@@ -50,11 +52,13 @@ export default function Main() {
     const [areaNames, setAreaNames] = useState<string[]>([]);
     const [attractionNames, setAttractionNames] = useState<string[]>([]);
     const [foodNames, setFoodNames] = useState<string[]>([]);
+    const [missionNames, setMissionNames] = useState<string[]>([]);
 
       // state: 원본 리스트 상태 //
     const [areaList, setArealList] = useState<Area[]>([]);
     const [attractionList, setAttractionList] = useState<Attraction[]>([]);
     const [foodList, setFoodList] = useState<Food[]>([]);
+    const [missionList, setMissionList] = useState<Mission[]>([]);
     const [areaAttractionsMap, setAreaAttractionsMap] = useState<Map<number, string[]>>(new Map());
 
     const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
@@ -123,6 +127,23 @@ export default function Main() {
         setFoodNames(foods.map((food) => food.foodName));
     }
 
+    const getMissionListResponse = (responseBody: GetMissionResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { missions } = responseBody as GetMissionResponseDto;
+        setMissionList(missions);
+        setMissionNames(missions.map((mission) => mission.missionName));
+    }
+
     const getAreaNames = () => {
         getAreaListRequest().then(getAreaListResponse);
     };
@@ -135,17 +156,22 @@ export default function Main() {
         getFoodListRequest().then(getFoodListResponse);
     };
 
+    const getMissionNames = () => {
+        getMissionListRequest().then(getMissionListResponse);
+    };
+
     useEffect(() => {
         getAreaNames();
         getAttractionNames();
         getFoodNames();
+        getMissionNames();
     }, []);
 
     // 각 릴의 데이터
     // const regions = ['서울', '부산', '제주', '광주', '대구'];
     // const attractions = ['경복궁', '부산타워', '한라산', '전주한옥마을', '대구엑스코'];
     // const foods = ['김밥', '치킨', '비빔밥', '떡볶이', '순두부찌개'];
-    const missions = ['사진 찍기', '음식 먹기', '기념품 사기', '무지개 찾기', '명소 방문하기'];
+    // const missions = ['사진 찍기', '음식 먹기', '기념품 사기', '무지개 찾기', '명소 방문하기'];
 
     const handleSpin = () => {
         setSpinning(true);
@@ -170,13 +196,14 @@ export default function Main() {
         });
 
         const foodResults = foodNames.sort(() => Math.random() - 0.5).slice(0, 5);
+        const missionResults = missionNames.sort(() => Math.random() - 0.5).slice(0, 5);
 
         // 각 릴의 내용을 랜덤하게 설정
         const newResults = [
             areaResults, // 첫 번째 룰렛: areaNames
             attractionResults.flat(), // 두 번째 룰렛: 선택된 area의 attractionNames
             foodResults.sort(() => Math.random() - 0.5).slice(0, 5),
-            missions.sort(() => Math.random() - 0.5).slice(0, 5),
+            missionResults.sort(() => Math.random() - 0.5).slice(0, 5),
         ];
 
         // 결과를 즉시 업데이트하여 애니메이션 시작 전에 표시
