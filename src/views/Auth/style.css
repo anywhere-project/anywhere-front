@@ -6,8 +6,7 @@
     background: linear-gradient(to bottom, #87ceeb, #e0f7fa);
     font-family: 'Arial', sans-serif;
 }
-
-.sign-up-container {
+.sign-up-page .sign-up-container {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -16,7 +15,7 @@
     max-width: 90%;
 }
 
-.sign-up-title {
+.sign-up-page .sign-up-title {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
@@ -24,19 +23,19 @@
     margin-bottom: 20px;
 }
 
-.sign-up-form {
+.sign-up-page .sign-up-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.sign-up-button-area {
+.sign-up-page .sign-up-button-area {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
 }
 
-.sign-up-button {
+.sign-up-page .sign-up-button {
     background-color: #007acc;
     color: white;
     font-size: 14px;
@@ -48,11 +47,11 @@
     transition: background-color 0.3s ease;
 }
 
-.sign-up-button:hover {
+.sign-up-page .sign-up-button:hover {
     background-color: #005f99;
 }
 
-.sign-up-cancel-button {
+.sign-up-page .sign-up-cancel-button {
     background-color: #f44336;
     color: white;
     font-size: 14px;
@@ -64,6 +63,6 @@
     transition: background-color 0.3s ease;
 }
 
-.sign-up-cancel-button:hover {
+.sign-up-page .sign-up-cancel-button:hover {
     background-color: #d32f2f;
 }

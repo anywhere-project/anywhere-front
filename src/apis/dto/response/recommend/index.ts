@@ -1,19 +1,19 @@
-import GetRecommendAttractionResponseDto from "./get-recommend-attraction.response.dto"
-import GetRecommendFoodResponseDto from "./get-recommend-food.response.dto"
-import GetRecommendMissionResponseDto from "./get-recommend-mission.response.dto"
+import GetRecommendAttractionPostResponseDto from "./get-recommend-attraction-post.response.dto"
+import GetRecommendFoodPostResponseDto from "./get-recommend-food-post.response.dto"
+import GetRecommendMissionPostResponseDto from "./get-recommend-mission-post.response.dto"
+import GetRecommendPostResponseDto from "./get-recommend-post.response.dto"
 import GetRecommendAttractionListResponseDto from "./get-recommend-attraction-list.response.dto"
 import GetRecommendFoodListResponseDto from "./get-recommend-food-list.response.dto"
 import GetRecommendMissionListResponseDto from "./get-recommend-mission-list.response.dto"
-import GetRecommendPostResponseDto from "./get-recommend-post.response.dto"
-import GetRecommendImageListResponseDto from "./get-recommend-image-list.response.dto"
+import GetRecommendPostListResponseDto from "./get-recommend-post-list.response.dto"
 
 export type {
-    GetRecommendAttractionResponseDto,
-    GetRecommendFoodResponseDto,
-    GetRecommendMissionResponseDto,
+    GetRecommendAttractionPostResponseDto,
+    GetRecommendFoodPostResponseDto,
+    GetRecommendMissionPostResponseDto,
+    GetRecommendPostResponseDto,
     GetRecommendAttractionListResponseDto,
     GetRecommendFoodListResponseDto,
     GetRecommendMissionListResponseDto,
-    GetRecommendPostResponseDto,
-    GetRecommendImageListResponseDto
+    GetRecommendPostListResponseDto
 }
