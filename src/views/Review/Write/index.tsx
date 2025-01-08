@@ -76,7 +76,6 @@ export default function ReviewWrite() {
                 multiple
                 onChange={onImageInputChangeHandler}
             />
-            
         </div>
     )
 }
