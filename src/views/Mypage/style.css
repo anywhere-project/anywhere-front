@@ -60,6 +60,7 @@
     background-color: rgb(182, 218, 218);
     width: 100%;
     flex-grow: 1;
+    margin-bottom: 10px;
 }
 
 
@@ -67,7 +68,7 @@
     width: 200px;
     height: 200px;
 
-    background-image: url(https://i.pinimg.com/236x/cf/e6/81/cfe681bfad23c73d4dbb42c8502d5829.jpg);
+   
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -100,8 +101,8 @@
     
 }
 
-#mypage-wrapper  .mypage-gallery img{
-    width: 220px;
+#mypage-wrapper  .mypage-gallery .gallery-item{
+    width: 200px;
     height: auto;
     object-fit: cover;
     
