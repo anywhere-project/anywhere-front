@@ -1,9 +1,13 @@
 import { ResponseDto } from 'apis/dto/response';
-import { REVIEW_PATH } from '../../../constants';
+import { ACCESS_TOKEN, REVIEW_PATH } from '../../../constants';
 import React, { ChangeEvent, useRef, useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { useSignInUserStore } from 'stores';
+import './style.css';
+import { RiImageAddFill } from 'react-icons/ri';
+import { fileUploadRequest, postReviewRequest } from 'apis';
+import { PostReviewRequestDto } from 'apis/dto/request/review';
 
 // component: 후기 작성 화면 컴포넌트
 export default function ReviewWrite() {
@@ -15,14 +19,24 @@ export default function ReviewWrite() {
     const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: 후기 정보 상태 //
-    const [ImageFile, setImageFile] = useState<File | null>(null);
-    const [Image, setImage] = useState<string>('');
+    const [reviewContent, setReviewContent] = useState<string>('');
 
     // state: 이미지 입력 참조 //
-    const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const [previews, setPreviews] = useState<string[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // state: 해시태그 입력 //
+    const [inputHashTag, setInputHashTag] = useState('');
+    const [hashTags, setHashTags] = useState<string[]>([]);
 
     // function: navigator 함수 //
     const navigator = useNavigate();
+
+    // function: empty value 함수 //
+    const isEmptyValue = (value: string): boolean => {
+        return value === null || value === undefined || value.trim() === '';
+    };
 
     // function: post review response 처리 함수 //
     const postReviewResponse = (responseBody: ResponseDto | null) => {
@@ -42,40 +56,177 @@ export default function ReviewWrite() {
 
         navigator(REVIEW_PATH);
     }
+    
+    // event handler: 이름 변경 이벤트 처리 함수 //
+    const onContentChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setReviewContent(value);
+    };
+
+    // event handler: 후기 작성 이벤트 처리 //
+    const postReviewPostButtonClickHandler = async () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+    
+        const uploadedImages: string[] = await Promise.all(imageFiles.map(async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                const uploadedImage = await fileUploadRequest(formData, accessToken);
+                return uploadedImage || '';
+            })
+        );
+    
+        const requestBody: PostReviewRequestDto = {
+            reviewContent: reviewContent,
+            images: uploadedImages,
+            hashtags: hashTags
+        };
+
+        postReviewRequest(requestBody, accessToken).then(postReviewResponse);
+    }; 
+    
 
     // event handler: 이미지 클릭 이벤트 처리 //
-    const onImageClickHandler = () => {
-        const { current } = imageInputRef;
-        if (!current) return;
-        current.click();
+    const onhandleButtonClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click(); 
+        }
     };
 
-    // event handler: 이미지 변경 이벤트 처리 함수 //
-    const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const { files } = event.target;
-        if (!files || !files.length) return;
-
-        const file = files[0];
-        setImageFile(file);
-
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        fileReader.onloadend = () => {
-        setImage(fileReader.result as string);
-        };
+    // event handler: 이미지 업로드 이벤트 처리 //
+    const onHandleImageUploadHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+        
+        const newPreviews: string[] = [];
+    
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                newPreviews.push(reader.result as string);
+                setPreviews((prev) => [...prev, reader.result as string]);
+            };
+            reader.readAsDataURL(file);
+        });
+        setImageFiles((prev) => [...prev, ...files]);
     };
+
+    // event handler: 이미지 삭제 이벤트 처리 함수 //
+    const onHandleImageRemoveHandler = (index: number) => {
+        setImageFiles((prev) => prev.filter((_, i) => i !== index));
+        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    // event handler: 해시태그 입력 이벤트 처리 //
+    const addHashTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        const allowedCommand = ['Enter', 'Space', 'Comma', 'NumpadEnter'];
+        if (!allowedCommand.includes(e.key)) return;
+    
+        const target = e.target as HTMLInputElement;
+    
+        if (isEmptyValue(target.value.trim())) {
+            return setInputHashTag('');
+        }
+    
+        let newHashTag = target.value.trim();
+        if (!newHashTag.startsWith('#')) {
+            newHashTag = `#${newHashTag}`;
+        }
+        const regExp = /[\{\}\[\]\/?.;:|\)*~`!^\-_+<>@\$%&\\\=\(\'\"]/g;
+        if (regExp.test(newHashTag)) {
+            newHashTag = newHashTag.replace(regExp, '');
+        }
+        if (newHashTag.includes(',')) {
+            newHashTag = newHashTag.split(',').join('');
+        }
+    
+        if (isEmptyValue(newHashTag)) return;
+    
+        setHashTags((prevHashTags) => {
+            return [...prevHashTags, newHashTag].filter((value, index, self) => self.indexOf(value) === index);
+        });
+    
+        setInputHashTag('');
+    };
+
+    // event handler: 키 다운 이벤트 처리 //
+    const keyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.code !== 'Enter' && e.code !== 'NumpadEnter') return;
+        e.preventDefault();
+
+        const target = e.target as HTMLInputElement;
+        
+        const regExp = /^[a-z|A-Z|가-힣|ㄱ-ㅎ|ㅏ-ㅣ|0-9| \t|]+$/g;
+        if (!regExp.test(target.value)) {
+            setInputHashTag('');
+        }
+    };
+     
+    // event handler: 해시태그 변경 이벤트 처리 함수 //
+    const changeHashTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        setInputHashTag(target.value);
+    };
+
 
     // render : 후기 작성 컴포넌트 렌더링 //
     return (
-        <div id='review-write'>
-            <h1>후기 작성</h1>
-            <input
-                type="file"
-                ref={imageInputRef}
-                style={{ display: 'none' }}
-                multiple
-                onChange={onImageInputChangeHandler}
-            />
+        <div className='review-write'>
+            <div className='review-write-container'>
+                <div className='review-write-top'>
+                    <h1>후기 작성</h1>
+                    <div>이번 여행은 어떠셨나요? 당신의 여행을 모두에게 알려주세요!</div>
+                </div>
+                <div className='review-write-middle'>
+                    <div className='field-content'>
+                        <div className="field-label">사진 첨부</div>
+                        <div className="image-uploader">
+                            {previews.map((preview, index) => (
+                                <div key={index} style={{ display: "inline-block", margin: "10px" }}>
+                                    <img
+                                        src={preview}
+                                        alt={`Preview ${index}`}
+                                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                    />
+                                    <div className='delete-button' onClick={() => onHandleImageRemoveHandler(index)}>
+                                        삭제
+                                    </div>
+                                </div>
+                            ))}
+                            <input type="file" ref={fileInputRef} style={{ display: "none" }} multiple accept="image/*" onChange={onHandleImageUploadHandler} />
+                            <div className="upload-button" onClick={onhandleButtonClick}><RiImageAddFill /></div>
+                        </div>
+                    </div>
+                    <div className='field-content'>
+                        <div className="field-label">내용 작성</div>
+                        <textarea className="review-content" placeholder="여행에 대한 설명을 입력해주세요." onChange={()=>onContentChangeHandler}/>
+                    </div>
+                    <div className='field-content'>
+                        <div className="field-label">해시태그 선택</div>
+                        {hashTags.length > 0 &&
+                            hashTags.map((hashTag) => {
+                            return (
+                                <div key={hashTag} className='tag'>
+                                    {hashTag}
+                                </div>
+                            );
+                        })}
+
+                        <input
+                        value={inputHashTag}
+                        onChange={changeHashTagInput}
+                        onKeyUp={addHashTag}
+                        onKeyDown={keyDownHandler}
+
+                        placeholder='#해시태그를 등록해보세요. (최대 10개)'
+                        className='hashTagInput'
+                        />
+                    </div>
+                </div>
+                <div className='review-write-bottom'>
+                    <div className="add-button" onClick={postReviewPostButtonClickHandler}>등록</div>
+                </div>
+            </div>
         </div>
     )
 }

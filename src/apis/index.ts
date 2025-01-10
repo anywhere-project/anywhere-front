@@ -5,22 +5,16 @@ import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
-<<<<<<< HEAD
 import { PostReviewRequestDto } from "./dto/request/review";
-=======
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
->>>>>>> faa11769801434a65c822b4ea8e501fc673f6424
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const REVIEW_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/review`;
-<<<<<<< HEAD
-=======
 const MYPAGE_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mypage`;
->>>>>>> faa11769801434a65c822b4ea8e501fc673f6424
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -53,16 +47,13 @@ const GET_RECOMMEND_MISSION_LIST_API_URL = `${RECOMMEND_MODULE_URL}/missions`;
 const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 
-<<<<<<< HEAD
 const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
 const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
 const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
 const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
-=======
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
->>>>>>> faa11769801434a65c822b4ea8e501fc673f6424
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -307,7 +298,6 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
         .catch(error => null)
     return url;
 }
-<<<<<<< HEAD
 
 // export const getAreaListRequest = async () => {
 //     const responseBody = await axios.get(AREA_MODULE_URL)
@@ -316,12 +306,10 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
 //     return responseBody;
 // };
 
-// function: 추천 게시글 작성 요청 함수 //
-export const postRevjewPostRequest = async (requestBody: PostReviewRequestDto, accessToken: string) => {
+// function: 후기 게시글 작성 요청 함수 //
+export const postReviewRequest = async (requestBody: PostReviewRequestDto, accessToken: string) => {
     const responseBody = await axios.post(POST_REVIEW_POST_API_URL, requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
-=======
->>>>>>> faa11769801434a65c822b4ea8e501fc673f6424

@@ -1,4 +1,5 @@
 export default interface PostReviewRequestDto{
     reviewContent: string;
-    reviewWriter: string;
+    images: string[];
+    hashtags: string[];
 }

@@ -37,7 +37,7 @@
   }
 }
 
-.app-container {
+/* .app-container {
   display: flex;
   flex-direction: row;
   height: 100vh;
@@ -48,5 +48,5 @@
   flex: 1;
   background-color: #ffffff;
   overflow-y: auto;
-}
+} */
 
