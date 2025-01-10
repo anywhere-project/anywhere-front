@@ -6,8 +6,15 @@ import { getHashTagListRequest } from 'apis';
 import './style.css';
 
 export default function HashTagBar() {
-
     const [hashTagList, setHashTagList] = useState<HashTag[]>([]);
+    const [sidebarTop, setSidebarTop] = useState<number>(670);
+
+    const handleScroll = () => {
+        const scrollPosition = window.scrollY; 
+        const height = window.innerHeight
+        const newTop = Math.max(670, scrollPosition + height / 2 - 100);
+        setSidebarTop(newTop);
+    };
 
     const getHashTagListResponse = (responseBody: GetHashTagListResponseDto | ResponseDto | null) => {
         const message = 
@@ -23,19 +30,26 @@ export default function HashTagBar() {
 
         const { hashTags } = responseBody as GetHashTagListResponseDto;
         setHashTagList(hashTags);
-    }
+    };
+
 
     useEffect(() => {
-        getHashTagListRequest().then(getHashTagListResponse);
+        getHashTagListRequest().then(getHashTagListResponse); 
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll); 
+        };
     }, []);
 
     return (
-        <div className="sidebar">
-            <h3>인기 해시태그</h3>
+        <div className='hashtag-bar' style={{ top: `${sidebarTop}px` }}>
+            <div className='hash-tag-title'>🔥현재 인기 키워드는?</div>
+            <hr />
             <div className="hash-tag-list">
                 {hashTagList.length > 0 ? (
                     hashTagList.map((hashTag, index) => (
-                        <div key={index} className="hash-tag">#{hashTag.tagName}</div>
+                        <div key={index} className="hash-tag">{index + 1}. #{hashTag.tagName}</div>
                     ))
                 ) : (
                     <div className="hash-tag">해시태그가 없습니다.</div>

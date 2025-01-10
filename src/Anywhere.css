@@ -36,17 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-/* .app-container {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.main-content {
-  flex: 1;
-  background-color: #ffffff;
-  overflow-y: auto;
-} */
-

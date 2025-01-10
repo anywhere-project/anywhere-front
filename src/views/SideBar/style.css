@@ -15,8 +15,7 @@ body {
 .side-container {
     display: flex;
     justify-content: center;
-    position: fixed;
-    top: 40%;
+    position: absolute;
     left: 50px;
     width: 200px;
     height: 300px;
@@ -25,6 +24,8 @@ body {
     overflow-y: auto;
     z-index: 1000;
     border-radius: 16px;
+    transform: translateY(-50%);
+    transition: top 0.7s ease-out;
 }
 
 .menu-list {
