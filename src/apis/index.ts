@@ -5,6 +5,7 @@ import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
+import { PostReviewRequestDto } from "./dto/request/review";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
@@ -53,6 +54,12 @@ const GET_RECOMMEND_MISSION_LIST_API_URL = `${RECOMMEND_MODULE_URL}/missions`;
 const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 
+const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
+const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
+const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
+const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
+
+const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -313,4 +320,19 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
         .then(responseDataHandler<string>)
         .catch(error => null)
     return url;
+}
+
+// export const getAreaListRequest = async () => {
+//     const responseBody = await axios.get(AREA_MODULE_URL)
+//         .then(responseDataHandler<GetAreaResponseDto>)
+//         .catch(responseErrorHandler);
+//     return responseBody;
+// };
+
+// function: 후기 게시글 작성 요청 함수 //
+export const postReviewRequest = async (requestBody: PostReviewRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_REVIEW_POST_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
 }

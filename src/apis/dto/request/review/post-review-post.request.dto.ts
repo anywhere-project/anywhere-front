@@ -1,7 +1,5 @@
 export default interface PostReviewRequestDto{
-    reviewId: number;
     reviewContent: string;
-    reviewWriter: string;
-    reviewCreatedAt: string;
-    reviewLikeCount: number;
+    images: string[];
+    hashtags: string[];
 }

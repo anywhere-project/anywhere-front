@@ -10,6 +10,7 @@ export const RECOMMEND_UPDATE_PATH = (recommendId: string | number) => `${RECOMM
 export const RECOMMEND_WRITE_PATH = `${RECOMMEND_PATH}/write`;
 
 export const REVIEW_PATH = '/review';
+export const REVIEW_WRITE_PATH = `${REVIEW_PATH}/write`;
 
 export const MYPAGE_PATH = (userId: string) => `/mypage/${userId}`;
 
