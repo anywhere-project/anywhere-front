@@ -8,6 +8,8 @@ import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
+import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
+
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -22,6 +24,7 @@ const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
+const GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/user/${userId}`;
 
 
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
@@ -117,11 +120,20 @@ export const getSignInRequest = async (accessToken: string) => {
     return responseBody;
 };
 
+
 export const getReviewListRequest = async () => {
     const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
     .then(responseDataHandler<GetReviewPostListResponseDto>)
     .catch(responseErrorHandler);
 return responseBody;
+
+// function: 게시글 유저 정보 리스트 요청 함수 //
+export const getUserInfoRequest = async (userId: string) => {
+    const responseBody = await axios.get(GET_USER_INFO_API_URL(userId))
+        .then(responseDataHandler<GetUserInfoResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+
 }
 
 // function: 추천 게시글 작성 요청 함수 //
