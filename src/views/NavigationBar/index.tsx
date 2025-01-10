@@ -17,7 +17,7 @@ function Dropdown({ onDropdownButtonClick }: { onDropdownButtonClick: () => void
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [id, setId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
+    const [message, setMessage] = useState<string>(''); 
 
     // state: cookie 상태 관리
     const [cookies, setCookie, removeCookie] = useCookies();

@@ -23,7 +23,6 @@ function Anywhere() {
       <SideBar />
       <HashTagBar />
       <NavigationBar />
-
       <Routes>
         <Route index element={<Main />} />
         <Route path={SIGN_UP_PATH} element={<SignUp />} />
@@ -32,7 +31,6 @@ function Anywhere() {
         <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
         <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
       </Routes>
-
     </>
   );
 }
