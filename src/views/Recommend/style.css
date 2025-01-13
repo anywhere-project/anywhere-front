@@ -99,6 +99,7 @@
 .attraction-details .attraction-address {
     font-size: 14px;
     color: #777;
+    width: 170px;
     margin-top: 10px;
 }
 
@@ -106,6 +107,12 @@
     font-size: 14px;
     color: #555;
     margin-top: 10px;
+}
+
+.attraction-details .attraction-like-button {
+    font-size: 30px;
+    margin-top: 50px;
+    margin-left: 105px;
 }
 
 .recommend-post .post-divider {
@@ -188,16 +195,22 @@
     font-style: italic;
 }
 
-.attraction-details .mission-name {
+.mission-details .mission-name {
     font-size: 18px;
     font-weight: bold;
     color: #333;
 }
 
-.attraction-details .mission-content {
+.mission-details .mission-content {
     font-size: 14px;
     color: #555;
     margin-top: 10px;
+}
+
+.mission-details .mission-like-button {
+    font-size: 30px;
+    margin-top: 50px;
+    margin-left: 145px;
 }
 
 .food-box {
@@ -252,4 +265,10 @@
     font-size: 14px;
     color: #555;
     margin-top: 10px;
+}
+
+.food-details .food-like-button {
+    font-size: 30px;
+    margin-top: 50px;
+    margin-left: 145px;
 }

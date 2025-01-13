@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { GetHashTagListResponseDto } from 'apis/dto/response/hashtag';
 import { ResponseDto } from 'apis/dto/response';
 import { HashTag } from 'types';
-import { getHashTagListRequest } from 'apis';
 import './style.css';
+import { getHashTagListRequest } from 'apis';
 
 export default function HashTagBar() {
     const [hashTagList, setHashTagList] = useState<HashTag[]>([]);
