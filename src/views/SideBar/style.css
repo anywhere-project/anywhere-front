@@ -46,6 +46,5 @@ body {
 }
 
 .menu-item:hover {
-    background-color: #d2efff;
     border-radius: 16px;
 }

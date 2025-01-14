@@ -9,9 +9,11 @@ import GetUserInfoResponseDto from "apis/dto/response/user/get-user-info.respons
 import { RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } from "types";
 import './style.css';
 import 'swiper/swiper-bundle.min.css';
+import Banner from "views/Banner";
 import { useCookies } from "react-cookie";
 import { ACCESS_TOKEN } from "../../constants";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
+
 
 interface Posts {
     recommendPost: RecommendPost;
@@ -403,7 +405,7 @@ export default function Recommend() {
     return (
         <div className="recommend-post">
             <div className="share-banner">
-                <p>자신의 추천 루트를 공유하고 다른 사람들과 함께 해보세요!</p>
+                <Banner />
             </div>
     
             <div className="recommend-post-content">

@@ -140,7 +140,6 @@ export const getUserInfoRequest = async (userId: string) => {
         .then(responseDataHandler<GetUserInfoResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-
 }
 
 // function: 추천 게시글 작성 요청 함수 //
