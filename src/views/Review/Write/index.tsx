@@ -57,8 +57,8 @@ export default function ReviewWrite() {
         navigator(REVIEW_PATH);
     }
     
-    // event handler: 이름 변경 이벤트 처리 함수 //
-    const onContentChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    // event handler: 내용 변경 이벤트 처리 함수 //
+    const onContentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = event.target;
         setReviewContent(value);
     };
@@ -87,7 +87,7 @@ export default function ReviewWrite() {
     
 
     // event handler: 이미지 클릭 이벤트 처리 //
-    const onhandleButtonClick = () => {
+    const onHandleButtonClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click(); 
         }
@@ -194,12 +194,12 @@ export default function ReviewWrite() {
                                 </div>
                             ))}
                             <input type="file" ref={fileInputRef} style={{ display: "none" }} multiple accept="image/*" onChange={onHandleImageUploadHandler} />
-                            <div className="upload-button" onClick={onhandleButtonClick}><RiImageAddFill /></div>
+                            <div className="upload-button" onClick={onHandleButtonClick}><RiImageAddFill /></div>
                         </div>
                     </div>
                     <div className='field-content'>
                         <div className="field-label">내용 작성</div>
-                        <textarea className="review-content" placeholder="여행에 대한 설명을 입력해주세요." onChange={()=>onContentChangeHandler}/>
+                        <textarea className="review-content" placeholder="여행에 대한 설명을 입력해주세요." onChange={onContentChangeHandler} />
                     </div>
                     <div className='field-content'>
                         <div className="field-label">해시태그 선택</div>

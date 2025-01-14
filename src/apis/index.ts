@@ -27,9 +27,6 @@ const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
 const GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/user/${userId}`;
 
-
-const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
-
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string, category: string) => `${RECOMMEND_MODULE_URL}/${recommendId}/${category}`;
 const GET_RECOMMEND_POST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/post/${recommendId}`;
@@ -60,6 +57,7 @@ const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: nu
 const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
+const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -126,13 +124,6 @@ export const getSignInRequest = async (accessToken: string) => {
         .catch(responseErrorHandler);
     return responseBody;
 };
-
-
-export const getReviewListRequest = async () => {
-    const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
-    .then(responseDataHandler<GetReviewPostListResponseDto>)
-    .catch(responseErrorHandler);
-return responseBody;
 
 // function: 게시글 유저 정보 리스트 요청 함수 //
 export const getUserInfoRequest = async (userId: string) => {
@@ -336,3 +327,11 @@ export const postReviewRequest = async (requestBody: PostReviewRequestDto, acces
         .catch(responseErrorHandler);
     return responseBody;
 }
+
+// function: 추천 게시글 리스트 가져오기 요청 함수 //
+export const getReviewListRequest = async () => {
+    const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
+    .then(responseDataHandler<GetReviewPostListResponseDto>)
+    .catch(responseErrorHandler);
+return responseBody;
+};
