@@ -125,14 +125,6 @@ export const getSignInRequest = async (accessToken: string) => {
     return responseBody;
 };
 
-// function : 후기 게시판 리스트 요청 함수 //
-export const getReviewListRequest = async () => {
-    const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
-    .then(responseDataHandler<GetReviewPostListResponseDto>)
-    .catch(responseErrorHandler);
-return responseBody;
-}
-
 // function: 게시글 유저 정보 리스트 요청 함수 //
 export const getUserInfoRequest = async (userId: string) => {
     const responseBody = await axios.get(GET_USER_INFO_API_URL(userId))
