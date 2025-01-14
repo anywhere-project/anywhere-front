@@ -11,16 +11,25 @@ interface TableRowProps {
 
 function TableRow({review, getReviewList}: TableRowProps) {
 
+    // render : 후기 게시글 리스트 렌더링 //
+    return (
+        <></>
+    )
     
-
 }
 
 // component: 후기 리스트 화면 컴포넌트
-export default function Review() {
+export default function ReviewList() {
 
     // render : 후기 게시판 컴포넌트 렌더링 //
     return (
-        <div>
+        <div className='review-post'>
+            <div className='share-banner'>
+                <p>나만의 여행 루트를 다른 사람들에게 함께 공유해 보세요!</p>
+            </div>
+            <div className="review-content">
+
+            </div>
         </div>
     )
 }
