@@ -1,9 +1,8 @@
-import { getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostListRequest, getUserInfoRequest } from "apis";
+import { getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostListRequest, getUserInfoRequest, postAttractionLikeRequest, postFoodLikeRequest, postMissionLikeRequest } from "apis";
 import { ResponseDto } from "apis/dto/response";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useSignInUserStore } from "stores";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper';
 import GetUserInfoResponseDto from "apis/dto/response/user/get-user-info.response.dto";
@@ -11,6 +10,10 @@ import { RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } f
 import './style.css';
 import 'swiper/swiper-bundle.min.css';
 import Banner from "views/Banner";
+import { useCookies } from "react-cookie";
+import { ACCESS_TOKEN } from "../../constants";
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+
 
 interface Posts {
     recommendPost: RecommendPost;
@@ -73,6 +76,32 @@ function PostRow({ recommendPost }: Posts) {
 
 function AttractionRow({ recommendAttraction, index }: Attractions & { index: number }) {
     const [attractionImages, setAttractionImages] = useState<string[]>([]);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [cookies] = useCookies();
+
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    const postAttractionLikeResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'NRA' ? '존재하지 않는 관광지입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && (responseBody.code === 'LC' || responseBody.code === 'LUC');
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        setIsLiked(!isLiked);
+    };
+
+    const onLikeButtonClickHandler = () => {
+        postAttractionLikeRequest(recommendAttraction.attractionId, accessToken).then(postAttractionLikeResponse);
+    }
 
     useEffect(() => {
         setAttractionImages(recommendAttraction.images.map((image) => image.imageUrl)); 
@@ -102,6 +131,9 @@ function AttractionRow({ recommendAttraction, index }: Attractions & { index: nu
                     <div className="attraction-address">{recommendAttraction.attractionAddress}</div>
                     <div className="attraction-content">{recommendAttraction.attractionContent}</div>
                 </div>
+                {accessToken && (
+                    <div className="attraction-like-button" onClick={onLikeButtonClickHandler}>{isLiked ? <FaHeart color="red" /> : <FaRegHeart />}</div>
+                )}
             </div>
         </div>
     );
@@ -109,9 +141,35 @@ function AttractionRow({ recommendAttraction, index }: Attractions & { index: nu
 
 function MissionRow({ recommendMission, index }: Missions & { index: number }) {
     const [missionImages, setMissionImages] = useState<string[]>([]);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [cookies] = useCookies();
+
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    const postMissionLikeResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'NRM' ? '존재하지 않는 미션입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && (responseBody.code === 'LC' || responseBody.code === 'LUC');
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        setIsLiked(!isLiked);
+    };
+
+    const onLikeButtonClickHandler = () => {
+        postMissionLikeRequest(recommendMission.missionId, accessToken).then(postMissionLikeResponse);
+    };
 
     useEffect(() => {
-        setMissionImages(recommendMission.images.map((image) => image.imageUrl)); 
+        setMissionImages(recommendMission.images.map((image) => image.imageUrl));
     }, [recommendMission]);
 
     return (
@@ -137,6 +195,12 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
                     <div className="mission-name">{recommendMission.missionName}</div>
                     <div className="mission-content">{recommendMission.missionContent}</div>
                 </div>
+
+                {accessToken && (
+                    <div className="mission-like-button" onClick={onLikeButtonClickHandler}>
+                        {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -144,9 +208,35 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
 
 function FoodRow({ recommendFood, index }: Foods & { index: number }) {
     const [foodImages, setFoodImages] = useState<string[]>([]);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [cookies] = useCookies();
+
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    const postFoodLikeResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'NRF' ? '존재하지 않는 음식입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && (responseBody.code === 'LC' || responseBody.code === 'LUC');
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        setIsLiked(!isLiked);
+    };
+
+    const onLikeButtonClickHandler = () => {
+        postFoodLikeRequest(recommendFood.foodId, accessToken).then(postFoodLikeResponse);
+    };
 
     useEffect(() => {
-        setFoodImages(recommendFood.images.map((image) => image.imageUrl)); 
+        setFoodImages(recommendFood.images.map((image) => image.imageUrl));
     }, [recommendFood]);
 
     return (
@@ -172,14 +262,19 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
                     <div className="food-name">{recommendFood.foodName}</div>
                     <div className="food-content">{recommendFood.foodContent}</div>
                 </div>
+
+                {accessToken && (
+                    <div className="food-like-button" onClick={onLikeButtonClickHandler}>
+                        {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
 export default function Recommend() {
-    
-    const { signInUser } = useSignInUserStore();
+
     const { category } = useParams();
 
     const [posts, setPosts] = useState<RecommendPost[]>([]);
@@ -428,7 +523,6 @@ export default function Recommend() {
             <div ref={observerRef} style={{ height: "1px" }}></div>
         </div>
     );
-    
 
 }
 

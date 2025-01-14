@@ -27,7 +27,6 @@ const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
 const GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/user/${userId}`;
 
-
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
 
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
@@ -54,10 +53,10 @@ const GET_RECOMMEND_MISSION_LIST_API_URL = `${RECOMMEND_MODULE_URL}/missions`;
 const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 
-const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
-const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
-const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
-const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
+const POST_ATTRACTION_LIKE_API_URL = (attractionId: number | string) => `${RECOMMEND_MODULE_URL}/attraction/like/${attractionId}`;
+const POST_FOOD_LIKE_API_URL = (foodId: number | string) => `${RECOMMEND_MODULE_URL}/food/like/${foodId}`;
+const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_MODULE_URL}/mission/like/${missionId}`;
+
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
@@ -130,9 +129,9 @@ export const getSignInRequest = async (accessToken: string) => {
 
 export const getReviewListRequest = async () => {
     const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
-    .then(responseDataHandler<GetReviewPostListResponseDto>)
-    .catch(responseErrorHandler);
-return responseBody;
+        .then(responseDataHandler<GetReviewPostListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
 }
 
 // function: 게시글 유저 정보 리스트 요청 함수 //
@@ -310,6 +309,31 @@ export const getHashTagListRequest = async () => {
         .catch(responseErrorHandler);
     return responseBody;
 }
+
+// function: 추천 관광지 좋아요 요청 함수 //
+export const postAttractionLikeRequest = async(attractionId: string | number, accessToken: string) => {
+    const repsonseBody = await axios.post(POST_ATTRACTION_LIKE_API_URL(attractionId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return repsonseBody;
+}
+
+// function: 추천 먹거리 좋아요 요청 함수 //
+export const postFoodLikeRequest = async (foodId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_FOOD_LIKE_API_URL(foodId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 추천 미션 좋아요 요청 함함수 //
+export const postMissionLikeRequest = async (missionId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_MISSION_LIKE_API_URL(missionId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
 
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 
