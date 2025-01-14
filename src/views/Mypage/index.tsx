@@ -2,17 +2,15 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-import { Review } from 'types';
+import { RecommendPost, Review } from 'types';
 import { ACCESS_TOKEN } from '../../constants';
 import { useParams } from 'react-router-dom';
-import { GetSignInResponseDto } from 'apis/dto/response/auth';
 import { ResponseDto } from 'apis/dto/response';
-import GetReviewResponseDto from './../../apis/dto/response/review/get-review.response.dto';
 import useReviewPagination from 'hooks/review.pagination.hook';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import { profile } from 'console';
-import { getReviewListRequest } from 'apis';
+import {  getRecommendAttractionListRequest, getRecommendPostListRequest,  getReviewListRequest } from 'apis';
+import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 
 
 // interface: another user 정보 //
@@ -36,7 +34,12 @@ export default function Mypage () {
     const { userId } = useParams<{ userId: string }>();
     const [profileImage, setProfileImage] = useState<string>('');
     const [nickname, setNickname] = useState<string>('');
-    const [totalCount, setTotalCount] = useState<number>(0);
+    const [reviewPostCount, setReviewPostCount] = useState<number>(0);
+    const [recommendPostCount, setRecommendPostCount] = useState<number>(0);
+    const [recommendAttractionPostCount, setRecommendAttractionPostCount] = useState<number>(0);
+    const [recommendFoodPostCount, setRecommendFoodPostCount] = useState<number>(0);
+    const [recommendMissionPostCount, setRecommendMissionPostCount] = useState<number>(0);
+
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -62,7 +65,7 @@ export default function Mypage () {
         'https://via.placeholder.com/150'  // 이미지 주소 9
     ];
 
-    // function : get review list response 처리 함수 //
+    // function : get review attraction list response 처리 함수 //
     const getReviewListResponse = (responseBody: GetReviewPostListResponseDto | ResponseDto | null ) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
         !responseBody ? '서버에 문제가 있습니다.' :
@@ -76,59 +79,81 @@ export default function Mypage () {
         }
 
         const reviewPosts = (responseBody as GetReviewPostListResponseDto).reviewPosts || [];
-        const myPosts = reviewPosts.filter(post => post.reviewWriter === userId);
-        setTotalList(myPosts);
-        setReviewContents(myPosts);
 
-        setTotalCount(myPosts.length);
+        const myReviewPosts = reviewPosts.filter(post => post.reviewWriter === userId);
 
+        setTotalList(myReviewPosts);
+        setReviewContents(myReviewPosts);
+
+        setReviewPostCount(myReviewPosts.length);
+
+
+    };
+
+        // function : get recommend attraction list response 처리 함수 //
+        const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
+            const message = !responseBody ? '서버에 문제가 있습니다.' :
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+            const isSuccessed = responseBody!== null && responseBody.code === 'SU';
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            }
+    
+            const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+            // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
+
+            setRecommendAttractionPostCount(recommendAttractionPosts.length);
+        };
+
+    // function : get recommend food list response 처리 함수 //
+    const getRecommendFoodListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody!== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+    
+        const recommendFoodPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+        // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
+
+        setRecommendFoodPostCount(recommendFoodPosts.length);
         
     };
 
 
-    // // function : get review post response 처리 함수 //
-    // const GetReviewPostResponse = (responseBody: GetReviewResponseDto | ResponseDto | null) => {
-    //     const message = !responseBody ? '서버에 문제가 있습니다.' :
-    //     responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-    //     responseBody.code === 'AF' ? '잘못된 권한입니다.' :
-    //     responseBody.code === 'NRP' ? '존재하지 않는 글입니다.' :
-    //     responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '' ;
+    // function : get recommend mission list response 처리 함수 //
+    const getRecommendMissionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
-    //     const isSuccessed = responseBody!== null && responseBody.code === 'SU';
-    //     if (!isSuccessed) {
-    //         alert(message);
-    //         return;
-    //     }
+        const isSuccessed = responseBody!== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
 
-    //     const {
-    //         reviewId,
-    //         reviewContent,
-    //         reviewWriter,
-    //         reviewCreatedAt,
-    //         reviewLikeCount
-    //     } = responseBody as GetReviewResponseDto;
-
-
-    // }
     
+        const recommendMissionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+        // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
 
-    // // function : get user response 처리 함수 //
-    // const getUserResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
-    //     const message = !responseBody ? ' 서버에 문제가 있습니다.' :
-    //     responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-    //     responseBody.code === 'AF' ? '잘못된 권한입니다.' :
-    //     responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '' ;
+        setRecommendMissionPostCount(recommendMissionPosts.length);
 
-    //     const isSuccessed = responseBody !== null && responseBody.code ==='SU';
-    //     if (!isSuccessed) {
-    //         alert(message);
-    //         return;
-    //     }
 
-    //     const {profileImage} = responseBody as GetSignInResponseDto;
-    //     setProfileImage(profileImage);
+    };
 
-    // }
+
 
     // 유저 정보 가져오기
 useEffect(() => {
@@ -150,9 +175,23 @@ useEffect(() => {
     fetchUserInfo();
 }, [userId]);
 
+
+
 useEffect(() => {
     getReviewListRequest().then(getReviewListResponse);
-},[signInUser])
+},[signInUser]);
+
+useEffect(() => {
+    getRecommendPostListRequest("attraction").then(getRecommendAttractionListResponse);
+    getRecommendPostListRequest("food").then(getRecommendFoodListResponse);
+    getRecommendPostListRequest("mission").then(getRecommendMissionListResponse);
+    
+},[recommendPostCount]);
+
+useEffect(()=>{
+    setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
+},[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
+
 
 
     return (
@@ -168,8 +207,17 @@ useEffect(() => {
                     <div className='mypage-middle'>
                         <div className='mypage-profile'  style={{ backgroundImage: `url(${userId ? profileImage : '이미지 없음'})`}}></div>
                         <div className='mypage-board'>
-                            <div className='board-category'>후기글</div>
-                            <div className='board-category'>{totalCount}개</div>
+                            <div className='board-category'>
+                                <div className='board-category-count'>
+                                    <div>후기 게시판</div>
+                                    <div>{reviewPostCount}개</div>
+                                </div>
+                                <div className='board-category-count'>
+                                <div>추천 게시판</div>
+                                <div>{recommendPostCount}개</div>
+                                </div>
+                            </div>
+
 
                         </div>
                     </div>
