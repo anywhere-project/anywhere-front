@@ -7,15 +7,9 @@
 
 .recommend-post .share-banner {
     background-color: #c6edf7;
-    padding: 15px;
     margin-bottom: 20px;
-    width: 100%;
-    height: 500px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
     margin-top: 100px;
+    width: 100%;
 }
 
 .recommend-post .recommend-post-content {

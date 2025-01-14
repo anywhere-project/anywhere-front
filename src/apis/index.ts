@@ -133,6 +133,7 @@ export const getReviewListRequest = async () => {
     .then(responseDataHandler<GetReviewPostListResponseDto>)
     .catch(responseErrorHandler);
 return responseBody;
+}
 
 // function: 게시글 유저 정보 리스트 요청 함수 //
 export const getUserInfoRequest = async (userId: string) => {
@@ -140,7 +141,6 @@ export const getUserInfoRequest = async (userId: string) => {
         .then(responseDataHandler<GetUserInfoResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-
 }
 
 // function: 추천 게시글 작성 요청 함수 //
