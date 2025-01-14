@@ -12,6 +12,7 @@ import SideBar from 'views/SideBar';
 import NavigationBar from 'views/NavigationBar';
 import HashTagBar from 'views/HashTagBar';
 import ReviewWrite from 'views/Review/Write';
+import ReviewList from 'views/Review';
 
 function Anywhere() {
 
@@ -39,6 +40,7 @@ function Anywhere() {
         <Route path={RECOMMEND_WRITE_PATH} element={<RecommendWrite />} />
         <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
         <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
+        <Route path={REVIEW_PATH} element={<ReviewList/>}/>
         <Route path={REVIEW_WRITE_PATH} element={<ReviewWrite/>}/>
       </Routes>
     </>
