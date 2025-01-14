@@ -3,12 +3,12 @@ import './style.css';
 
 export default function SideBar() {
 
-    const [barPosition, setBarPosition] = useState<number>(670);
+    const [barPosition, setBarPosition] = useState<number>(830);
 
     const handleScroll = () => {
         const scrollPosition = window.scrollY; 
         const height = window.innerHeight
-        const newTop = Math.max(670, scrollPosition + height / 2 - 100);
+        const newTop = Math.max(830, scrollPosition + height / 2 - 100);
         setBarPosition(newTop);
     };
 

@@ -51,10 +51,10 @@ const GET_RECOMMEND_MISSION_LIST_API_URL = `${RECOMMEND_MODULE_URL}/missions`;
 const PATCH_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/mission/${missionId}`;
 
-const POST_RECOMMEND_IMAGE_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}`;
-const GET_RECOMMEND_IMAGE_LIST_API_URL = (recommendId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/images`;
-const PATCH_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;
-const DELETE_RECOMMEND_IMAGE_API_URL = (recommendId: number | string, imageId: number | string) => `${RECOMMEND_MODULE_URL}/${recommendId}/image/${imageId}`;;
+const POST_ATTRACTION_LIKE_API_URL = (attractionId: number | string) => `${RECOMMEND_MODULE_URL}/attraction/like/${attractionId}`;
+const POST_FOOD_LIKE_API_URL = (foodId: number | string) => `${RECOMMEND_MODULE_URL}/food/like/${foodId}`;
+const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_MODULE_URL}/mission/like/${missionId}`;
+
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
@@ -131,7 +131,6 @@ export const getUserInfoRequest = async (userId: string) => {
         .then(responseDataHandler<GetUserInfoResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-
 }
 
 // function: 추천 게시글 작성 요청 함수 //
@@ -302,6 +301,31 @@ export const getHashTagListRequest = async () => {
     return responseBody;
 }
 
+// function: 추천 관광지 좋아요 요청 함수 //
+export const postAttractionLikeRequest = async(attractionId: string | number, accessToken: string) => {
+    const repsonseBody = await axios.post(POST_ATTRACTION_LIKE_API_URL(attractionId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return repsonseBody;
+}
+
+// function: 추천 먹거리 좋아요 요청 함수 //
+export const postFoodLikeRequest = async (foodId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_FOOD_LIKE_API_URL(foodId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 추천 미션 좋아요 요청 함함수 //
+export const postMissionLikeRequest = async (missionId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_MISSION_LIKE_API_URL(missionId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 
 const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
@@ -326,7 +350,7 @@ export const postReviewRequest = async (requestBody: PostReviewRequestDto, acces
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-}
+};
 
 // function: 추천 게시글 리스트 가져오기 요청 함수 //
 export const getReviewListRequest = async () => {
