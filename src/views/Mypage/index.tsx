@@ -2,14 +2,14 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-import { RecommendPost, Review } from 'types';
+import { Review } from 'types';
 import { ACCESS_TOKEN } from '../../constants';
 import { useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
 import useReviewPagination from 'hooks/review.pagination.hook';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import {  getRecommendAttractionListRequest, getRecommendPostListRequest,  getReviewListRequest } from 'apis';
+import { getRecommendPostListRequest,  getReviewListRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 
 
