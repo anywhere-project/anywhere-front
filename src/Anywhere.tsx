@@ -30,7 +30,7 @@ function Anywhere() {
   
   return (
     <>
-      {/* {showSideBar && <SideBar />} */}
+      {showSideBar && <SideBar />}
       {showHashTagBar && <HashTagBar />}
       <NavigationBar />
       <Routes>
