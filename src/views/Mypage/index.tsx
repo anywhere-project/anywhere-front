@@ -2,6 +2,7 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
+
 import { Review } from 'types';
 import { ACCESS_TOKEN } from '../../constants';
 import { useParams } from 'react-router-dom';
@@ -11,7 +12,8 @@ import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-li
 import axios from 'axios';
 import { getRecommendPostListRequest,  getReviewListRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
-
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import RecommendIcon from '@mui/icons-material/Recommend';
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -47,8 +49,14 @@ export default function Mypage () {
     // variable: accessToken
     const accessToken = cookies[ACCESS_TOKEN];
 
-        // state: 내 후기 게시판 목록 상태 //
+    // state: 내 후기 게시판 목록 상태 //
     const [reviewContents, setReviewContents] = useState<Review[]>([]);
+
+    const [activeBoard, setActiveBoard] = useState<'review' | 'recommend'>('review');
+
+    const handleBoardClick = (board: 'review' | 'recommend')=> {
+        setActiveBoard(board);
+    }
 
     // variable: 작성자 여부 //
     const isOwner = (signInUser?.userId === userId) ? signInUser : user;
@@ -104,9 +112,9 @@ export default function Mypage () {
             }
     
             const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
-            // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
+            const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
 
-            setRecommendAttractionPostCount(recommendAttractionPosts.length);
+            setRecommendAttractionPostCount(myRecommendAttractionPosts.length);
         };
 
     // function : get recommend food list response 처리 함수 //
@@ -124,9 +132,9 @@ export default function Mypage () {
 
     
         const recommendFoodPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
-        // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
+        const myRecommendFoodPosts = recommendFoodPosts.filter(post => post.recommendWriter === userId);
 
-        setRecommendFoodPostCount(recommendFoodPosts.length);
+        setRecommendFoodPostCount(myRecommendFoodPosts.length);
         
     };
 
@@ -146,9 +154,9 @@ export default function Mypage () {
 
     
         const recommendMissionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
-        // const myRecommendPosts = recommendPosts.filter(post => post.recommendWriter === userId);
+        const myRecommendMissionPosts = recommendMissionPosts.filter(post => post.recommendWriter === userId);
 
-        setRecommendMissionPostCount(recommendMissionPosts.length);
+        setRecommendMissionPostCount(myRecommendMissionPosts.length);
 
 
     };
@@ -221,16 +229,35 @@ useEffect(()=>{
 
                         </div>
                     </div>
-                    <div></div>
-                    <div className="mypage-gallery">
+                    <div className="board-selector">
+                        <div
+                            className={`review-board ${activeBoard === 'review' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('review')}
+                        >
+                            <ReviewsIcon />후기
+                        </div>
+                        <div
+                            className={`recommend-board ${activeBoard === 'recommend' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('recommend')}
+                        >
+                            <RecommendIcon />추천
+                        </div>
+                    </div>
+                    <div className="gallery-review" style={{ display: activeBoard === 'review' ? 'grid' : 'none' }}>
                         {reviewContents.map((post, index) => (
                             <div key={index} className="gallery-item">
-                                <img 
+                                <img
                                     src={post.imageUrl?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
-                                    alt={`Review item ${index + 1}`} 
-                                    className="gallery-image" 
+                                    alt={`Review item ${index + 1}`}
+                                    className="gallery-image"
                                 />
-                                
+                            </div>
+                        ))}
+                    </div>
+                    <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
+                        {imageList.map((image, index) => (
+                            <div key={index} className="gallery-item">
+                                <img src={image} alt={`Recommend item ${index + 1}`} className="gallery-image" />
                             </div>
                         ))}
                     </div>
