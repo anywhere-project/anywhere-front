@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { ACCESS_TOKEN, MYPAGE_PATH, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
+import { ACCESS_TOKEN, MYPAGE_PATH, RECOMMEND_CATEGORY_PATH, RECOMMEND_PATH, REVIEW_PATH, ROOT_PATH, SIGN_UP_PATH } from '../../constants';
 import { useCookies } from 'react-cookie';
 import { useSignInUserStore } from 'stores';
 import { GetSignInResponseDto, SignInResponseDto } from 'apis/dto/response/auth';
@@ -205,7 +205,7 @@ export default function NavigationBar() {
     }
 
     const onRecommendClickHandler = () => {
-        navigator(RECOMMEND_PATH);
+        navigator(RECOMMEND_CATEGORY_PATH('attraction'));
     }
     const toggleDropdown = () => {
         setDropdownOpen(prevState => !prevState);

@@ -2,7 +2,8 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-import {  Review } from 'types';
+
+import { Review } from 'types';
 import { ACCESS_TOKEN } from '../../constants';
 import { useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';

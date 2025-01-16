@@ -1,0 +1,82 @@
+#banner-container {
+    display: flex;
+    width: 100%;
+    height: 600px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+}
+
+.locals-banner, .foods-banner, .missions-banner {
+    width: 35%;
+    height: 100%;
+    background-repeat: no-repeat;
+    transition: width 0.3s ease;
+    cursor: pointer;
+    margin: 0;
+    position: relative;
+}
+
+.locals-banner {
+    font-family: 'InkLipquid';
+    background-image: url('../../../public/images/동궁과월지-일러.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.foods-banner {
+    font-family: 'InkLipquid';
+    background-image: url('../../../public/images/비빔밥-일러.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.missions-banner {
+    font-family: 'InkLipquid';
+    background-image: url('../../../public/images/미션.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.locals-banner.active, .foods-banner.active, .missions-banner.active {
+    width: 90%;
+}
+
+.locals-banner:not(.active), .foods-banner:not(.active), .missions-banner:not(.active) {
+    filter: brightness(40%);
+    transition: filter 0.3s ease;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    color: white;
+    font-size: 100px;
+    font-weight: 700;
+    text-shadow: 8px 8px 40px rgba(0, 0, 0, 1);
+    text-align: center;
+    letter-spacing: 10px;
+}
+
+@media (max-width: 2200px) {
+    .banner-text {
+        font-size: 60px;
+    }
+}
+
+
+@media (max-width: 1415px) {
+    .banner-text {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 1050px) {
+    .banner-text {
+        display: none;
+    }
+}
+
+

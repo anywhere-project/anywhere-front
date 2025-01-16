@@ -56,3 +56,16 @@
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 }
+
+.review-write-bottom .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+    border-radius: 8px;
+    height: 50px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin: 10px auto;
+}
