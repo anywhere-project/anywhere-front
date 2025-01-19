@@ -16,6 +16,9 @@ import ReviewImage from "./review-image.interface";
 import FoodImage from "./food-image.interface";
 import MissionImage from "./mission-image.interface";
 import AttractionImage from "./attraction-image.interface";
+import AttractionLike from "./attraction-like.interface";
+import FoodLike from "./food-like.interface";
+import MissionLike from "./mission-like.interface";
 
 export type {
     Area,
@@ -35,5 +38,8 @@ export type {
     ReviewImage,
     AttractionImage,
     FoodImage,
-    MissionImage
+    MissionImage,
+    AttractionLike,
+    FoodLike,
+    MissionLike
 }

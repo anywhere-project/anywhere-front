@@ -1,4 +1,4 @@
-import { getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostListRequest, getUserInfoRequest, postAttractionLikeRequest, postFoodLikeRequest, postMissionLikeRequest } from "apis";
+import { getRecommendAttractionListRequest, getRecommendFoodListRequest, getRecommendMissionListRequest, getRecommendPostListRequest, getSignInRequest, getUserInfoRequest, postAttractionLikeRequest, postFoodLikeRequest, postMissionLikeRequest } from "apis";
 import { ResponseDto } from "apis/dto/response";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto, GetRecommendPostListResponseDto } from "apis/dto/response/recommend";
 import { useEffect, useRef, useState } from "react";
@@ -6,14 +6,15 @@ import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper';
 import GetUserInfoResponseDto from "apis/dto/response/user/get-user-info.response.dto";
-import { RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } from "types";
-import './style.css';
-import 'swiper/swiper-bundle.min.css';
+import { AttractionLike, FoodLike, RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } from "types";
 import Banner from "views/Banner";
 import { useCookies } from "react-cookie";
 import { ACCESS_TOKEN } from "../../constants";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-
+import { useSignInUserStore } from "stores";
+import 'swiper/swiper-bundle.min.css';
+import './style.css';
+import { GetSignInResponseDto } from "apis/dto/response/auth";
 
 interface Posts {
     recommendPost: RecommendPost;
@@ -21,14 +22,18 @@ interface Posts {
 
 interface Attractions {
     recommendAttraction: RecommendAttraction;
+    userId: string;
+    index: number;
 }
 
 interface Missions {
     recommendMission: RecommendMission;
+    index: number;
 }
 
 interface Foods {
     recommendFood: RecommendFood;
+    index: number;
 }
 
 function PostRow({ recommendPost }: Posts) {
@@ -74,11 +79,10 @@ function PostRow({ recommendPost }: Posts) {
     );
 }
 
-function AttractionRow({ recommendAttraction, index }: Attractions & { index: number }) {
+function AttractionRow({ recommendAttraction, userId, index }: Attractions) {
     const [attractionImages, setAttractionImages] = useState<string[]>([]);
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [cookies] = useCookies();
-
     const accessToken = cookies[ACCESS_TOKEN];
 
     const postAttractionLikeResponse = (responseBody: ResponseDto | null) => {
@@ -96,16 +100,17 @@ function AttractionRow({ recommendAttraction, index }: Attractions & { index: nu
             return;
         }
 
-        setIsLiked(!isLiked);
+        setIsLiked((prev) => !prev); 
     };
 
     const onLikeButtonClickHandler = () => {
         postAttractionLikeRequest(recommendAttraction.attractionId, accessToken).then(postAttractionLikeResponse);
-    }
+    };
 
     useEffect(() => {
-        setAttractionImages(recommendAttraction.images.map((image) => image.imageUrl)); 
-    }, [recommendAttraction]);
+        setAttractionImages(recommendAttraction.images.map((image) => image.imageUrl));
+        setIsLiked(recommendAttraction.likeList.some((user) => user === userId));
+    }, [recommendAttraction, userId]);
 
     return (
         <div className="attraction-box">
@@ -132,7 +137,9 @@ function AttractionRow({ recommendAttraction, index }: Attractions & { index: nu
                     <div className="attraction-content">{recommendAttraction.attractionContent}</div>
                 </div>
                 {accessToken && (
-                    <div className="attraction-like-button" onClick={onLikeButtonClickHandler}>{isLiked ? <FaHeart color="red" /> : <FaRegHeart />}</div>
+                    <div className="attraction-like-button" onClick={onLikeButtonClickHandler}>
+                        {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
+                    </div>
                 )}
             </div>
         </div>
@@ -145,6 +152,8 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
     const [cookies] = useCookies();
 
     const accessToken = cookies[ACCESS_TOKEN];
+
+    const { signInUser } = useSignInUserStore();
 
     const postMissionLikeResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -164,12 +173,35 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
         setIsLiked(!isLiked);
     };
 
+    // const getMissionLikeResponse = (responseBody: GetMissionLikeResponseDto | ResponseDto | null) => {
+    //     const message = !responseBody ? '서버에 문제가 있습니다.' :
+    //         responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+    //         responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+    //         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+    //     const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    //     if (!isSuccessed) {
+    //         alert(message);
+    //         return;
+    //     }
+    
+    //     const { userIds } = responseBody as GetMissionLikeResponseDto;
+    
+    //     if (Array.isArray(userIds)) {
+    //         const isUserLiked = userIds.some(userId => userId === signInUser?.userId);
+    //         setIsLiked(isUserLiked);
+    //     } else {
+    //         setIsLiked(false);
+    //     }
+    // };
+
     const onLikeButtonClickHandler = () => {
         postMissionLikeRequest(recommendMission.missionId, accessToken).then(postMissionLikeResponse);
     };
 
     useEffect(() => {
         setMissionImages(recommendMission.images.map((image) => image.imageUrl));
+        // getMissionLikeRequest(recommendMission.missionId).then(getMissionLikeResponse);
     }, [recommendMission]);
 
     return (
@@ -196,7 +228,7 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
                     <div className="mission-content">{recommendMission.missionContent}</div>
                 </div>
 
-                {accessToken && (
+                {signInUser && (
                     <div className="mission-like-button" onClick={onLikeButtonClickHandler}>
                         {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
                     </div>
@@ -212,6 +244,8 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
     const [cookies] = useCookies();
 
     const accessToken = cookies[ACCESS_TOKEN];
+
+    const { signInUser } = useSignInUserStore();
 
     const postFoodLikeResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -231,12 +265,35 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
         setIsLiked(!isLiked);
     };
 
+    // const getFoodLikeResponse = (responseBody: GetFoodLikeResponseDto | ResponseDto | null) => {
+    //     const message = !responseBody ? '서버에 문제가 있습니다.' :
+    //         responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+    //         responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+    //         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+    //     const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    //     if (!isSuccessed) {
+    //         alert(message);
+    //         return;
+    //     }
+    
+    //     const { userIds } = responseBody as GetFoodLikeResponseDto;
+    
+    //     if (Array.isArray(userIds)) {
+    //         const isUserLiked = userIds.some(userId => userId === signInUser?.userId);
+    //         setIsLiked(isUserLiked);
+    //     } else {
+    //         setIsLiked(false);
+    //     }
+    // };
+
     const onLikeButtonClickHandler = () => {
         postFoodLikeRequest(recommendFood.foodId, accessToken).then(postFoodLikeResponse);
     };
 
     useEffect(() => {
         setFoodImages(recommendFood.images.map((image) => image.imageUrl));
+        // getFoodLikeRequest(recommendFood.foodId).then(getFoodLikeResponse);
     }, [recommendFood]);
 
     return (
@@ -263,7 +320,7 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
                     <div className="food-content">{recommendFood.foodContent}</div>
                 </div>
 
-                {accessToken && (
+                {signInUser && (
                     <div className="food-like-button" onClick={onLikeButtonClickHandler}>
                         {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
                     </div>
@@ -285,6 +342,27 @@ export default function Recommend() {
     const [visiblePosts, setVisiblePosts] = useState<number>(5); 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const observerRef = useRef(null);
+
+    const [cookies] = useCookies();
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    const [userId, setUserId] = useState<string>('');
+
+    const getSignInUserResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' : 
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { userId } = responseBody as GetSignInResponseDto;
+        setUserId(userId);
+    }
 
     const getRecommendPostListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message =
@@ -314,7 +392,6 @@ export default function Recommend() {
         }
 
         const { attractions } = responseBody as GetRecommendAttractionPostResponseDto;
-
         setAttractions(attractions);
     }
 
@@ -360,6 +437,7 @@ export default function Recommend() {
 
     useEffect(() => {
         if (!category) return;
+        getSignInRequest(accessToken).then(getSignInUserResponse);
         getRecommendPostListRequest(category).then(getRecommendPostListResponse);
 
         if (category === 'attraction') {
@@ -388,7 +466,7 @@ export default function Recommend() {
                 observer.unobserve(observerRef.current);
             }
         };
-    }, [category]);
+    }, [category, accessToken]);
 
     const filteredAttractions = attractions.filter(attraction => 
         posts.some(post => post.recommendId === attraction.recommendId)
@@ -440,6 +518,7 @@ export default function Recommend() {
                                             <SwiperSlide key={attraction.attractionId}>
                                                 <AttractionRow
                                                     recommendAttraction={attraction}
+                                                    userId={userId}
                                                     index={index}
                                                 />
                                             </SwiperSlide>
@@ -450,6 +529,7 @@ export default function Recommend() {
                                         <AttractionRow
                                             key={attraction.attractionId}
                                             recommendAttraction={attraction}
+                                            userId={userId}
                                             index={index}
                                         />
                                     ))
@@ -483,7 +563,7 @@ export default function Recommend() {
                                     ))
                                 )}
                             </div>
-    
+                            
                             <div className="recommend-food-item">
                                 {foodsCount > 3 ? (
                                     <Swiper
@@ -511,7 +591,6 @@ export default function Recommend() {
                                     ))
                                 )}
                             </div>
-    
                             <hr className="post-divider" />
                         </div>
                     );

@@ -104,9 +104,9 @@
 }
 
 .attraction-details .attraction-like-button {
-    font-size: 30px;
+    font-size: 25px;
     margin-top: 50px;
-    margin-left: 105px;
+    margin-left: 110px;
 }
 
 .recommend-post .post-divider {
@@ -202,9 +202,9 @@
 }
 
 .mission-details .mission-like-button {
-    font-size: 30px;
+    font-size: 25px;
     margin-top: 50px;
-    margin-left: 145px;
+    margin-left: 110px;
 }
 
 .food-box {
@@ -262,7 +262,7 @@
 }
 
 .food-details .food-like-button {
-    font-size: 30px;
+    font-size: 25px;
     margin-top: 50px;
-    margin-left: 145px;
+    margin-left: 110px;
 }

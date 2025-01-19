@@ -30,8 +30,8 @@ function Anywhere() {
   
   return (
     <>
-      {showSideBar && <SideBar />}
-      {showHashTagBar && <HashTagBar />}
+      {/* {showSideBar && <SideBar />}
+      {showHashTagBar && <HashTagBar />} */}
       <NavigationBar />
       <Routes>
         <Route index element={<Main />} />

@@ -8,4 +8,5 @@ export default interface RecommendAttractionPost {
     recommendLikeCount: number;
     attractions: RecommendAttraction[];
     images: RecommendImage[];
+    likeList: string[];
 }
