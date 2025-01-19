@@ -13,25 +13,35 @@ import NavigationBar from 'views/NavigationBar';
 import HashTagBar from 'views/HashTagBar';
 import ReviewWrite from 'views/Review/Write';
 import ReviewList from 'views/Review';
+import ScrollTopButton from 'views/ScrollTopButton';
 
 function Anywhere() {
 
   const location = useLocation();
 
-  const { recommendId } = useParams();
-
-  const showSideBar = location.pathname !== ROOT_PATH;
+  const showSideBar = 
+  !location.pathname.includes(RECOMMEND_UPDATE_PATH('')) &&
+  location.pathname !== RECOMMEND_WRITE_PATH && location.pathname !== REVIEW_WRITE_PATH &&
+  !location.pathname.includes(MYPAGE_PATH('')) && 
+  location.pathname !== ROOT_PATH;
 
   const showHashTagBar = 
     !location.pathname.includes(RECOMMEND_UPDATE_PATH('')) &&
     location.pathname !== RECOMMEND_WRITE_PATH && location.pathname !== REVIEW_WRITE_PATH &&
     !location.pathname.includes(MYPAGE_PATH('')) && 
     location.pathname !== ROOT_PATH;
+
+  const showScrollButton = 
+  !location.pathname.includes(RECOMMEND_UPDATE_PATH('')) &&
+  location.pathname !== RECOMMEND_WRITE_PATH && location.pathname !== REVIEW_WRITE_PATH &&
+  !location.pathname.includes(MYPAGE_PATH('')) && 
+  location.pathname !== ROOT_PATH;
   
   return (
     <>
-      {/* {showSideBar && <SideBar />}
-      {showHashTagBar && <HashTagBar />} */}
+      {showSideBar && <SideBar />}
+      {showHashTagBar && <HashTagBar />}
+      {showScrollButton && <ScrollTopButton />}
       <NavigationBar />
       <Routes>
         <Route index element={<Main />} />

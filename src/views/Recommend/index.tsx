@@ -135,7 +135,14 @@ function AttractionRow({ recommendAttraction, userId, index }: Attractions) {
                 <div className="attraction-details-content">
                     <div className="attraction-name">{recommendAttraction.attractionName}</div>
                     <div className="attraction-address">{recommendAttraction.attractionAddress}</div>
-                    <div className="attraction-content">{recommendAttraction.attractionContent}</div>
+                    <div className="attraction-content tooltip-container">
+                        {recommendAttraction.attractionContent.length > 30
+                            ? `${recommendAttraction.attractionContent.slice(0, 15)} ...더보기`
+                            : recommendAttraction.attractionContent}
+                        {recommendAttraction.attractionContent.length > 30 && (
+                            <span className="tooltip-text">{recommendAttraction.attractionContent}</span>
+                        )}
+                    </div>
                 </div>
                 {accessToken && (
                     <div className="attraction-like-button" onClick={onLikeButtonClickHandler}>
@@ -177,7 +184,7 @@ function MissionRow({ recommendMission, userId, index }: Missions & { index: num
 
     useEffect(() => {
         setMissionImages(recommendMission.images.map((image) => image.imageUrl));
-        setIsLiked(recommendMission.likeList.some((user) => user === userId ));
+        setIsLiked(recommendMission.likeList.some((user) => user === userId));
     }, [recommendMission, userId]);
 
     return (
@@ -201,7 +208,14 @@ function MissionRow({ recommendMission, userId, index }: Missions & { index: num
                 <div className="mission-number">{index + 1}</div>
                 <div className="mission-details-content">
                     <div className="mission-name">{recommendMission.missionName}</div>
-                    <div className="mission-content">{recommendMission.missionContent}</div>
+                    <div className="mission-content tooltip-container">
+                        {recommendMission.missionContent.length > 30
+                            ? `${recommendMission.missionContent.slice(0, 15)} ...더보기`
+                            : recommendMission.missionContent}
+                        {recommendMission.missionContent.length > 30 && (
+                            <span className="tooltip-text">{recommendMission.missionContent}</span>
+                        )}
+                    </div>
                 </div>
                 {accessToken && (
                     <div className="mission-like-button" onClick={onLikeButtonClickHandler}>
@@ -267,7 +281,14 @@ function FoodRow({ recommendFood, userId, index }: Foods & { index: number }) {
                 <div className="food-number">{index + 1}</div>
                 <div className="food-details-content">
                     <div className="food-name">{recommendFood.foodName}</div>
-                    <div className="food-content">{recommendFood.foodContent}</div>
+                    <div className="food-content tooltip-container">
+                        {recommendFood.foodContent.length > 30
+                            ? `${recommendFood.foodContent.slice(0, 15)} ...더보기`
+                            : recommendFood.foodContent}
+                        {recommendFood.foodContent.length > 30 && (
+                            <span className="tooltip-text">{recommendFood.foodContent}</span>
+                        )}
+                    </div>
                 </div>
 
                 {accessToken && (

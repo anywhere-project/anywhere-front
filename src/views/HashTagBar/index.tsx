@@ -7,12 +7,12 @@ import { getHashTagListRequest } from 'apis';
 
 export default function HashTagBar() {
     const [hashTagList, setHashTagList] = useState<HashTag[]>([]);
-    const [sidebarTop, setSidebarTop] = useState<number>(670);
+    const [sidebarTop, setSidebarTop] = useState<number>(720);
 
     const handleScroll = () => {
         const scrollPosition = window.scrollY; 
         const height = window.innerHeight
-        const newTop = Math.max(670, scrollPosition + height / 2 - 100);
+        const newTop = Math.max(720, scrollPosition + height / 2 - 100);
         setSidebarTop(newTop);
     };
 
