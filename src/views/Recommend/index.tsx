@@ -6,15 +6,14 @@ import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper';
 import GetUserInfoResponseDto from "apis/dto/response/user/get-user-info.response.dto";
-import { AttractionLike, FoodLike, RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } from "types";
+import { RecommendAttraction, RecommendFood, RecommendMission, RecommendPost } from "types";
+import { GetSignInResponseDto } from "apis/dto/response/auth";
 import Banner from "views/Banner";
 import { useCookies } from "react-cookie";
 import { ACCESS_TOKEN } from "../../constants";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { useSignInUserStore } from "stores";
 import 'swiper/swiper-bundle.min.css';
 import './style.css';
-import { GetSignInResponseDto } from "apis/dto/response/auth";
 
 interface Posts {
     recommendPost: RecommendPost;
@@ -28,11 +27,13 @@ interface Attractions {
 
 interface Missions {
     recommendMission: RecommendMission;
+    userId: string;
     index: number;
 }
 
 interface Foods {
     recommendFood: RecommendFood;
+    userId: string;
     index: number;
 }
 
@@ -146,14 +147,11 @@ function AttractionRow({ recommendAttraction, userId, index }: Attractions) {
     );
 }
 
-function MissionRow({ recommendMission, index }: Missions & { index: number }) {
+function MissionRow({ recommendMission, userId, index }: Missions & { index: number }) {
     const [missionImages, setMissionImages] = useState<string[]>([]);
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [cookies] = useCookies();
-
     const accessToken = cookies[ACCESS_TOKEN];
-
-    const { signInUser } = useSignInUserStore();
 
     const postMissionLikeResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -173,36 +171,14 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
         setIsLiked(!isLiked);
     };
 
-    // const getMissionLikeResponse = (responseBody: GetMissionLikeResponseDto | ResponseDto | null) => {
-    //     const message = !responseBody ? '서버에 문제가 있습니다.' :
-    //         responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-    //         responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-    //         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
-    //     const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-    //     if (!isSuccessed) {
-    //         alert(message);
-    //         return;
-    //     }
-    
-    //     const { userIds } = responseBody as GetMissionLikeResponseDto;
-    
-    //     if (Array.isArray(userIds)) {
-    //         const isUserLiked = userIds.some(userId => userId === signInUser?.userId);
-    //         setIsLiked(isUserLiked);
-    //     } else {
-    //         setIsLiked(false);
-    //     }
-    // };
-
     const onLikeButtonClickHandler = () => {
         postMissionLikeRequest(recommendMission.missionId, accessToken).then(postMissionLikeResponse);
     };
 
     useEffect(() => {
         setMissionImages(recommendMission.images.map((image) => image.imageUrl));
-        // getMissionLikeRequest(recommendMission.missionId).then(getMissionLikeResponse);
-    }, [recommendMission]);
+        setIsLiked(recommendMission.likeList.some((user) => user === userId ));
+    }, [recommendMission, userId]);
 
     return (
         <div className="mission-box">
@@ -227,8 +203,7 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
                     <div className="mission-name">{recommendMission.missionName}</div>
                     <div className="mission-content">{recommendMission.missionContent}</div>
                 </div>
-
-                {signInUser && (
+                {accessToken && (
                     <div className="mission-like-button" onClick={onLikeButtonClickHandler}>
                         {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
                     </div>
@@ -238,14 +213,11 @@ function MissionRow({ recommendMission, index }: Missions & { index: number }) {
     );
 }
 
-function FoodRow({ recommendFood, index }: Foods & { index: number }) {
+function FoodRow({ recommendFood, userId, index }: Foods & { index: number }) {
     const [foodImages, setFoodImages] = useState<string[]>([]);
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [cookies] = useCookies();
-
     const accessToken = cookies[ACCESS_TOKEN];
-
-    const { signInUser } = useSignInUserStore();
 
     const postFoodLikeResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -265,36 +237,14 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
         setIsLiked(!isLiked);
     };
 
-    // const getFoodLikeResponse = (responseBody: GetFoodLikeResponseDto | ResponseDto | null) => {
-    //     const message = !responseBody ? '서버에 문제가 있습니다.' :
-    //         responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-    //         responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-    //         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
-    //     const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-    //     if (!isSuccessed) {
-    //         alert(message);
-    //         return;
-    //     }
-    
-    //     const { userIds } = responseBody as GetFoodLikeResponseDto;
-    
-    //     if (Array.isArray(userIds)) {
-    //         const isUserLiked = userIds.some(userId => userId === signInUser?.userId);
-    //         setIsLiked(isUserLiked);
-    //     } else {
-    //         setIsLiked(false);
-    //     }
-    // };
-
     const onLikeButtonClickHandler = () => {
         postFoodLikeRequest(recommendFood.foodId, accessToken).then(postFoodLikeResponse);
     };
 
     useEffect(() => {
         setFoodImages(recommendFood.images.map((image) => image.imageUrl));
-        // getFoodLikeRequest(recommendFood.foodId).then(getFoodLikeResponse);
-    }, [recommendFood]);
+        setIsLiked(recommendFood.likeList.some((user) => user === userId));
+    }, [recommendFood, userId]);
 
     return (
         <div className="food-box">
@@ -320,7 +270,7 @@ function FoodRow({ recommendFood, index }: Foods & { index: number }) {
                     <div className="food-content">{recommendFood.foodContent}</div>
                 </div>
 
-                {signInUser && (
+                {accessToken && (
                     <div className="food-like-button" onClick={onLikeButtonClickHandler}>
                         {isLiked ? <FaHeart color="red" /> : <FaRegHeart />}
                     </div>
@@ -548,6 +498,7 @@ export default function Recommend() {
                                             <SwiperSlide key={mission.missionId}>
                                                 <MissionRow
                                                     recommendMission={mission}
+                                                    userId={userId}
                                                     index={index}
                                                 />
                                             </SwiperSlide>
@@ -557,6 +508,7 @@ export default function Recommend() {
                                     matchedMissions.map((mission, index) => (
                                         <MissionRow
                                             key={mission.missionId}
+                                            userId={userId}
                                             recommendMission={mission}
                                             index={index}
                                         />
@@ -576,6 +528,7 @@ export default function Recommend() {
                                             <SwiperSlide key={food.foodId}>
                                                 <FoodRow
                                                     recommendFood={food}
+                                                    userId={userId}
                                                     index={index}
                                                 />
                                             </SwiperSlide>
@@ -586,6 +539,7 @@ export default function Recommend() {
                                         <FoodRow
                                             key={food.foodId}
                                             recommendFood={food}
+                                            userId={userId}
                                             index={index}
                                         />
                                     ))
