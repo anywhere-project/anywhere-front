@@ -4,13 +4,13 @@ import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
 
 import { Review } from 'types';
-import { ACCESS_TOKEN } from '../../constants';
-import { useParams } from 'react-router-dom';
+import { ACCESS_TOKEN, REVIEW_UPDATE_PATH, REVIEW_WRITE_PATH } from '../../constants';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
 import useReviewPagination from 'hooks/review.pagination.hook';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import { getRecommendPostListRequest,  getReviewListRequest } from 'apis';
+import { deleteReviewPostRequest, getRecommendPostListRequest,  getReviewListRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
@@ -27,6 +27,10 @@ interface AnotherUser {
     userStatus: string;
     }
 export default function Mypage () {
+
+    //function: 네비게이터 함수 //
+  const navigator = useNavigate();
+
     // state: 페이징 관련 상태 //
     const { currentPage, totalPage,  viewList, setTotalList, initViewList, ...paginationProps } = useReviewPagination<Review>();
 
@@ -161,6 +165,47 @@ export default function Mypage () {
 
     };
 
+    const handleEditPost = (post: Review) => {
+        if (!post.reviewId) {
+            alert("리뷰 ID를 찾을 수 없습니다.");
+            return;
+        }
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        navigator(REVIEW_UPDATE_PATH(post.reviewId));
+    };
+    
+    const handleDeletePost = (post: Review) => {
+        const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
+        if (confirmDelete) {
+            if (!post.reviewId) {
+                alert("리뷰 ID를 찾을 수 없습니다.");
+                return;
+            }
+            if (!accessToken) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+            deleteReviewPostRequest(post.reviewId, accessToken)
+                .then(response => {
+                    if (response.code === 'SU') {
+                        alert('게시물이 성공적으로 삭제되었습니다.');
+                        // 성공적으로 삭제 후 화면에서 게시물을 제거
+                        setReviewContents(prev => prev.filter(item => item.reviewId !== post.reviewId));
+                    } else {
+                        alert('게시물 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('게시물 삭제 중 오류 발생:', error);
+                    alert('오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+    };
+    
+
 
 
     // 유저 정보 가져오기
@@ -251,6 +296,20 @@ useEffect(()=>{
                                     alt={`Review item ${index + 1}`}
                                     className="gallery-image"
                                 />
+                                <div className="item-buttons">
+                                    <button
+                                        className="item-button"
+                                        onClick={() => handleEditPost(post)}
+                                    >
+                                        ✏️ 수정
+                                    </button>
+                                    <button
+                                        className="item-button"
+                                        onClick={() => handleDeletePost(post)}
+                                    >
+                                        🗑️ 삭제
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

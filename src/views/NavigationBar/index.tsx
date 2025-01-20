@@ -146,7 +146,7 @@ function Dropdown({ onDropdownButtonClick }: { onDropdownButtonClick: () => void
     return (
         <div className="dropdown-wrapper">
             <div className="dropdown">
-            {signInUser ? (
+            {accessToken ? (
                 <>
                     <div className="dropdown-item" onClick={onMypageButtonClickHandler}>마이페이지</div>
                     <div className='dropdown-item' onClick={onLogoutButtonClickHandler}>로그아웃</div>

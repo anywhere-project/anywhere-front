@@ -6,11 +6,7 @@ import SignInUser from "./sign-in-user.interface";
 import RecommendPost from "./recommend-post.interface";
 import RecommendAttraction from "./recommend-attraction.interface";
 import RecommendFood from "./recommend-food.interface";
-import RecommendImage from "./recommend-image.interface";
 import RecommendMission from "./recommend-mission.interface";
-import RecommendFoodPost from "./recommend-food-post.interface";
-import RecommendMissionPost from "./recommend-mission.interface";
-import RecommendAttractionPost from "./recommend-attraction-post.interface";
 import Review from "./review-post.interface";
 import ReviewImage from "./review-image.interface";
 import FoodImage from "./food-image.interface";
@@ -27,10 +23,6 @@ export type {
     RecommendAttraction,
     RecommendFood,
     RecommendMission,
-    RecommendImage,
-    RecommendFoodPost,
-    RecommendMissionPost,
-    RecommendAttractionPost,
     Review,
     ReviewImage,
     AttractionImage,

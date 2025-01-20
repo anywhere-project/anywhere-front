@@ -22,10 +22,9 @@ body {
     background-color: #ffffff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 10;
     border-radius: 16px;
-    transform: translateY(-50%);
-    transition: top 0.7s ease-out;
+    transition: top 0.3s ease-out;
 }
 
 .menu-list {
