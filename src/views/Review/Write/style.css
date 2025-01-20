@@ -16,8 +16,9 @@
 .review-write .review-write-middle {
     padding: 20px;
     background-color: #fff;
-    border-radius: 8px;
-    border: 1.5px solid #aaa; 
+    border-radius: 10px;
+    border: 1.5px solid #ccc; 
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .review-write .field-label {
@@ -41,6 +42,10 @@
     font-size: 18px;
     margin-bottom: 25px;
     resize: none;
+}
+
+.review-write .field-content textarea {
+    height: 280px;
 }
 
 .review-write .field-content .image-uploader .delete-button {
@@ -68,4 +73,17 @@
     font-size: 30px;
     cursor: pointer;
     margin: 10px auto;
+}
+
+.field-content .hash-field {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.hash-field .tag {
+    margin-right: 10px;
+    padding: 5px 8px;
+    background-color: #b9bada;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }

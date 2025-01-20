@@ -203,14 +203,17 @@ export default function ReviewWrite() {
                     </div>
                     <div className='field-content'>
                         <div className="field-label">해시태그 선택</div>
-                        {hashTags.length > 0 &&
-                            hashTags.map((hashTag) => {
-                            return (
-                                <div key={hashTag} className='tag'>
-                                    {hashTag}
-                                </div>
-                            );
-                        })}
+                        <div className='hash-field'>
+                            {hashTags.length > 0 &&
+                                hashTags.map((hashTag) => {
+                                return (
+                                    <div key={hashTag} className='tag'>
+                                        {hashTag}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        
 
                         <input
                         value={inputHashTag}
