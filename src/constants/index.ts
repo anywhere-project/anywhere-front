@@ -11,6 +11,7 @@ export const RECOMMEND_WRITE_PATH = `${RECOMMEND_PATH}/write`;
 
 export const REVIEW_PATH = '/review';
 export const REVIEW_WRITE_PATH = `${REVIEW_PATH}/write`;
+export const REVIEW_UPDATE_PATH = (reviewId: string | number) =>`${REVIEW_PATH}/update/${reviewId}`;
 
 export const MYPAGE_PATH = (userId: string) => `/mypage/${userId}`;
 

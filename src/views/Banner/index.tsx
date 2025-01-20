@@ -3,6 +3,8 @@ import './style.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
+
+
 export default function Banner() {
 
     const navigator = useNavigate();
