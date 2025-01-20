@@ -6,4 +6,5 @@ export default interface RecommendMission {
     missionName: string;
     missionContent: string;
     images: MissionImage[];
+    likeList: string[];
 }

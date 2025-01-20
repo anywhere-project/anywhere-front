@@ -12,7 +12,6 @@ import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.
 import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
 import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.request.dto";
 
-
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
 const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
@@ -55,7 +54,6 @@ const DELETE_RECOMMEND_MISSION_API_URL = (recommendId: number | string, missionI
 const POST_ATTRACTION_LIKE_API_URL = (attractionId: number | string) => `${RECOMMEND_MODULE_URL}/attraction/like/${attractionId}`;
 const POST_FOOD_LIKE_API_URL = (foodId: number | string) => `${RECOMMEND_MODULE_URL}/food/like/${foodId}`;
 const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_MODULE_URL}/mission/like/${missionId}`;
-
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
@@ -329,7 +327,6 @@ export const postMissionLikeRequest = async (missionId: string | number, accessT
     return responseBody;
 };
 
-
 const FILE_UPLOAD_URL = `${ANYWHERE_API_DOMAIN}/file/upload`;
 
 const multipart = (accessToken: string) => ({ headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } })
@@ -340,13 +337,6 @@ export const fileUploadRequest = async (requestBody: FormData, accessToken: stri
         .catch(error => null)
     return url;
 }
-
-// export const getAreaListRequest = async () => {
-//     const responseBody = await axios.get(AREA_MODULE_URL)
-//         .then(responseDataHandler<GetAreaResponseDto>)
-//         .catch(responseErrorHandler);
-//     return responseBody;
-// };
 
 // function: 후기 게시글 작성 요청 함수 //
 export const postReviewRequest = async (requestBody: PostReviewRequestDto, accessToken: string) => {

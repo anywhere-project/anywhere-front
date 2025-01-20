@@ -7,4 +7,5 @@ export default interface RecommendAttraction {
     attractionAddress: string;
     attractionContent: string;
     images: AttractionImage[];
+    likeList: string[];
 }
