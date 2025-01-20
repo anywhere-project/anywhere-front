@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow-x: hidden;
+    align-items: center;
 }
 
 .review-post .share-banner {
@@ -16,4 +16,134 @@
     font-weight: bold;
     color: #333;
     margin-top: 100px;
+}
+
+.review-content {
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    height: 750px;
+    margin-bottom: 20px;
+    border: 2px solid #dadce0;
+    border-radius: 25px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.review-content .review-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+}
+
+.review-content .review-top .review-writer {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.review-middle .review-image {
+    width: 500px;
+    height: 500px;
+    object-fit: fill;
+    margin-left: 50px;
+    display: block; /* 이미지가 없는 경우에도 block으로 처리 */
+}
+
+.review-middle .review-image::before {
+    content: "이미지가 로드되지 않았습니다";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+}
+
+.review-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; 
+    padding: 5px 40px;
+    box-sizing: border-box;
+}
+
+.review-bottom .bottom-first-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bottom-first-line .like-button {
+    font-size: 30px;
+}
+
+.bottom-first-line .hashTag {
+    margin-left: 8px;
+    font-weight: 600; 
+}
+
+.review-bottom .bottom-second-line {
+    display: -webkit-box; /* Flexbox와 비슷한 레이아웃 컨테이너 */
+    -webkit-line-clamp: 3; /* 최대 3줄까지만 표시 */
+    -webkit-box-orient: vertical; /* 수직 정렬 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 말줄임표 (...) 표시 */
+    cursor: pointer;
+    white-space: normal; /* 여러 줄 처리를 위해 normal로 변경 */
+}
+
+.review-bottom .bottom-third-line {
+    margin-bottom: 20px;
+}
+
+.review-content .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+
+}
+
+.review-content .modal-box {
+    position: relative;
+
+    box-sizing: border-box;
+    border: 1px solid rgba(238, 238, 238, 1);
+    border-radius: 8px;
+    padding: 24px;
+    width: 800px;
+    height: 800px;
+
+    background-color: rgba(255, 255, 255, 1);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.review-content .modal-top {
+    position: relative;
+    left: 700px;
+    font-size: 25px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.modal-middle .review-writer {
+    margin-bottom: 15px;
+}
+
+.review-content .modal-middle {
+    padding: 50px;
+    text-align: left; /* 텍스트 시작 방향을 왼쪽으로 맞추기 */
+    direction: ltr;  /* 텍스트 방향을 왼쪽에서 오른쪽으로 설정 */
 }

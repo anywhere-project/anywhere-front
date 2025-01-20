@@ -55,10 +55,11 @@ const POST_ATTRACTION_LIKE_API_URL = (attractionId: number | string) => `${RECOM
 const POST_FOOD_LIKE_API_URL = (foodId: number | string) => `${RECOMMEND_MODULE_URL}/food/like/${foodId}`;
 const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_MODULE_URL}/mission/like/${missionId}`;
 
-
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
+const POST_REVIEW_LIKE_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/like`;
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
+
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -318,7 +319,7 @@ export const postFoodLikeRequest = async (foodId: string | number, accessToken: 
     return responseBody;
 };
 
-// function: 추천 미션 좋아요 요청 함함수 //
+// function: 추천 미션 좋아요 요청 함수 //
 export const postMissionLikeRequest = async (missionId: string | number, accessToken: string) => {
     const responseBody = await axios.post(POST_MISSION_LIKE_API_URL(missionId), {}, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
@@ -353,10 +354,18 @@ export const postReviewRequest = async (requestBody: PostReviewRequestDto, acces
     return responseBody;
 };
 
-// function: 추천 게시글 리스트 가져오기 요청 함수 //
+// function: 후기 게시글 리스트 가져오기 요청 함수 //
 export const getReviewListRequest = async () => {
     const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
     .then(responseDataHandler<GetReviewPostListResponseDto>)
     .catch(responseErrorHandler);
 return responseBody;
 };
+
+// function: 후기 게시글 좋아요 요청 함수 //
+export const postReviewLikeRequest = async(reviewId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_REVIEW_LIKE_API_URL(reviewId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
