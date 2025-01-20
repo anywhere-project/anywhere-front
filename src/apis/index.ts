@@ -10,6 +10,7 @@ import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostRespon
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
 import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
+import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.request.dto";
 
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
@@ -58,6 +59,8 @@ const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_M
 
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
+const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
+const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -353,10 +356,26 @@ export const postReviewRequest = async (requestBody: PostReviewRequestDto, acces
     return responseBody;
 };
 
-// function: 추천 게시글 리스트 가져오기 요청 함수 //
+// function: 후기 게시글 리스트 가져오기 요청 함수 //
 export const getReviewListRequest = async () => {
     const responseBody = await axios.get(GET_REVIEW_POST_LIST_API_URL)
     .then(responseDataHandler<GetReviewPostListResponseDto>)
     .catch(responseErrorHandler);
 return responseBody;
 };
+
+// function: 후기 게시글 삭제 요청 함수 //
+export const deleteReviewPostRequest = async (reviewId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_REVIEW_POST_API_URL(reviewId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 후기 게시글 수정 요청 함수 //
+export const patchReviewPostRequest = async (requestBody: PatchReviewPostRequestDto, reviewId: string | number,  accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_REVIEW_POST_API_URL(reviewId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
