@@ -12,6 +12,8 @@ import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.
 import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
 import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.request.dto";
 import GetReviewResponseDto from "./dto/response/review/get-review.response.dto";
+import { PostRouletteRequestDto } from "./dto/request/roulette";
+import { GetRouletteListResponseDto } from "./dto/response/roulette";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -19,6 +21,7 @@ const AUTH_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/auth`;
 const RECOMMEND_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/recommend`;
 const REVIEW_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/review`;
 const MYPAGE_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/mypage`;
+const ROULETTE_MODULE_URL = `${ANYWHERE_API_DOMAIN}/api/v1/roulette`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -64,6 +67,9 @@ const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODUL
 const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
 
+const POST_MY_RANDOM_API_URL = `${ROULETTE_MODULE_URL}/my-random`;
+const DELETE_MY_RANDOM_API_URL = (randomId: string | number) => `${ROULETTE_MODULE_URL}/my-random/${randomId}`;
+const GET_MY_RANDOM_LIST_API_URL = `${ROULETTE_MODULE_URL}/my-random`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -386,6 +392,30 @@ export const deleteReviewPostRequest = async (reviewId: string | number, accessT
 export const patchReviewPostRequest = async (requestBody: PatchReviewPostRequestDto, reviewId: string | number,  accessToken: string) => {
     const responseBody = await axios.patch(PATCH_REVIEW_POST_API_URL(reviewId), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 랜덤 작성 요청 함수 //
+export const postMyRandomRequest = async (requestBody: PostRouletteRequestDto, accessToken: string) => {
+    const repsonseBody = await axios.post(POST_MY_RANDOM_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return repsonseBody;
+}
+
+// function: 랜덤 삭제 요청 함수 //
+export const deleteMyRandomRequest = async (randomId: string | number, accessToken: string) => {
+    const repsonseBody = await axios.delete(DELETE_MY_RANDOM_API_URL(randomId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return repsonseBody;
+}
+
+// function: 내 랜덤 이력 불러오기 요청 함수 //
+export const getMyRandomListRequest = async (accessToken: string) => {
+    const responseBody = await axios.get(GET_MY_RANDOM_LIST_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetRouletteListResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
