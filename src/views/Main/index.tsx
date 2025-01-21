@@ -10,6 +10,10 @@ import { motion } from 'framer-motion';
 import Food from 'types/food-get.interface';
 import { GetFoodResponseDto } from 'apis/dto/response/food';
 import GetMissionResponseDto from 'apis/dto/response/mission/get-mission.response.dto';
+import { postMyRandomRequest } from 'apis';
+import { PostRouletteRequestDto } from 'apis/dto/request/roulette';
+import { useCookies } from 'react-cookie';
+import { ACCESS_TOKEN } from '../../constants';
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들
@@ -58,6 +62,9 @@ export default function Main() {
     const [foodList, setFoodList] = useState<Food[]>([]);
     const [missionList, setMissionList] = useState<Mission[]>([]);
     const [areaAttractionsMap, setAreaAttractionsMap] = useState<Map<number, string[]>>(new Map());
+
+    const [cookies] = useCookies();
+    const accessToken = cookies[ACCESS_TOKEN];
 
     const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
@@ -143,7 +150,18 @@ export default function Main() {
     }
 
     const postMyRandomResponse = (responseBody: ResponseDto | null) => {
-        
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' : 
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'VF' ? '유효하지 않은 값입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
     }
 
     const getAreaNames = () => {
@@ -213,6 +231,14 @@ export default function Main() {
 
         // 가장 긴 속도와 지연을 기준으로 총 애니메이션 지속 시간 계산
         const totalDuration = Math.max(...newSpeeds) * 1000 + Math.max(...newDelays) * 1000;
+
+        if (accessToken) {
+            const requestBody: PostRouletteRequestDto = {
+                areaName: newResults[0][0], attractionName: newResults[1][0], foodName: newResults[2][0], missionName: newResults[3][0]
+            }
+    
+            postMyRandomRequest(requestBody, accessToken).then(postMyRandomResponse);
+        }
 
         // 애니메이션이 끝난 후 스피닝 상태를 false로 설정
         setTimeout(() => {
