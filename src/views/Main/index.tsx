@@ -10,8 +10,6 @@ import { motion } from 'framer-motion';
 import Food from 'types/food-get.interface';
 import { GetFoodResponseDto } from 'apis/dto/response/food';
 import GetMissionResponseDto from 'apis/dto/response/mission/get-mission.response.dto';
-import NavigationBar from 'views/NavigationBar';
-
 
 interface SlotReelProps {
     values: string[]; // 릴의 항목들
@@ -217,6 +215,10 @@ export default function Main() {
             setSpinning(false);
         }, totalDuration);
     };
+
+    useEffect(() => {
+
+    }, [])
 
     return (
         <div id="main-wrapper">
