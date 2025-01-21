@@ -142,6 +142,10 @@ export default function Main() {
         setMissionNames(missions.map((mission) => mission.missionName));
     }
 
+    const postMyRandomResponse = (responseBody: ResponseDto | null) => {
+        
+    }
+
     const getAreaNames = () => {
         getAreaListRequest().then(getAreaListResponse);
     };
