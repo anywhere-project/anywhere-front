@@ -1,0 +1,89 @@
+.review-update {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    width: 1067px;
+    margin: 0 auto;
+}
+
+.review-update .review-update-container {
+    margin-top: 100px;
+}
+
+.review-update .review-update-top {
+    margin-bottom: 15px;
+}
+
+.review-update .review-update-middle {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1.5px solid #ccc; 
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.review-update .field-label {
+    font-size: 18px;
+    color: #333;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.review-update .upload-button {
+    margin-bottom: 20px;
+}
+
+.review-update .field-content textarea,
+.review-update .field-content .hashTagInput {
+    padding: 13px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 1000px;
+    font-size: 18px;
+    margin-bottom: 25px;
+    resize: none;
+}
+
+.review-update .field-content textarea {
+    height: 280px;
+}
+
+.review-update .field-content .image-uploader .delete-button {
+    background: rgb(255, 255, 255);
+    color: gray;
+    text-align: center;
+    width: 50px;
+    height: 20px;
+    padding: 12px 24px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.review-update-bottom .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+    border-radius: 8px;
+    height: 50px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin: 10px auto;
+}
+
+.field-content .hash-field {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.hash-field .tag {
+    margin-right: 10px;
+    padding: 5px 8px;
+    background-color: #b9bada;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
