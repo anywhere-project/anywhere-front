@@ -11,6 +11,7 @@ import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
 import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
 import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.request.dto";
+import GetReviewResponseDto from "./dto/response/review/get-review.response.dto";
 import { PostRouletteRequestDto } from "./dto/request/roulette";
 import { GetRouletteListResponseDto } from "./dto/response/roulette";
 
@@ -61,6 +62,7 @@ const POST_MISSION_LIKE_API_URL = (missionId: number | string) => `${RECOMMEND_M
 const POST_REVIEW_POST_API_URL = `${REVIEW_MODULE_URL}`;
 const POST_REVIEW_LIKE_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/like`;
 const GET_REVIEW_POST_LIST_API_URL =  `${REVIEW_MODULE_URL}`;
+const GET_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
@@ -361,6 +363,14 @@ export const getReviewListRequest = async () => {
     .catch(responseErrorHandler);
 return responseBody;
 };
+
+// function: 후기 게시글 가져오기 요청 함수 //
+export const getReviewPostRequest = async (reviewId: string | number) => {
+    const responseBody = await axios.get(GET_REVIEW_POST_API_URL(reviewId))
+        .then(responseDataHandler<GetReviewResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 후기 게시글 좋아요 요청 함수 //
 export const postReviewLikeRequest = async(reviewId: string | number, accessToken: string) => {
