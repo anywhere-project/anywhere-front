@@ -14,6 +14,7 @@ import { deleteReviewPostRequest, getRecommendPostListRequest,  getReviewListReq
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
+import CasinoIcon from '@mui/icons-material/Casino';
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -29,7 +30,7 @@ interface AnotherUser {
 export default function Mypage () {
 
     //function: 네비게이터 함수 //
-  const navigator = useNavigate();
+    const navigator = useNavigate();
 
     // state: 페이징 관련 상태 //
     const { currentPage, totalPage,  viewList, setTotalList, initViewList, ...paginationProps } = useReviewPagination<Review>();
@@ -42,6 +43,7 @@ export default function Mypage () {
     const [nickname, setNickname] = useState<string>('');
     const [reviewPostCount, setReviewPostCount] = useState<number>(0);
     const [recommendPostCount, setRecommendPostCount] = useState<number>(0);
+    const [rouletteCount, setRouletteCount] = useState<number>(0);
     const [recommendAttractionPostCount, setRecommendAttractionPostCount] = useState<number>(0);
     const [recommendFoodPostCount, setRecommendFoodPostCount] = useState<number>(0);
     const [recommendMissionPostCount, setRecommendMissionPostCount] = useState<number>(0);
@@ -56,9 +58,9 @@ export default function Mypage () {
     // state: 내 후기 게시판 목록 상태 //
     const [reviewContents, setReviewContents] = useState<Review[]>([]);
 
-    const [activeBoard, setActiveBoard] = useState<'review' | 'recommend'>('review');
+    const [activeBoard, setActiveBoard] = useState<'review' | 'recommend' | 'roulette'>('review');
 
-    const handleBoardClick = (board: 'review' | 'recommend')=> {
+    const handleBoardClick = (board: 'review' | 'recommend' | 'roulette')=> {
         setActiveBoard(board);
     }
 
@@ -269,6 +271,10 @@ useEffect(()=>{
                                 <div>추천 게시판</div>
                                 <div>{recommendPostCount}개</div>
                                 </div>
+                                <div className='board-category-count'>
+                                <div>룰렛 기록</div>
+                                <div>{rouletteCount}개</div>
+                                </div>
                             </div>
 
 
@@ -286,6 +292,12 @@ useEffect(()=>{
                             onClick={() => handleBoardClick('recommend')}
                         >
                             <RecommendIcon />추천
+                        </div>
+                        <div
+                            className={`recommend-board ${activeBoard === 'roulette' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('roulette')}
+                        >
+                            <CasinoIcon />룰렛
                         </div>
                     </div>
                     <div className="gallery-review" style={{ display: activeBoard === 'review' ? 'grid' : 'none' }}>
@@ -319,6 +331,9 @@ useEffect(()=>{
                                 <img src={image} alt={`Recommend item ${index + 1}`} className="gallery-image" />
                             </div>
                         ))}
+                    </div>
+                    <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'grid' : 'none' }}>
+                        {/* 룰렛 탭 공간 */}
                     </div>
 
                 </div>
