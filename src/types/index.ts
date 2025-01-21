@@ -12,6 +12,7 @@ import ReviewImage from "./review-image.interface";
 import FoodImage from "./food-image.interface";
 import MissionImage from "./mission-image.interface";
 import AttractionImage from "./attraction-image.interface";
+import MyRandom from "./my-random.interface";
 
 export type {
     Area,
@@ -27,5 +28,6 @@ export type {
     ReviewImage,
     AttractionImage,
     FoodImage,
-    MissionImage
+    MissionImage,
+    MyRandom
 }
