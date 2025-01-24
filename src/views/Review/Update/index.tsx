@@ -1,11 +1,13 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import GetReviewResponseDto from 'apis/dto/response/review/get-review.response.dto';
 import { ResponseDto } from 'apis/dto/response';
 import { RiImageAddFill } from 'react-icons/ri';
-import { getReviewPostRequest } from 'apis';
+import { deleteReviewPostRequest, fileUploadRequest, getReviewPostRequest, patchReviewPostRequest } from 'apis';
+import { ACCESS_TOKEN, REVIEW_PATH } from '../../../constants';
+import PatchReviewPostRequestDto from 'apis/dto/request/review/patch-review-post.request.dto';
 
 // component: 후기 수정 화면 컴포넌트
 export default function ReviewUpdate() {
@@ -15,21 +17,26 @@ export default function ReviewUpdate() {
 
   // state: cookie 상태 //
   const [cookies] = useCookies();
+  const accessToken = cookies[ACCESS_TOKEN];
 
   // state: 후기 게시글 상태 //
   const [previews, setPreviews] = useState<string[]>([]);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]); // 기존 서버 이미지
+  const [newImages, setNewImages] = useState<File[]>([]); // 새로 업로드한 이미지
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [reviewContent, setReviewContent] = useState<string>('');
   const [inputHashTag, setInputHashTag] = useState('');
   const [hashTags, setHashTags] = useState<string[]>([]);
+
+  // function: navigator 함수 //
+  const navigator = useNavigate();
 
   // function: empty value 함수 //
   const isEmptyValue = (value: string): boolean => {
     return value === null || value === undefined || value.trim() === '';
   };
 
-  // function: 추천 게시글 가져오기 요청 함수 //
+  // function: 후기 게시글 가져오기 요청 함수 //
   const getReviewPostResponse = (responseBody: GetReviewResponseDto | ResponseDto | null) => {
       const message =     
           !responseBody ? '서버에 문제가 있습니다.' :
@@ -43,11 +50,48 @@ export default function ReviewUpdate() {
           return;
       }
 
-      const { reviewContent, hashTags, imageUrl } = responseBody as GetReviewResponseDto;
+      const { reviewContent, hashTags, images } = responseBody as GetReviewResponseDto;
       setReviewContent(reviewContent);
       setHashTags(hashTags);
-      // setPreviews(imageUrl.map((image) => image.imageUrl));
+      setExistingImages(images.map((image) => image.imageUrl));
+      setPreviews(images.map((image) => image.imageUrl));
       
+  }
+
+  // function: 후기 게시글 수정 요청 함수 //
+    const patchReviewPostResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        alert('수정 완료!');
+        navigator(REVIEW_PATH);
+    };
+
+  // function: 후기 게시글 삭제하기 요청 함수 //
+  const deleteReviewPostResponse = (responseBody: ResponseDto | null) => {
+    const message = 
+        !responseBody ? '서버에 문제가 있습니다.' :
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'NRV' ? '존재하지 않는 후기입니다.' :
+        responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+        responseBody.code === 'NP' ? '권한이 없습니다.' :
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+    const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    if (!isSuccessed) {
+        alert(message);
+        return;
+    }
+    navigator(REVIEW_PATH);
   }
 
   // event handler: 내용 변경 이벤트 처리 함수 //
@@ -65,27 +109,37 @@ export default function ReviewUpdate() {
 
   // event handler: 이미지 업로드 이벤트 처리 //
   const onHandleImageUploadHandler = (event: ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(event.target.files || []);
-      if (files.length === 0) return;
-      
-      const newPreviews: string[] = [];
-  
-      files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-              newPreviews.push(reader.result as string);
-              setPreviews((prev) => [...prev, reader.result as string]);
-          };
-          reader.readAsDataURL(file);
-      });
-      setImageFiles((prev) => [...prev, ...files]);
-  };
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+
+        const newPreviews: string[] = [];
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                newPreviews.push(reader.result as string);
+                setPreviews((prev) => [...prev, reader.result as string]); // 미리보기 상태
+            };
+            reader.readAsDataURL(file);
+        });
+
+        setNewImages((prev) => [...prev, ...files]); // 새로 업로드한 이미지 상태
+    };
 
   // event handler: 이미지 삭제 이벤트 처리 함수 //
   const onHandleImageRemoveHandler = (index: number) => {
-      setImageFiles((prev) => prev.filter((_, i) => i !== index));
-      setPreviews((prev) => prev.filter((_, i) => i !== index));
-  };
+        // 기존 이미지인지 새 이미지인지 확인
+        if (index < existingImages.length) {
+            // 기존 이미지 삭제
+            setExistingImages((prev) => prev.filter((_, i) => i !== index));
+        } else {
+            // 새 이미지 삭제
+            const newIndex = index - existingImages.length;
+            setNewImages((prev) => prev.filter((_, i) => i !== newIndex));
+        }
+
+        // 미리보기에서도 삭제
+        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    };
 
   // event handler: 해시태그 입력 이벤트 처리 //
   const addHashTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -138,8 +192,51 @@ export default function ReviewUpdate() {
       setInputHashTag(target.value);
   };
 
+  // event handler: 해시태그 변경 이벤트 처리 함수 //
+  const handleDeleteHashTag = (hashTagToDelete: string) => {
+    setHashTags((prevHashTags) =>
+        prevHashTags.filter((hashTag) => hashTag !== hashTagToDelete)
+      );
+    };
+
+  // event handler: 후기 수정 작성 이벤트 처리 //
+  const updateReviewPostButtonClickHandler = async () => {
+    if (!accessToken || !reviewId) return;
+
+    // 새 이미지만 업로드
+    const uploadedNewImages: string[] = await Promise.all(newImages.map(async (file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            const uploadedImage = await fileUploadRequest(formData, accessToken);
+            return uploadedImage || '';
+        })
+    );
+
+    // 기존 이미지와 새 이미지 URL 병합
+    const uploadedImages = [...existingImages, ...uploadedNewImages];
+
+    const requestBody: PatchReviewPostRequestDto = {
+        reviewContent: reviewContent,
+        images: uploadedImages,
+        hashtags: hashTags
+    };
+
+    patchReviewPostRequest(requestBody, reviewId, accessToken).then(patchReviewPostResponse);
+  }; 
+
+  // event handler: 후기 삭제 작성 이벤트 처리 //
+  const deleteReviewPostButtonClickHandler = async () => {
+    if (!accessToken || !reviewId) return;
+    
+    const confirm = window.confirm('정말로 삭제하시겠습니까?');
+    if (!confirm) return;
+
+    deleteReviewPostRequest(reviewId, accessToken).then(deleteReviewPostResponse);
+  };
+
   // effect: 컴포넌트 로드 시 후기 정보 불러오기 함수 //
   useEffect(() => {
+    window.scrollTo(0, 0);
       if (!reviewId) return;
       getReviewPostRequest(reviewId).then(getReviewPostResponse);
   }, []);
@@ -181,7 +278,7 @@ export default function ReviewUpdate() {
                   {hashTags.length > 0 &&
                       hashTags.map((hashTag) => {
                       return (
-                          <div key={hashTag} className='tag'>
+                          <div key={hashTag} className='tag' onClick={() => handleDeleteHashTag(hashTag)}>
                               {hashTag}
                           </div>
                       );
@@ -197,7 +294,12 @@ export default function ReviewUpdate() {
               placeholder='#해시태그를 등록해보세요. (최대 10개)'
               className='hashTagInput'
               />
+              <div className='delete-info'>생성하신 해시태그를 누르시면 삭제가 됩니다.</div>
           </div>
+        </div>
+        <div className='review-bottom-group'>
+            <div className="update-button" onClick={updateReviewPostButtonClickHandler}>수정</div>
+            <div className="delete-button" onClick={deleteReviewPostButtonClickHandler}>삭제</div>
         </div>
       </div>
     </div>

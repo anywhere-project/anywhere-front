@@ -9,6 +9,6 @@ export default interface GetReviewResponseDto extends ResponseDto {
     reviewWriter: string;
     reviewCreatedAt: string;
     reviewLikeCount: number;
-    imageUrl: ReviewImages[];
+    images: ReviewImages[];
     hashTags: string[];
 }
