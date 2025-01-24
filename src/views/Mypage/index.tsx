@@ -2,12 +2,10 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-
 import { RecommendAttraction, RecommendPost, Review } from 'types';
-import { ACCESS_TOKEN, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
+import { ACCESS_TOKEN, MYPAGE_UPDATE_PATH, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
-import useReviewPagination from 'hooks/review.pagination.hook';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
 import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest,  getReviewListRequest } from 'apis';
@@ -16,6 +14,9 @@ import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import CasinoIcon from '@mui/icons-material/Casino';
 import { GetRecommendAttractionListResponseDto } from 'apis/dto/response/recommend';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+
 
 
 // interface: another user 정보 //
@@ -34,12 +35,10 @@ export default function Mypage () {
     //function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // state: 페이징 관련 상태 //
-    // const { currentPage, totalPage,  viewList, setTotalList, initViewList, ...paginationProps } = useReviewPagination<Review>();
 
     // state: 로그인 유저 정보 //
     const { signInUser } = useSignInUserStore();
-    const [user, setUser] = useState<AnotherUser | null>(null);
+
     const { userId } = useParams<{ userId: string }>();
     const [profileImage, setProfileImage] = useState<string>('');
     const [nickname, setNickname] = useState<string>('');
@@ -139,37 +138,7 @@ export default function Mypage () {
 
     };
 
-    // recommendPosts와 recommendPosts2를 기반으로 recommendId를 비교하여 필터링하는 함수
-const filterRecommendPosts = (recommendPosts: any[], recommendPosts2: any[], userId: string | undefined) => {
-    return recommendPosts2
-        .filter(post => {
-            const matchingAttraction = recommendPosts.find(attraction => attraction.recommendId === post.recommendId);
-            return matchingAttraction !== undefined;
-        })
-        .map(post => {
-            const matchingAttraction = recommendPosts.find(attraction => attraction.recommendId === post.recommendId);
 
-            if (matchingAttraction) {
-                return {
-                    recommendId: post.recommendId,
-                    recommendCreatedAt: post.recommendCreatedAt,
-                    recommendWriter: post.recommendWriter,
-                    recommendLikeCount: post.recommendLikeCount,
-                    recommendCategory: post.recommendCategory,
-                    attractionId: matchingAttraction.attractionId,
-                    attractionName: matchingAttraction.attractionName,
-                    attractionAddress: matchingAttraction.attractionAddress,
-                    attractionContent: matchingAttraction.attractionContent,
-                    images: matchingAttraction.images,
-                    likeList: matchingAttraction.likeList,
-                } as RecommendAttraction;
-            }
-            return null;
-        })
-        .filter(post => post !== null) as RecommendAttraction[];
-
-        
-};
 
 const filterMatchingRecommendIds = () => {
     const matchingContents = recommendAttractionContents.filter(attraction => {
@@ -325,8 +294,11 @@ const filterMatchingRecommendIds = () => {
                 });
         }
     };
+    const onClickNickname = () => {
+        if(!signInUser)return;
+        navigator(MYPAGE_UPDATE_PATH(signInUser.userId));
+    }
 
-    
     
 
 
@@ -395,12 +367,13 @@ setFilteredRecommendContents(filteredContents);
             <div className='mypage'>
                 <div className='mypage-container'>
                     <div className='mypage-top'>
-                    <div className='mypage-nickname'>{nickname || '닉네임 없음'}</div>
+                    <div className='mypage-nickname' onClick={onClickNickname}>{nickname || '닉네임 없음'}<SettingsIcon/> </div>
 
                         <div className='mypage-tool'></div>
                     </div>
                     <div className='mypage-middle'>
-                        <div className='mypage-profile'  style={{ backgroundImage: `url(${userId ? profileImage : '이미지 없음'})`}}></div>
+                        <div className='mypage-profile'  style={{ backgroundImage: `url(${userId ? profileImage : '이미지 없음'})`}}  >
+                        </div>
                         <div className='mypage-board'>
                             <div className='board-category'>
                                 <div className='board-category-count'>
@@ -446,11 +419,7 @@ setFilteredRecommendContents(filteredContents);
                                 setSelectedPost(post); // 클릭한 포스트 정보를 상태에 저장
                                 setIsModalOpen(true);  // 모달 열기
                             }}>
-                                <img
-                                    src={post.imageUrl?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
-                                    alt={`Review item ${index + 1}`}
-                                    className="gallery-image"
-                                />
+                            <div className='button-overlay'>
                                 <div className="item-buttons">
                                     <button
                                         className="item-button"
@@ -464,7 +433,13 @@ setFilteredRecommendContents(filteredContents);
                                     >
                                         🗑️ 삭제
                                     </button>
-                                </div>
+                                </div> </div>
+                                <img
+                                    src={post.imageUrl?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
+                                    alt={`Review item ${index + 1}`}
+                                    className="gallery-image"
+                                />
+                                
                             </div>
                         ))}
                     </div>
@@ -472,7 +447,7 @@ setFilteredRecommendContents(filteredContents);
                     {isModalOpen && selectedPost && (
                         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                                <h2>Post Details</h2>
+                                <div className='modal-writer'>{selectedPost.reviewWriter}</div>
                                 <img
                                     src={selectedPost.imageUrl?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
                                     alt="Selected post"
@@ -481,10 +456,12 @@ setFilteredRecommendContents(filteredContents);
                                 <p>{selectedPost.reviewContent}</p>
                                 <p>{selectedPost.reviewCreatedAt}</p>
                                 <p>좋아요 : {selectedPost.reviewLikeCount}</p>
+                                
                                 <button className="modal-close-button" onClick={() => setIsModalOpen(false)}>
                                     Close
                                 </button>
                             </div>
+                            
                         </div>
                     )}
 
