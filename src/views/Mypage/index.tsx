@@ -13,12 +13,12 @@ import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import CasinoIcon from '@mui/icons-material/Casino';
+import RouletteAdd from 'views/RouletteAdd';
 import { GetRecommendAttractionListResponseDto } from 'apis/dto/response/recommend';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { GetRouletteListResponseDto } from 'apis/dto/response/roulette';
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -423,8 +423,12 @@ setFilteredRecommendContents(filteredContents);
                                     <div>{rouletteCount}개</div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
+
+                    <RouletteAdd />
+                    
                     <div className="board-selector">
                         <div
                             className={`review-board ${activeBoard === 'review' ? 'active' : ''}`}
