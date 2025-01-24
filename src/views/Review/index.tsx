@@ -3,22 +3,25 @@ import './style.css'
 import type { Review } from 'types';
 import { ResponseDto } from 'apis/dto/response';
 import GetUserInfoResponseDto from 'apis/dto/response/user/get-user-info.response.dto';
-import { getReviewListRequest, getUserInfoRequest, postReviewLikeRequest } from 'apis';
+import { getReviewListRequest, getSignInRequest, getUserInfoRequest, postReviewLikeRequest } from 'apis';
 import { FaHeart, FaPencilAlt, FaRegHeart } from "react-icons/fa";
 import 'swiper/swiper-bundle.min.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN } from "../../constants";
+import { ACCESS_TOKEN, REVIEW_UPDATE_PATH } from "../../constants";
 import { useSignInUserStore } from 'stores';
+import { GetSignInResponseDto } from 'apis/dto/response/auth';
+import { useNavigate } from 'react-router-dom';
 
 // interface: 후기 리스트 아이템 Properties //
 interface TableRowProps {
     review: Review;
+    userLoginId: string;
 }
 
-function TableRow({review}: TableRowProps) {
+function TableRow({review, userLoginId}: TableRowProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -32,13 +35,17 @@ function TableRow({review}: TableRowProps) {
     // state: 후기 정보 상태 //
     const [images, setImages] = useState<string[]>([]);
     const [hashTags, setHashTags] = useState<string[]>([]);
+    const [likes, setLikes] = useState<string[]>([]);
     const [isLiked, setIsLiked] = useState<boolean>(false);
 
     // state: 후기 모달 팝업 상태 //
     const [commentModalOpen, setCommentModalOpen] = useState<boolean>(false);
 
     // variable: 작성자 여부 //
-    const isOwner = signInUser?.userId === userId;
+    const isOwner =  userLoginId=== userId;
+
+    // function: navigator 함수 //
+    const navigator = useNavigate();
 
     // function: get user info response 처리 함수 //
     const getUserInfoResponse = (responseBody: GetUserInfoResponseDto | ResponseDto | null) => {
@@ -92,6 +99,11 @@ function TableRow({review}: TableRowProps) {
         }
     }
 
+    // event handler: 후기 작성 이벤트 처리 //
+    const updatePostButtonClickHandler = async () => {
+        navigator(REVIEW_UPDATE_PATH(review.reviewId));
+    };
+
     // effect: user 상태가 바뀔 때 userInfo 상태 업데이트
     useEffect(() => {
         if(!userId) return;
@@ -108,12 +120,25 @@ function TableRow({review}: TableRowProps) {
         setHashTags(review.hashtags.map((hashtag) => hashtag));
     }, [review]);
 
+    // effect: review 상태가 바뀔 때 hashTags 상태 업데이트
+    useEffect(() => {
+        setLikes(review.hashtags.map((like) => like));
+    }, [review]);
+
+    useEffect(() => {
+        if (Array.isArray(review.likes)) {
+            setIsLiked(review.likes.some((user) => user === userLoginId));
+        } else {
+            setIsLiked(false); // 기본값
+        }
+    }, [review, userLoginId]);
+
     // render : 후기 게시글 리스트 렌더링 //
     return (
         <div className='review-content'>
             <div className='review-top'>
                 <div className="review-writer">{nickName}</div>
-                {isOwner && <FaPencilAlt />}
+                {isOwner && <FaPencilAlt onClick={updatePostButtonClickHandler} style={{cursor:'pointer'}}/>}
             </div>
             <div className='review-middle'>
                 <Swiper
@@ -173,13 +198,35 @@ function TableRow({review}: TableRowProps) {
 // component: 후기 리스트 화면 컴포넌트
 export default function ReviewList() {
 
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+    const accessToken = cookies[ACCESS_TOKEN];
+
     // state: 후기 정보 상태 //
     const [posts, setPosts] = useState<Review[]>([]);
+    const [userId, setUserId] = useState<string>('');
 
     // state: 무한 스크롤 정보 상태 //
     const [visiblePosts, setVisiblePosts] = useState<number>(5);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const observerRef = useRef(null);
+
+    // function: get user info response 처리 함수 //
+    const getSignInUserResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' : 
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { userId } = responseBody as GetSignInResponseDto;
+        setUserId(userId);
+    }
 
     // function: get review response 처리 함수 //
     const getReviewPostListResponse = (responseBody: GetReviewPostListResponseDto | ResponseDto | null) => {
@@ -208,6 +255,8 @@ export default function ReviewList() {
 
      // effect: 후기 정보 업데이트
     useEffect(() => {
+
+        getSignInRequest(accessToken).then(getSignInUserResponse);
 
         // 페이지 새로 고침 시, 스크롤 위치 자동 복원 방지
         window.history.scrollRestoration = 'manual'; // 스크롤 위치 복원 방지
@@ -245,7 +294,7 @@ export default function ReviewList() {
             </div>
             <div className='get-review'>
                 {posts.slice(0, visiblePosts).map((reviewPost, index) => (
-                    <TableRow key={index} review={reviewPost}/>
+                    <TableRow key={index} review={reviewPost} userLoginId={userId}/>
                 ))}
             </div>
 

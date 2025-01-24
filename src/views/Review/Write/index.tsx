@@ -168,6 +168,12 @@ export default function ReviewWrite() {
         setInputHashTag(target.value);
     };
 
+    // event handler: 해시태그 변경 이벤트 처리 함수 //
+    const handleDeleteHashTag = (hashTagToDelete: string) => {
+        setHashTags((prevHashTags) =>
+            prevHashTags.filter((hashTag) => hashTag !== hashTagToDelete)
+        );
+    };
 
     // render : 후기 작성 컴포넌트 렌더링 //
     return (
@@ -207,14 +213,12 @@ export default function ReviewWrite() {
                             {hashTags.length > 0 &&
                                 hashTags.map((hashTag) => {
                                 return (
-                                    <div key={hashTag} className='tag'>
+                                    <div key={hashTag} className='tag' onClick={() => handleDeleteHashTag(hashTag)}>
                                         {hashTag}
                                     </div>
                                 );
                             })}
                         </div>
-                        
-
                         <input
                         value={inputHashTag}
                         onChange={changeHashTagInput}
@@ -224,6 +228,7 @@ export default function ReviewWrite() {
                         placeholder='#해시태그를 등록해보세요. (최대 10개)'
                         className='hashTagInput'
                         />
+                        <div className='delete-info'>생성하신 해시태그를 누르시면 삭제가 됩니다.</div>
                     </div>
                 </div>
                 <div className='review-write-bottom'>

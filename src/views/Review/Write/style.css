@@ -40,7 +40,6 @@
     border-radius: 10px;
     width: 1000px;
     font-size: 18px;
-    margin-bottom: 25px;
     resize: none;
 }
 
@@ -78,6 +77,12 @@
 .field-content .hash-field {
     display: flex;
     margin-bottom: 15px;
+}
+
+.field-content .delete-info {
+    color: gray;
+    font-size: small;
+    padding: 0px 10px;
 }
 
 .hash-field .tag {
