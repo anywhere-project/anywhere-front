@@ -1,0 +1,80 @@
+#RouletteAdd-wrapper {
+    flex: 1;
+    padding: 16px 0;
+}
+
+#RouletteAdd-wrapper .button-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 80px;
+}
+
+#RouletteAdd-wrapper .area-button,
+#RouletteAdd-wrapper .attraction-button,
+#RouletteAdd-wrapper .food-button,
+#RouletteAdd-wrapper .mission-button {
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    flex: 1;
+    padding: 12px 0;
+
+    font-size: 24px;
+    text-align: center;
+}
+
+#RouletteAdd-wrapper .area-button:hover,
+#RouletteAdd-wrapper .attraction-button:hover,
+#RouletteAdd-wrapper .food-button:hover,
+#RouletteAdd-wrapper .mission-button:hover {
+    opacity: 0.2;
+}
+
+#RouletteAdd-wrapper .input-container {
+    display: flex;
+    padding: 20px 0;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+#RouletteAdd-wrapper .main-input {
+    flex: 1;
+    height: 46px;
+    border-radius: 8px;
+
+    font-size: 24px;
+}
+
+#RouletteAdd-wrapper .add-button {
+    cursor: pointer;
+    padding: 10px 40px;
+
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 8px;
+
+    font-size: 24px;
+}
+
+#RouletteAdd-wrapper .add-button:hover {
+    opacity: 0.2;
+}
+
+#RouletteAdd-wrapper .dropdown {
+    cursor: pointer;
+
+    width: 220px;
+    height: 50px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 1);
+    padding: 8px 12px;
+    background-color: white;
+
+    font-size: 18px;
+    color: black;
+}
+
+#RouletteAdd-wrapper .dropdown:hover {
+    opacity: 0.2;
+}

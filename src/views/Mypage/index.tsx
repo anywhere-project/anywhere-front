@@ -15,6 +15,7 @@ import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import CasinoIcon from '@mui/icons-material/Casino';
+import RouletteAdd from 'views/RouletteAdd';
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -277,9 +278,11 @@ useEffect(()=>{
                                 </div>
                             </div>
 
-
                         </div>
                     </div>
+
+                    <RouletteAdd />
+                    
                     <div className="board-selector">
                         <div
                             className={`review-board ${activeBoard === 'review' ? 'active' : ''}`}
