@@ -149,7 +149,6 @@
 
 #mypage-wrapper .button-overlay:hover .item-buttons {
     display: flex;
-
 }
 
 #mypage-wrapper .item-buttons {
@@ -160,6 +159,7 @@
     right: 0px;
     gap: 5px;
     background-color: rgba(0, 0, 0, 0.6);
+
     border-radius: 5px;
     z-index: 20;
 }
@@ -177,6 +177,7 @@
 #mypage-wrapper .gallery-recommend .gallery-item .gallery-image {
     width: 100%;
     height: 100%;
+
     object-fit: cover; 
     border-radius: 20px; 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1); 
@@ -247,5 +248,32 @@
 
 #mypage-wrapper .modal-overlay:hover {
     cursor: pointer;
+}
+
+
+.roulette-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+.roulette-table th,
+.roulette-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.roulette-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.roulette-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.roulette-table tr:hover {
+    background-color: #f1f1f1;
 }
 
