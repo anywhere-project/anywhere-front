@@ -2,7 +2,7 @@ import React from 'react';
 import './Anywhere.css';
 import { Routes, Route, useLocation, useParams } from 'react-router-dom';
 import Main from './views/Main';
-import { MYPAGE_PATH, RECOMMEND_CATEGORY_PATH, RECOMMEND_UPDATE_PATH, RECOMMEND_WRITE_PATH, REVIEW_PATH, REVIEW_WRITE_PATH, REVIEW_UPDATE_PATH, ROOT_PATH, SIGN_UP_PATH } from './constants';
+import { MYPAGE_PATH, RECOMMEND_CATEGORY_PATH, RECOMMEND_UPDATE_PATH, RECOMMEND_WRITE_PATH, REVIEW_PATH, REVIEW_WRITE_PATH, REVIEW_UPDATE_PATH, ROOT_PATH, SIGN_UP_PATH, MYPAGE_UPDATE_PATH } from './constants';
 import SignUp from './views/Auth';
 import RecommendWrite from './views/Recommend/Write';
 import RecommendUpdate from './views/Recommend/Update';
@@ -15,6 +15,7 @@ import ReviewWrite from 'views/Review/Write';
 import ReviewList from 'views/Review';
 import ScrollTopButton from 'views/ScrollTopButton';
 import ReviewUpdate from 'views/Review/Update';
+import MyPageUpdate from 'views/Mypage/Update';
 
 function Anywhere() {
 
@@ -51,6 +52,7 @@ function Anywhere() {
         <Route path={RECOMMEND_WRITE_PATH} element={<RecommendWrite />} />
         <Route path={RECOMMEND_UPDATE_PATH(':recommendId')} element={<RecommendUpdate />} />
         <Route path={MYPAGE_PATH(':userId')} element={<Mypage />} />
+        <Route path={MYPAGE_UPDATE_PATH(':userId')} element={<MyPageUpdate />} />
         <Route path={REVIEW_PATH} element={<ReviewList/>}/>
         <Route path={REVIEW_WRITE_PATH} element={<ReviewWrite/>}/>
         <Route path={REVIEW_UPDATE_PATH(':reviewId')} element={<ReviewUpdate/>}/>

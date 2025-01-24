@@ -1,5 +1,6 @@
 export default interface PostRouletteRequestDto {
-    attractonName: string;
+    areaName: string;
+    attractionName: string;
     foodName: string;
     missionName: string;
 }

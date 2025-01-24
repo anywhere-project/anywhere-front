@@ -8,4 +8,5 @@ export default interface Review {
     reviewLikeCount: number;
     imageUrl: ReviewImages[];
     hashtags: string[];
+    likes: string[];
 }
