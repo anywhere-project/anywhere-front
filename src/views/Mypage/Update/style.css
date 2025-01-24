@@ -1,0 +1,119 @@
+#mypage-update {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 100px;
+    margin: 0 auto;
+    width: 100%;
+
+}
+
+#mypage-update .mypage-update {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    top: 100px;
+    
+}
+
+#mypage-update h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+#mypage-update .form-group {
+    margin-bottom: 20px;
+}
+
+#mypage-update .form-group label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+#mypage-update .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+}
+
+#mypage-update .form-group input:focus {
+    border-color: #007bff;
+}
+
+#mypage-update .profile-image {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+#mypage-update .profile-image button {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#mypage-update .profile-image button:hover {
+    background-color: #0056b3;
+}
+
+#mypage-update button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+#mypage-update button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+#mypage-update button[type="button"] {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#mypage-update button[type="button"]:hover {
+    background-color: #0056b3;
+}
