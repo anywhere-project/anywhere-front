@@ -853,9 +853,7 @@ export default function Mypage() {
                         })}
                     </div>
 
-                    {isLoading && <div className="mypage-loading-spinner">Loading...</div>}
 
-                    <div ref={observerRef} style={{ height: "1px" }}></div>
 
 
 
@@ -891,6 +889,7 @@ export default function Mypage() {
 
                     </div>
                     <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'block' : 'none' }}>
+                        <div className='roulette-title'>나의 랜덤 룰렛</div>
                         <table className="roulette-table">
                             <thead>
                                 <tr>
@@ -910,18 +909,14 @@ export default function Mypage() {
                                         <td>{myrandom.attractionName}</td>
                                         <td>{myrandom.foodName}</td>
                                         <td>{myrandom.missionName}</td>
-                                        <td>
-                                            <IconButton
-                                                className="random-delete-button"
-                                                onClick={() => onMyRandomDeleteClickHandler(index)}
-                                            >
-                                                <Delete className='random-delete-icon' />
-                                            </IconButton>
-                                        </td>
+                                        <td><Delete className='random-delete-icon' onClick={() => onMyRandomDeleteClickHandler(index)} /></td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                        <div className='roulette-table-bottom'></div>
+                        {isLoading && <div className="mypage-loading-spinner">Loading...</div>}
+                        <div ref={observerRef} style={{ height: "1px" }}></div>
                     </div>
                 </div>
             </div>
