@@ -7,7 +7,6 @@
     top: 100px;
     margin: 0 auto;
     width: 100%;
-
 }
 
 #mypage-wrapper .mypage {
@@ -250,30 +249,33 @@
     cursor: pointer;
 }
 
-
-.roulette-table {
+.roulette-record .roulette-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 16px 0;
+    text-align: center; 
 }
 
-.roulette-table th,
-.roulette-table td {
-    border: 1px solid #ddd;
+.roulette-record .roulette-table th, 
+.roulette-record .roulette-table td {
+    border-bottom: 1px solid #ddd; 
     padding: 8px;
-    text-align: center;
 }
 
-.roulette-table th {
+.roulette-record .roulette-table th {
     background-color: #f4f4f4;
-    font-weight: bold;
+    font-weight: bold; 
 }
 
-.roulette-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+.roulette-record .roulette-table tr:last-child td {
+    border-bottom: none; 
 }
 
-.roulette-table tr:hover {
-    background-color: #f1f1f1;
+.roulette-record .random-delete-icon {
+    border: none; 
+    cursor: pointer; 
+    font-size: 20px;
 }
 
+.roulette-record .random-delete-icon:hover {
+    color: red; 
+}

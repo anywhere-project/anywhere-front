@@ -33,7 +33,6 @@ interface AnotherUser {
 }
 
 export default function Mypage() {
-
     //function: 네비게이터 함수 //
     const navigator = useNavigate();
 
@@ -65,8 +64,6 @@ export default function Mypage() {
     const [reviewContents, setReviewContents] = useState<Review[] | null>([]);
     const [recommendAttractionContents, setRecommendAttractionContents] = useState<RecommendAttraction[]>([]);
     const [recommendContents, setRecommendContents] = useState<RecommendPost[]>([]);
-
-
     const [activeBoard, setActiveBoard] = useState<'review' | 'recommend' | 'roulette'>('review');
 
     const handleBoardClick = (board: 'review' | 'recommend' | 'roulette') => {
@@ -134,42 +131,35 @@ export default function Mypage() {
 
         const recommendPosts2 = (responseBody as GetRecommendPostListResponseDto).posts || [];
 
-
         setRecommendContents(recommendPosts2);
 
     };
 
+    const filterMatchingRecommendIds = () => {
+        const matchingContents = recommendAttractionContents.filter(attraction => {
+            // recommendContents에서 matching recommendId 찾기
+            return recommendContents.some(post => post.recommendId === attraction.recommendId);
+        });
 
+        console.log("Matching Recommend Id Contents:", matchingContents);
+        return matchingContents;
+    };
 
-const filterMatchingRecommendIds = () => {
-    const matchingContents = recommendAttractionContents.filter(attraction => {
-        // recommendContents에서 matching recommendId 찾기
-        return recommendContents.some(post => post.recommendId === attraction.recommendId);
-    });
-
-    console.log("Matching Recommend Id Contents:", matchingContents);
-    return matchingContents;
-};
-
-
-    
-
-    
-
-        // function : get recommend attraction list response 처리 함수 //
-        const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
-            const message = !responseBody ? '서버에 문제가 있습니다.' :
+    // function : get recommend attraction list response 처리 함수 //
+    const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
-            const isSuccessed = responseBody!== null && responseBody.code === 'SU';
-            if (!isSuccessed) {
-                alert(message);
-                return;
-            }
-    
-            const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
-            const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+        const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
 
         setRecommendAttractionPostCount(myRecommendAttractionPosts.length);
     };
@@ -215,11 +205,11 @@ const filterMatchingRecommendIds = () => {
     const deleteMyRandomResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                    responseBody.code === 'NMR' ? '랜덤 이력이 존재하지 않습니다.' :
-                        responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
-                            responseBody.code === 'NP' ? '허가되지 않은 접근입니다.' :
-                                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NMR' ? '랜덤 이력이 존재하지 않습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
+            responseBody.code === 'NP' ? '허가되지 않은 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -231,9 +221,9 @@ const filterMatchingRecommendIds = () => {
     const getMyRandomListResponse = (responseBody: GetRouletteListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                    responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -331,11 +321,13 @@ const filterMatchingRecommendIds = () => {
         navigator(MYPAGE_UPDATE_PATH(signInUser.userId));
     }
 
-
     const onMyRandomDeleteClickHandler = (index: number) => {
         const randomId = myRandomList[index].randomId;
         if (!accessToken || !randomId) return;
-        deleteMyRandomRequest(index, accessToken).then(deleteMyRandomResponse);
+        const isConfirm = window.confirm("정말 삭제하시겠습니까?");
+        if (isConfirm) {
+            deleteMyRandomRequest(index, accessToken).then(deleteMyRandomResponse);
+        }
     }
 
     // 유저 정보 가져오기
@@ -359,24 +351,21 @@ const filterMatchingRecommendIds = () => {
     }, [userId]);
 
 
-useEffect(()=>{
-getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
-getRecommendPostListRequest("attraction").then(getRecommendListResponse);
+    useEffect(() => {
+        getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
+        getRecommendPostListRequest("attraction").then(getRecommendListResponse);
+    }, [recommendPostCount]);
 
-},[recommendPostCount]);
-
-
-
-
-useEffect(()=>{
-    setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
-},[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
+    useEffect(()=>{
+        setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
+    },[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
 
     useEffect(() => {
         getReviewListRequest().then(getReviewListResponse);
-        getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
+        if (accessToken) {
+            getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
+        }
     }, [signInUser]);
-
 
     useEffect(() => {
         getRecommendPostListRequest("attraction").then(getRecommendAttractionListResponse);
@@ -388,15 +377,11 @@ useEffect(()=>{
         setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
     }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
 
-
-useEffect(()=>{
-// 예시로 필터링된 값을 다른 상태에 저장할 수 있음
-const filteredContents = filterMatchingRecommendIds();
-setFilteredRecommendContents(filteredContents);
-},[activeBoard]);
-
-
-
+    useEffect(() => {
+        // 예시로 필터링된 값을 다른 상태에 저장할 수 있음
+        const filteredContents = filterMatchingRecommendIds();
+        setFilteredRecommendContents(filteredContents);
+    }, [activeBoard]);
 
     return (
         <div id='mypage-wrapper'>
@@ -535,9 +520,10 @@ setFilteredRecommendContents(filteredContents);
                                 <tr>
                                     <th>No.</th>
                                     <th>지역</th>
-                                    <th>명소</th>
-                                    <th>음식</th>
+                                    <th>관광지</th>
+                                    <th>먹거리</th>
                                     <th>미션</th>
+                                    <th>삭제</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -553,7 +539,7 @@ setFilteredRecommendContents(filteredContents);
                                                 className="random-delete-button"
                                                 onClick={() => onMyRandomDeleteClickHandler(index)}
                                             >
-                                                <Delete />
+                                                <Delete className='random-delete-icon' />
                                             </IconButton>
                                         </td>
                                     </tr>
