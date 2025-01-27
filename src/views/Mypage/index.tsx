@@ -1,25 +1,30 @@
 import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
-import { useEffect, useState } from 'react';
-import { RecommendAttraction, RecommendPost, MyRandom, Review } from 'types';
+
+import { useEffect, useRef, useState } from 'react';
+import { RecommendAttraction, RecommendPost, MyRandom, Review, RecommendMission, RecommendFood } from 'types';
 import { ACCESS_TOKEN, MYPAGE_UPDATE_PATH, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest, getReviewListRequest, getMyRandomListRequest, deleteMyRandomRequest } from 'apis';
+import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest, getReviewListRequest, getMyRandomListRequest, deleteMyRandomRequest, getUserInfoRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import CasinoIcon from '@mui/icons-material/Casino';
 import RouletteAdd from 'views/RouletteAdd';
-import { GetRecommendAttractionListResponseDto } from 'apis/dto/response/recommend';
+import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendMissionListResponseDto } from 'apis/dto/response/recommend';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { GetRouletteListResponseDto } from 'apis/dto/response/roulette';
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import GetRouletteListResponseDto from './../../apis/dto/response/roulette/get-roulette-list.response.dto';
+import AttractionsIcon from '@mui/icons-material/Attractions';
+import LunchDiningIcon from '@mui/icons-material/LunchDining';
+import TaskIcon from '@mui/icons-material/Task';
 import RouletteDel from 'views/RouletteDel';
+
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -32,6 +37,78 @@ interface AnotherUser {
     isAdmin: boolean;
     userStatus: string;
 }
+
+
+interface Attractions {
+    recommendAttraction: RecommendAttraction;
+}
+
+interface Missions {
+    recommendMission: RecommendMission;
+}
+
+interface Foods {
+    recommendFood: RecommendFood;
+}
+
+
+function AttractionRow({ recommendAttraction }: Attractions) {
+    const [attractionImages, setAttractionImages] = useState<string[]>([]);
+
+    useEffect(() => {
+        setAttractionImages(recommendAttraction.images.map((image) => image.imageUrl));
+    }, [recommendAttraction]);
+
+    return (
+
+        <div className="gallery-image">
+            {attractionImages.map((imageUrl, index) => (
+                <img src={imageUrl} alt={`Attraction ${index}`} />
+            ))}
+        </div>
+
+    );
+}
+
+function FoodRow({ recommendFood }: Foods) {
+    const [foodImages, setFoodImages] = useState<string[]>([]);
+
+
+    useEffect(() => {
+        setFoodImages(recommendFood.images.map((image) => image.imageUrl));
+    }, [recommendFood]);
+
+    return (
+        <div className="food-box">
+            <div className="food-image">
+                {foodImages.map((imageUrl, index) => (
+                    <img src={imageUrl} alt={`Food ${index}`} />
+                ))}
+            </div>
+
+        </div>
+    );
+}
+
+function MissionRow({ recommendMission }: Missions) {
+    const [missionImages, setMissionImages] = useState<string[]>([]);
+
+    useEffect(() => {
+        setMissionImages(recommendMission.images.map((image) => image.imageUrl));
+    }, [recommendMission]);
+
+    return (
+        <div className="mission-box">
+            <div className="mission-image">
+                {missionImages.map((imageUrl, index) => (
+                    <img src={imageUrl} alt={`Mission ${index}`} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+
 
 export default function Mypage() {
     //function: 네비게이터 함수 //
@@ -64,10 +141,25 @@ export default function Mypage() {
     // state: 내 게시판 목록 상태 //
     const [reviewContents, setReviewContents] = useState<Review[] | null>([]);
     const [recommendAttractionContents, setRecommendAttractionContents] = useState<RecommendAttraction[]>([]);
-    const [recommendContents, setRecommendContents] = useState<RecommendPost[]>([]);
+
+    const [recommendPost, setRecommendPost] = useState<RecommendPost[]>([]);
+
+    const [posts, setPosts] = useState<RecommendPost[]>([]);
+    const [attractions, setAttractions] = useState<RecommendAttraction[]>([]);
+    const [foods, setFoods] = useState<RecommendFood[]>([]);
+    const [missions, setMissions] = useState<RecommendMission[]>([]);
+
+    const [visiblePosts, setVisiblePosts] = useState<number>(5);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const observerRef = useRef(null);
+
     const [activeBoard, setActiveBoard] = useState<'review' | 'recommend' | 'roulette'>('review');
 
+    const [activeGallery, setActiveGallery] = useState<'attraction' | 'food' | 'mission'>('attraction');
+
+    const [recommendContents, setRecommendContents] = useState<RecommendPost[]>([]);
     const [activeButton, setActiveButton] = useState<'add' | 'delete' | null>(null);
+
 
     const handleBoardClick = (board: 'review' | 'recommend' | 'roulette') => {
         setActiveBoard(board);
@@ -100,6 +192,8 @@ export default function Mypage() {
 
         if (reviewContents === null) return;
     };
+
+
 
     // function : get recommend post list response 처리 함수 //
     const getRecommendAttractionResponse = (responseBody: GetRecommendAttractionListResponseDto | ResponseDto | null) => {
@@ -134,42 +228,82 @@ export default function Mypage() {
 
         const recommendPosts2 = (responseBody as GetRecommendPostListResponseDto).posts || [];
 
-        setRecommendContents(recommendPosts2);
+        setRecommendPost(recommendPosts2);
+        setPosts(recommendPosts2);
 
     };
+
 
     const filterMatchingRecommendIds = () => {
         const matchingContents = recommendAttractionContents.filter(attraction => {
             // recommendContents에서 matching recommendId 찾기
             return recommendContents.some(post => post.recommendId === attraction.recommendId);
         });
-
-        console.log("Matching Recommend Id Contents:", matchingContents);
         return matchingContents;
     };
 
-    // function : get recommend attraction list response 처리 함수 //
-    const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
-        const message = 
+
+
+    const getRecommendAttractionListResponse = (responseBody: GetRecommendAttractionListResponseDto | ResponseDto | null) => {
+        const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-      
-    const filterMatchingRecommendIds = () => {
-        const matchingContents = recommendAttractionContents.filter(attraction => {
-            // recommendContents에서 matching recommendId 찾기
-            return recommendContents.some(post => post.recommendId === attraction.recommendId);
-        });
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
-        console.log("Matching Recommend Id Contents:", matchingContents);
-        return matchingContents;
-    };
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        if ('attractions' in responseBody) {
+            const { attractions } = responseBody;
+            setAttractions(attractions);
+        } else {
+            console.error('responseBody에 attractions 속성이 없습니다.', responseBody);
+        }
+        const { attractions } = responseBody as GetRecommendAttractionPostResponseDto;
+        setAttractions(attractions);
+    }
+
+    const getRecommendFoodListResponse = (responseBody: GetRecommendFoodListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { foods } = responseBody as GetRecommendFoodListResponseDto;
+        setFoods(foods);
+    }
+
+    const getRecommendMissionListResponse = (responseBody: GetRecommendMissionListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { missions } = responseBody as GetRecommendMissionListResponseDto;
+        setMissions(missions);
+    }
 
     // function : get recommend attraction list response 처리 함수 //
-    const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+    const getRecommendAttractionCountResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -179,13 +313,14 @@ export default function Mypage() {
 
         const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
         const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
-
         setRecommendAttractionPostCount(myRecommendAttractionPosts.length);
     };
 
     // function : get recommend food list response 처리 함수 //
 
-    const getRecommendFoodListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
+    const getRecommendFoodCountResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
@@ -204,7 +339,9 @@ export default function Mypage() {
 
     // function : get recommend mission list response 처리 함수 //
 
-    const getRecommendMissionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
+    const getRecommendMissionCountResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
@@ -220,6 +357,27 @@ export default function Mypage() {
 
         setRecommendMissionPostCount(myRecommendMissionPosts.length);
     };
+
+    const getRecommendPostListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { posts } = responseBody as GetRecommendPostListResponseDto;
+        setPosts(posts);
+        console.log("posts =", posts);  // 여기서 null인지 확인
+        if (!posts) {
+            console.warn("서버 응답에 posts가 null입니다.");
+            return;
+        }
+    }
+
 
     const deleteMyRandomResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -252,7 +410,14 @@ export default function Mypage() {
 
         const { myRandoms } = responseBody as GetRouletteListResponseDto;
         setMyRandomList(myRandoms);
+
+        const rouletteList = (responseBody as GetRouletteListResponseDto).myRandoms || [];
+
+        const myRouletteList = rouletteList.filter(post => post.userId === userId);
+
+        setRouletteCount(myRouletteList.length);
     }
+
 
     const reviewHandleEditPost = (post: Review) => {
         if (!post.reviewId) {
@@ -324,7 +489,7 @@ export default function Mypage() {
                     if (response.code === 'SU') {
                         alert('게시물이 성공적으로 삭제되었습니다.');
                         // 성공적으로 삭제 후 화면에서 게시물을 제거
-                        setRecommendContents(prev => prev.filter(item => item.recommendId !== post.recommendId));
+                        setRecommendPost(prev => prev.filter(item => item.recommendId !== post.recommendId));
                     } else {
                         alert('게시물 삭제에 실패했습니다.');
                     }
@@ -348,6 +513,14 @@ export default function Mypage() {
             deleteMyRandomRequest(index, accessToken).then(deleteMyRandomResponse);
         }
     }
+    const loadMorePosts = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setVisiblePosts((prev) => prev + 5);
+            setIsLoading(false);
+        }, 1000);
+    };
+
 
     // 유저 정보 가져오기
     useEffect(() => {
@@ -373,7 +546,9 @@ export default function Mypage() {
     useEffect(() => {
         getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
         getRecommendPostListRequest("attraction").then(getRecommendListResponse);
+
     }, [recommendPostCount]);
+
 
     useEffect(()=>{
         setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
@@ -386,26 +561,94 @@ export default function Mypage() {
 
     useEffect(() => {
         getReviewListRequest().then(getReviewListResponse);
+
         if (accessToken) {
-            getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
+        getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
         }
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    loadMorePosts();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerRef.current) {
+            observer.observe(observerRef.current);
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observer.unobserve(observerRef.current);
+            }
+        };
     }, [signInUser]);
 
-    useEffect(() => {
-        getRecommendPostListRequest("attraction").then(getRecommendAttractionListResponse);
-        getRecommendPostListRequest("food").then(getRecommendFoodListResponse);
-        getRecommendPostListRequest("mission").then(getRecommendMissionListResponse);
-    }, [recommendPostCount]);
+
+
 
     useEffect(() => {
         setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
     }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
+
 
     useEffect(() => {
         // 예시로 필터링된 값을 다른 상태에 저장할 수 있음
         const filteredContents = filterMatchingRecommendIds();
         setFilteredRecommendContents(filteredContents);
     }, [activeBoard]);
+
+
+    useEffect(() => {
+        getRecommendPostListRequest("attraction").then(getRecommendAttractionCountResponse);
+        getRecommendPostListRequest("food").then(getRecommendFoodCountResponse);
+        getRecommendPostListRequest("mission").then(getRecommendMissionCountResponse);
+    }, [recommendPostCount])
+
+    useEffect(() => {
+        // getRecommendPostListRequest("attractions").then(getRecommendPostListResponse);
+
+
+        getRecommendAttractionListRequest().then(getRecommendAttractionListResponse);
+        // getRecommendAttractionListRequest().then(getRecommendFoodListResponse);
+        // getRecommendAttractionListRequest().then(getRecommendMissionListResponse);
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    loadMorePosts();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerRef.current) {
+            observer.observe(observerRef.current);
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observer.unobserve(observerRef.current);
+            }
+        };
+    }, [recommendPostCount]);
+
+
+    const filteredAttractions = (attractions || []).filter(attraction =>
+        (posts || []).some(post => post.recommendId === attraction.recommendId)
+    );
+
+
+
+    const filteredFoods = foods.filter(food =>
+        posts.some(post => post.recommendId === food.recommendId)
+    );
+
+    const filteredMissions = missions.filter(mission =>
+        posts.some(post => post.recommendId === mission.recommendId)
+    );
+
 
     return (
         <div id='mypage-wrapper'>
@@ -436,6 +679,7 @@ export default function Mypage() {
                         </div>
                     </div>
 
+
                     {signInUser?.isAdmin && (
                         <div className="roulette-buttons">
                             <button
@@ -460,6 +704,7 @@ export default function Mypage() {
                     {activeButton === 'add' && <RouletteAdd />}
                     {activeButton === 'delete' && <RouletteDel />}
 
+
                     <div className="board-selector">
                         <div
                             className={`review-board ${activeBoard === 'review' ? 'active' : ''}`}
@@ -480,6 +725,28 @@ export default function Mypage() {
                             <CasinoIcon />룰렛
                         </div>
                     </div>
+                    {activeBoard === 'recommend' && (
+                    <div className="board-selector">
+                        <div
+                            className={`attraction-gallery ${activeGallery === 'attraction' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('review')}
+                        >
+                            <AttractionsIcon />관광지
+                        </div>
+                        <div
+                            className={`food-gallery ${activeGallery === 'food' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('recommend')}
+                        >
+                            <LunchDiningIcon />먹거리
+                        </div>
+                        <div
+                            className={`mission-gallery ${activeGallery === 'mission' ? 'active' : ''}`}
+                            onClick={() => handleBoardClick('roulette')}
+                        >
+                            <TaskIcon />미션
+                        </div>
+                    </div>
+                    )}
 
                     <div className="gallery-review" style={{ display: activeBoard === 'review' ? 'grid' : 'none' }}>
 
@@ -535,30 +802,98 @@ export default function Mypage() {
                     )}
 
 
+
+
                     <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
-                        {filterRecommendContents.map((post, index) => (
+
+                        {(posts || []).slice(0, visiblePosts).map((post) => {
+                            const matchedAttractions = (filteredAttractions || []).filter(
+                                (attraction) => attraction.recommendId === post.recommendId
+                            );
+                            // const matchedMissions = filteredMissions.filter(
+                            //     (mission) => mission.recommendId === post.recommendId
+                            // );
+                            // const matchedFoods = filteredFoods.filter(
+                            //     (food) => food.recommendId === post.recommendId
+                            // );
+
+                            return (
+                                <div key={post.recommendId} className="gallery-item">
+
+                                    <div className="gallery-item">
+                                        {
+                                            matchedAttractions.map((attraction, index) => (
+                                                <AttractionRow
+                                                    key={attraction.attractionId}
+                                                    recommendAttraction={attraction}
+                                                />
+                                            ))
+                                        }
+                                        {matchedAttractions.length}
+                                    </div>
+
+                                    {/* <div className="mypage-recommend-mission-item">
+                                            {
+                                                matchedMissions.map((mission, index) => (
+                                                    <MissionRow
+                                                        key={mission.missionId}
+                                                        recommendMission={mission}
+                                                    />
+                                                ))
+                                            }
+                                        </div>
+
+                                        <div className="mypage-recommend-food-item">
+                                            {
+                                                matchedFoods.map((food, index) => (
+                                                    <FoodRow
+                                                        key={food.foodId}
+                                                        recommendFood={food}
+                                                    />
+                                                ))
+                                            }
+                                        </div> */}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {isLoading && <div className="mypage-loading-spinner">Loading...</div>}
+
+                    <div ref={observerRef} style={{ height: "1px" }}></div>
+
+
+
+                    <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
+
+
+                        {/* {filterRecommendContents.map((post, index) => (
                             <div key={index} className="gallery-item">
                                 <img
                                     src={post.images?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
                                     alt={`Recommend item ${index + 1}`}
                                     className="gallery-image"
                                 />
-                                <div className="item-buttons">
-                                    <button
-                                        className="item-button"
-                                        onClick={() => recommendHandleEditPost(post)}
-                                    >
-                                        ✏️ 수정
-                                    </button>
-                                    <button
-                                        className="item-button"
-                                        onClick={() => recommendHandleDeletePost(post)}
-                                    >
-                                        🗑️ 삭제
-                                    </button>
+
+                                <div className='button-overlay'>
+                                    <div className="item-buttons">
+                                        <button
+                                            className="item-button"
+                                            onClick={() => recommendHandleEditPost(post)}
+                                        >
+                                            ✏️ 수정
+                                        </button>
+                                        <button
+                                            className="item-button"
+                                            onClick={() => recommendHandleDeletePost(post)}
+                                        >
+                                            🗑️ 삭제
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        ))}
+                        ))} */}
+
                     </div>
                     <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'block' : 'none' }}>
                         <table className="roulette-table">
