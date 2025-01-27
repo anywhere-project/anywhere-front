@@ -251,39 +251,39 @@
 }
 
 
-.roulette-table {
+#mypage-wrapper .roulette-table {
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0;
 }
 
-.roulette-table th,
-.roulette-table td {
+#mypage-wrapper .roulette-table th,
+#mypage-wrapper .roulette-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
 }
 
-.roulette-table th {
+#mypage-wrapper .roulette-table th {
     background-color: #f4f4f4;
     font-weight: bold;
 }
 
-.roulette-table tr:nth-child(even) {
+#mypage-wrapper .roulette-table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.roulette-table tr:hover {
+#mypage-wrapper .roulette-table tr:hover {
     background-color: #f1f1f1;
 }
 
-.roulette-buttons {
+#mypage-wrapper .roulette-buttons {
     display: flex;
     justify-content: center;
     margin: 20px 0;
 }
 
-.roulette-button {
+#mypage-wrapper .roulette-button {
     flex: 1;
     height: 50px;
     background-color: #f0f0f0;
@@ -295,11 +295,11 @@
     color: black;
 }
 
-.roulette-button:hover {
+#mypage-wrapper .roulette-button:hover {
     background-color: #ddd;
 }
 
-.roulette-button.active {
+#mypage-wrapper .roulette-button.active {
     background-color: #434343;
     color: white;
     border-color: #434343;
