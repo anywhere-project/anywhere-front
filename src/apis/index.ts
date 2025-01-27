@@ -14,6 +14,7 @@ import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.re
 import GetReviewResponseDto from "./dto/response/review/get-review.response.dto";
 import { PostRouletteRequestDto, PostAreaRequestDto, PostFoodRequestDto, PostAttractionRequestDto, PostMissionRequestDto } from "./dto/request/roulette";
 import { GetRouletteListResponseDto } from "./dto/response/roulette";
+import GetReviewCommentListResponseDto from "./dto/response/review/get-review-comment-list.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -66,6 +67,8 @@ const GET_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_
 const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
+const GET_REVIEW_COMMENT_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const DELETE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 
 const POST_AREA_API_URL  = `${ROULETTE_MODULE_URL}/area`;
 const POST_ATTRACTION_API_URL  = (areaId: number | string) => `${ROULETTE_MODULE_URL}/attraction/${areaId}`;
@@ -450,6 +453,22 @@ export const postAttractionRequest = async (requestBody: PostAttractionRequestDt
 export const postFoodRequest = async (requestBody: PostFoodRequestDto, accessToken: string) => {
     const responseBody = await axios.post(POST_FOOD_API_URL, requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 후기 댓글 리스트 가져오기 요청 함수 //
+export const getReviewCommentListRequest = async (reviewId: string | number) => {
+    const responseBody = await axios.get(GET_REVIEW_COMMENT_API_URL(reviewId))
+    .then(responseDataHandler<GetReviewCommentListResponseDto>)
+    .catch(responseErrorHandler);
+return responseBody;
+};
+
+// function: 후기 댓글 삭제 요청 함수 //
+export const deleteReviewCommentRequest = async (reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_REVIEW_COMMENT_API_URL(reviewId, reviewCommentId), bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
