@@ -277,3 +277,30 @@
     background-color: #f1f1f1;
 }
 
+.roulette-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.roulette-button {
+    flex: 1;
+    height: 50px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: black;
+}
+
+.roulette-button:hover {
+    background-color: #ddd;
+}
+
+.roulette-button.active {
+    background-color: #434343;
+    color: white;
+    border-color: #434343;
+}
