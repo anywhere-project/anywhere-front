@@ -1,19 +1,19 @@
-#RouletteAdd-wrapper {
+#RouletteDel-wrapper {
     flex: 1;
     padding: 16px 0;
 }
 
-#RouletteAdd-wrapper .button-container {
+#RouletteDel-wrapper .button-container {
     display: flex;
     justify-content: space-around;
     align-items: center;
     gap: 80px;
 }
 
-#RouletteAdd-wrapper .area-button,
-#RouletteAdd-wrapper .attraction-button,
-#RouletteAdd-wrapper .food-button,
-#RouletteAdd-wrapper .mission-button {
+#RouletteDel-wrapper .area-button,
+#RouletteDel-wrapper .attraction-button,
+#RouletteDel-wrapper .food-button,
+#RouletteDel-wrapper .mission-button {
     cursor: pointer;
     border: 1px solid rgba(0, 0, 0, 1);
     border-radius: 8px;
@@ -24,14 +24,14 @@
     text-align: center;
 }
 
-#RouletteAdd-wrapper .area-button:hover,
-#RouletteAdd-wrapper .attraction-button:hover,
-#RouletteAdd-wrapper .food-button:hover,
-#RouletteAdd-wrapper .mission-button:hover {
+#RouletteDel-wrapper .area-button:hover,
+#RouletteDel-wrapper .attraction-button:hover,
+#RouletteDel-wrapper .food-button:hover,
+#RouletteDel-wrapper .mission-button:hover {
     opacity: 0.2;
 }
 
-#RouletteAdd-wrapper .input-container {
+#RouletteDel-wrapper .input-container {
     display: flex;
     padding: 20px 0;
     gap: 10px;
@@ -39,7 +39,7 @@
     align-items: center;
 }
 
-#RouletteAdd-wrapper .main-input {
+#RouletteDel-wrapper .main-input {
     flex: 1;
     height: 46px;
     border-radius: 8px;
@@ -47,7 +47,7 @@
     font-size: 24px;
 }
 
-#RouletteAdd-wrapper .address-input {
+#RouletteDel-wrapper .content-input {
     flex: 1;
     height: 46px;
     border-radius: 8px;
@@ -55,33 +55,25 @@
     font-size: 24px;
 }
 
-#RouletteAdd-wrapper .content-input {
-    flex: 1;
-    height: 46px;
-    border-radius: 8px;
-
-    font-size: 24px;
-}
-
-#RouletteAdd-wrapper .add-button {
+#RouletteDel-wrapper .delete-button {
     cursor: pointer;
     padding: 12px 40px;
 
     border-radius: 8px;
 
     font-size: 24px;
-    background-color: #4d8fff;
+    background-color: #ff4d4f;
     color: white;
 }
 
-#RouletteAdd-wrapper .add-button:hover {
-    opacity: 0.2;
+#RouletteDel-wrapper .delete-button:hover {
+    opacity: 0.8;
 }
 
-#RouletteAdd-wrapper .dropdown {
+#RouletteDel-wrapper .dropdown {
     cursor: pointer;
 
-    width: 150px;
+    flex: 1;
     height: 50px;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 1);
@@ -92,6 +84,6 @@
     color: black;
 }
 
-#RouletteAdd-wrapper .dropdown:hover {
-    opacity: 0.2;
+#RouletteDel-wrapper .dropdown:hover {
+    opacity: 0.8;
 }
