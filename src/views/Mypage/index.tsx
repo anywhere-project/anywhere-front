@@ -2,13 +2,13 @@ import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-import { RecommendAttraction, RecommendPost, MyRandom,Review } from 'types';
+import { RecommendAttraction, RecommendPost, MyRandom, Review } from 'types';
 import { ACCESS_TOKEN, MYPAGE_UPDATE_PATH, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest,  getReviewListRequest, getMyRandomListRequest,deleteMyRandomRequest } from 'apis';
+import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest, getReviewListRequest, getMyRandomListRequest, deleteMyRandomRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
@@ -19,6 +19,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { GetRouletteListResponseDto } from 'apis/dto/response/roulette';
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import RouletteDel from 'views/RouletteDel';
 
 // interface: another user 정보 //
 interface AnotherUser {
@@ -69,6 +70,8 @@ export default function Mypage() {
 
     const [activeBoard, setActiveBoard] = useState<'review' | 'recommend' | 'roulette'>('review');
 
+    const [activeButton, setActiveButton] = useState<'add' | 'delete' | null>(null);
+
     const handleBoardClick = (board: 'review' | 'recommend' | 'roulette') => {
         setActiveBoard(board);
     }
@@ -78,10 +81,10 @@ export default function Mypage() {
     const isOwner = signInUser?.userId === userId;
 
     // function : get review  list response 처리 함수 //
-    const getReviewListResponse = (responseBody: GetReviewPostListResponseDto | ResponseDto | null ) => {
+    const getReviewListResponse = (responseBody: GetReviewPostListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
-        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
@@ -93,40 +96,40 @@ export default function Mypage() {
         const reviewPosts = (responseBody as GetReviewPostListResponseDto).reviewPosts || [];
 
         const myReviewPosts = reviewPosts.filter(post => post.reviewWriter === userId);
-        
+
         setReviewContents(myReviewPosts);
-        
+
         setReviewPostCount(myReviewPosts.length);
 
-        if(reviewContents ===null) return;
+        if (reviewContents === null) return;
     };
 
     // function : get recommend post list response 처리 함수 //
-    const getRecommendAttractionResponse = (responseBody: GetRecommendAttractionListResponseDto  | ResponseDto | null) => {
+    const getRecommendAttractionResponse = (responseBody: GetRecommendAttractionListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-    
+
         if (!isSuccessed) {
             alert(message);
             return;
         }
-    
+
         const recommendPosts = (responseBody as GetRecommendAttractionListResponseDto).attractions || [];
 
         setRecommendAttractionContents(recommendPosts);
     };
 
     // function : get recommend post list response 처리 함수 //
-    const getRecommendListResponse = (responseBody:  GetRecommendPostListResponseDto | ResponseDto | null) => {
+    const getRecommendListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-    
+
         if (!isSuccessed) {
             alert(message);
             return;
@@ -141,45 +144,45 @@ export default function Mypage() {
 
 
 
-const filterMatchingRecommendIds = () => {
-    const matchingContents = recommendAttractionContents.filter(attraction => {
-        // recommendContents에서 matching recommendId 찾기
-        return recommendContents.some(post => post.recommendId === attraction.recommendId);
-    });
+    const filterMatchingRecommendIds = () => {
+        const matchingContents = recommendAttractionContents.filter(attraction => {
+            // recommendContents에서 matching recommendId 찾기
+            return recommendContents.some(post => post.recommendId === attraction.recommendId);
+        });
 
-    console.log("Matching Recommend Id Contents:", matchingContents);
-    return matchingContents;
-};
+        console.log("Matching Recommend Id Contents:", matchingContents);
+        return matchingContents;
+    };
 
 
-    
 
-    
 
-        // function : get recommend attraction list response 처리 함수 //
-        const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
-            const message = !responseBody ? '서버에 문제가 있습니다.' :
+
+
+    // function : get recommend attraction list response 처리 함수 //
+    const getRecommendAttractionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-    
-            const isSuccessed = responseBody!== null && responseBody.code === 'SU';
-            if (!isSuccessed) {
-                alert(message);
-                return;
-            }
-    
-            const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
-            const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const recommendAttractionPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+        const myRecommendAttractionPosts = recommendAttractionPosts.filter(post => post.recommendWriter === userId);
 
         setRecommendAttractionPostCount(myRecommendAttractionPosts.length);
     };
 
     // function : get recommend food list response 처리 함수 //
 
-    const getRecommendFoodListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
+    const getRecommendFoodListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
-        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -195,10 +198,10 @@ const filterMatchingRecommendIds = () => {
 
     // function : get recommend mission list response 처리 함수 //
 
-    const getRecommendMissionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null ) => {
+    const getRecommendMissionListResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
         const message = !responseBody ? '서버에 문제가 있습니다.' :
-        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -257,7 +260,7 @@ const filterMatchingRecommendIds = () => {
         navigator(REVIEW_UPDATE_PATH(post.reviewId));
     };
 
-    
+
     const reviewHandleDeletePost = (post: Review) => {
 
         const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
@@ -275,7 +278,7 @@ const filterMatchingRecommendIds = () => {
                     if (response.code === 'SU') {
                         alert('게시물이 성공적으로 삭제되었습니다.');
                         // 성공적으로 삭제 후 화면에서 게시물을 제거
-                        setReviewContents(prev =>prev? prev.filter(item => item.reviewId !== post.reviewId) : []);
+                        setReviewContents(prev => prev ? prev.filter(item => item.reviewId !== post.reviewId) : []);
                     } else {
                         alert('게시물 삭제에 실패했습니다.');
                     }
@@ -298,7 +301,7 @@ const filterMatchingRecommendIds = () => {
         }
         navigator(RECOMMEND_UPDATE_PATH(post.recommendId));
     };
-    
+
     const recommendHandleDeletePost = (post: RecommendAttraction) => {
         const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
         if (confirmDelete) {
@@ -327,7 +330,7 @@ const filterMatchingRecommendIds = () => {
         }
     };
     const onClickNickname = () => {
-        if(!signInUser)return;
+        if (!signInUser) return;
         navigator(MYPAGE_UPDATE_PATH(signInUser.userId));
     }
 
@@ -359,18 +362,18 @@ const filterMatchingRecommendIds = () => {
     }, [userId]);
 
 
-useEffect(()=>{
-getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
-getRecommendPostListRequest("attraction").then(getRecommendListResponse);
+    useEffect(() => {
+        getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
+        getRecommendPostListRequest("attraction").then(getRecommendListResponse);
 
-},[recommendPostCount]);
-
-
+    }, [recommendPostCount]);
 
 
-useEffect(()=>{
-    setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
-},[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
+
+
+    useEffect(() => {
+        setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
+    }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
 
     useEffect(() => {
         getReviewListRequest().then(getReviewListResponse);
@@ -389,11 +392,11 @@ useEffect(()=>{
     }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
 
 
-useEffect(()=>{
-// 예시로 필터링된 값을 다른 상태에 저장할 수 있음
-const filteredContents = filterMatchingRecommendIds();
-setFilteredRecommendContents(filteredContents);
-},[activeBoard]);
+    useEffect(() => {
+        // 예시로 필터링된 값을 다른 상태에 저장할 수 있음
+        const filteredContents = filterMatchingRecommendIds();
+        setFilteredRecommendContents(filteredContents);
+    }, [activeBoard]);
 
 
 
@@ -403,7 +406,7 @@ setFilteredRecommendContents(filteredContents);
             <div className='mypage'>
                 <div className='mypage-container'>
                     <div className='mypage-top'>
-                    <div className='mypage-nickname' onClick={onClickNickname}>{nickname || '닉네임 없음'}<SettingsIcon/> </div>
+                        <div className='mypage-nickname' onClick={onClickNickname}>{nickname || '닉네임 없음'}<SettingsIcon /> </div>
                         <div className='mypage-tool'></div>
                     </div>
                     <div className='mypage-middle'>
@@ -427,8 +430,30 @@ setFilteredRecommendContents(filteredContents);
                         </div>
                     </div>
 
-                    <RouletteAdd />
-                    
+                    {signInUser?.isAdmin && (
+                        <div className="roulette-buttons">
+                            <button
+                                className={`roulette-button ${activeButton === 'add' ? 'active' : ''}`}
+                                onClick={() =>
+                                    setActiveButton((prev) => (prev === 'add' ? null : 'add'))
+                                }
+                            >
+                                룰렛 추가
+                            </button>
+                            <button
+                                className={`roulette-button ${activeButton === 'delete' ? 'active' : ''}`}
+                                onClick={() =>
+                                    setActiveButton((prev) => (prev === 'delete' ? null : 'delete'))
+                                }
+                            >
+                                룰렛 삭제
+                            </button>
+                        </div>
+                    )}
+
+                    {activeButton === 'add' && <RouletteAdd />}
+                    {activeButton === 'delete' && <RouletteDel />}
+
                     <div className="board-selector">
                         <div
                             className={`review-board ${activeBoard === 'review' ? 'active' : ''}`}
@@ -451,33 +476,33 @@ setFilteredRecommendContents(filteredContents);
                     </div>
 
                     <div className="gallery-review" style={{ display: activeBoard === 'review' ? 'grid' : 'none' }}>
-                        
+
                         {reviewContents?.map((post, index) => (
                             <div key={index} className="gallery-item" onClick={() => {
                                 setSelectedPost(post); // 클릭한 포스트 정보를 상태에 저장
                                 setIsModalOpen(true);  // 모달 열기
                             }}>
-                            <div className='button-overlay'>
-                                <div className="item-buttons">
-                                    <button
-                                        className="item-button"
-                                        onClick={() => reviewHandleEditPost(post)}
-                                    >
-                                        ✏️ 수정
-                                    </button>
-                                    <button
-                                        className="item-button"
-                                        onClick={() => reviewHandleDeletePost(post)}
-                                    >
-                                        🗑️ 삭제
-                                    </button>
-                                </div> </div>
+                                <div className='button-overlay'>
+                                    <div className="item-buttons">
+                                        <button
+                                            className="item-button"
+                                            onClick={() => reviewHandleEditPost(post)}
+                                        >
+                                            ✏️ 수정
+                                        </button>
+                                        <button
+                                            className="item-button"
+                                            onClick={() => reviewHandleDeletePost(post)}
+                                        >
+                                            🗑️ 삭제
+                                        </button>
+                                    </div> </div>
                                 <img
                                     src={post.imageUrl?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
                                     alt={`Review item ${index + 1}`}
                                     className="gallery-image"
                                 />
-                                
+
                             </div>
                         ))}
                     </div>
@@ -494,12 +519,12 @@ setFilteredRecommendContents(filteredContents);
                                 <p>{selectedPost.reviewContent}</p>
                                 <p>{selectedPost.reviewCreatedAt}</p>
                                 <p>좋아요 : {selectedPost.reviewLikeCount}</p>
-                                
+
                                 <button className="modal-close-button" onClick={() => setIsModalOpen(false)}>
                                     Close
                                 </button>
                             </div>
-                            
+
                         </div>
                     )}
 
@@ -507,26 +532,26 @@ setFilteredRecommendContents(filteredContents);
                     <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
                         {filterRecommendContents.map((post, index) => (
                             <div key={index} className="gallery-item">
-                            <img
-                                src={post.images?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
-                                alt={`Recommend item ${index + 1}`}
-                                className="gallery-image"
-                            />
-                            <div className="item-buttons">
-                                <button
-                                    className="item-button"
-                                    onClick={() => recommendHandleEditPost(post)}
-                                >
-                                    ✏️ 수정
-                                </button>
-                                <button
-                                    className="item-button"
-                                    onClick={() => recommendHandleDeletePost(post)}
-                                >
-                                    🗑️ 삭제
-                                </button>
+                                <img
+                                    src={post.images?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
+                                    alt={`Recommend item ${index + 1}`}
+                                    className="gallery-image"
+                                />
+                                <div className="item-buttons">
+                                    <button
+                                        className="item-button"
+                                        onClick={() => recommendHandleEditPost(post)}
+                                    >
+                                        ✏️ 수정
+                                    </button>
+                                    <button
+                                        className="item-button"
+                                        onClick={() => recommendHandleDeletePost(post)}
+                                    >
+                                        🗑️ 삭제
+                                    </button>
+                                </div>
                             </div>
-                        </div>
                         ))}
                     </div>
                     <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'block' : 'none' }}>
