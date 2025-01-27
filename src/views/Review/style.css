@@ -212,14 +212,14 @@
     height: 50px;
 }
 
-button {
+.modal-bottom button {
     background-color: rgb(89, 164, 249);
     color: rgb(255, 255, 255);
     font-size: 12px;
     padding: 12px 20px;
 }
 
-button:hover {
+.modal-bottom button:hover {
     background: rgb(46, 136, 239);
     color: rgb(255, 255, 255);
     box-shadow: 0 0 50px rgb(255, 255, 255);

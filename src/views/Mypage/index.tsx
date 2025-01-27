@@ -1,7 +1,6 @@
 import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
-
 import { useEffect, useRef, useState } from 'react';
 import { RecommendAttraction, RecommendPost, MyRandom, Review, RecommendMission, RecommendFood } from 'types';
 import { ACCESS_TOKEN, MYPAGE_UPDATE_PATH, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
@@ -550,10 +549,6 @@ export default function Mypage() {
     }, [recommendPostCount]);
 
 
-    useEffect(()=>{
-        setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
-    },[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
-    }, [recommendPostCount]);
 
     useEffect(() => {
         setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
