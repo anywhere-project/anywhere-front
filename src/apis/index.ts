@@ -12,8 +12,9 @@ import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.
 import GetUserInfoResponseDto from "./dto/response/user/get-user-info.response.dto";
 import PatchReviewPostRequestDto from "./dto/request/review/patch-review-post.request.dto";
 import GetReviewResponseDto from "./dto/response/review/get-review.response.dto";
-import { PostRouletteRequestDto, PostAreaRequestDto, PostFoodRequestDto, PostAttractionRequestDto } from "./dto/request/roulette";
+import { PostRouletteRequestDto, PostAreaRequestDto, PostFoodRequestDto, PostAttractionRequestDto, PostMissionRequestDto } from "./dto/request/roulette";
 import { GetRouletteListResponseDto } from "./dto/response/roulette";
+import GetReviewCommentListResponseDto from "./dto/response/review/get-review-comment-list.response.dto";
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -66,10 +67,18 @@ const GET_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_
 const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
+const GET_REVIEW_COMMENT_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const DELETE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 
 const POST_AREA_API_URL  = `${ROULETTE_MODULE_URL}/area`;
-const POST_ATTRACTION_API_URL  = (araeId: number | string) => `${ROULETTE_MODULE_URL}/attraction/{areaId}`;
+const POST_ATTRACTION_API_URL  = (areaId: number | string) => `${ROULETTE_MODULE_URL}/attraction/${areaId}`;
 const POST_FOOD_API_URL  = `${ROULETTE_MODULE_URL}/food`;
+const POST_MISSION_API_URL  = `${ROULETTE_MODULE_URL}/mission`;
+
+const DELETE_AREA_API_URL = (areaId: number | string)  => `${ROULETTE_MODULE_URL}/area/${areaId}`;
+const DELETE_ATTRACTION_API_URL = (areaId: number | string, attractionId: number | string)  => `${ROULETTE_MODULE_URL}/attraction/${areaId}/${attractionId}`;
+const DELETE_FOOD_API_URL = (foodId: number | string)  => `${ROULETTE_MODULE_URL}/food/${foodId}`;
+const DELETE_MISSION_API_URL = (missionId: number | string)  => `${ROULETTE_MODULE_URL}/mission/${missionId}`;
 
 const POST_MY_RANDOM_API_URL = `${ROULETTE_MODULE_URL}/my-random`;
 const DELETE_MY_RANDOM_API_URL = (randomId: string | number) => `${ROULETTE_MODULE_URL}/my-random/${randomId}`;
@@ -433,7 +442,7 @@ export const postAreaRequest = async (requestBody: PostAreaRequestDto, accessTok
 }
 
 // function: 관광지 추가 요청 함수 //
-export const postAttractionRequest = async (requestBody: PostAttractionRequestDto, areaId: number, accessToken: string) => {
+export const postAttractionRequest = async (requestBody: PostAttractionRequestDto, areaId: number | string, accessToken: string) => {
     const responseBody = await axios.post(POST_ATTRACTION_API_URL(areaId), requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
@@ -443,6 +452,59 @@ export const postAttractionRequest = async (requestBody: PostAttractionRequestDt
 // function: 먹거리 추가 요청 함수 //
 export const postFoodRequest = async (requestBody: PostFoodRequestDto, accessToken: string) => {
     const responseBody = await axios.post(POST_FOOD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 후기 댓글 리스트 가져오기 요청 함수 //
+export const getReviewCommentListRequest = async (reviewId: string | number) => {
+    const responseBody = await axios.get(GET_REVIEW_COMMENT_API_URL(reviewId))
+    .then(responseDataHandler<GetReviewCommentListResponseDto>)
+    .catch(responseErrorHandler);
+return responseBody;
+};
+
+// function: 후기 댓글 삭제 요청 함수 //
+export const deleteReviewCommentRequest = async (reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_REVIEW_COMMENT_API_URL(reviewId, reviewCommentId), bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 미션 추가 요청 함수 //
+export const postMissionRequest = async (requestBody: PostMissionRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_MISSION_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 지역 추가 요청 함수 //
+export const deleteAreaRequest = async (areaId: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_AREA_API_URL(areaId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+export const deleteAttractionRequest = async (areaId: number | string, attractionId: number | string ,accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_ATTRACTION_API_URL(areaId,attractionId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+export const deleteFoodRequest = async (foodId: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_FOOD_API_URL(foodId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+export const deleteMissionRequest = async (missionId: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_MISSION_API_URL(missionId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;

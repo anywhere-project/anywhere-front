@@ -81,6 +81,7 @@
 .bottom-first-line .hashTag {
     margin-left: 8px;
     font-weight: 600; 
+    color: #385898
 }
 
 .review-bottom .bottom-second-line {
@@ -95,6 +96,8 @@
 
 .review-bottom .bottom-third-line {
     margin-bottom: 20px;
+    font-size: 13px;
+    color: #888;
 }
 
 .review-content .modal {
@@ -140,10 +143,105 @@
 
 .modal-middle .review-writer {
     margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-middle .hashtags {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #385898;
+}
+
+.modal-middle .hashTag {
+    margin-right: 8px;
+}
+
+.modal-middle .post-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 10px;
 }
 
 .review-content .modal-middle {
-    padding: 50px;
+    padding: 50px 30px 0px 30px;
     text-align: left; /* 텍스트 시작 방향을 왼쪽으로 맞추기 */
     direction: ltr;  /* 텍스트 방향을 왼쪽에서 오른쪽으로 설정 */
+    max-height: 250px;
+}
+
+.modal-box .modal-middle-comment {
+    position: relative;
+    padding: 30px;
+    overflow-y: scroll;
+    min-height: 250px;
+    max-height: 420px;
+}
+
+.comment-box::-webkit-scrollbar {
+    width: 10px;
+}
+.comment-box::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+}
+.comment-box::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.modal-box .modal-bottom {
+    position: fixed;
+    bottom: 100px;
+    height: 50px;
+    width: 740px;
+    display: flex;
+}
+
+.modal-bottom .input-box {
+    width: 600px;
+    height: 50px;
+    border: 1px solid #dfe1e5;
+    border-radius: 16px;
+    padding: 0 45px;
+}
+
+.modal-bottom .comment-button {
+    width: 70px;
+    height: 50px;
+}
+
+button {
+    background-color: rgb(89, 164, 249);
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    padding: 12px 20px;
+}
+
+button:hover {
+    background: rgb(46, 136, 239);
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 50px rgb(255, 255, 255);
+}
+
+.review-comment .comment-first-line {
+    font-weight: 600;
+}
+
+.review-comment .comment-second-line {
+    padding: 5px 0px;
+}
+
+.review-comment .comment-third-line {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.comment-third-line .margin-right {
+    margin-right: 10px;
+}
+
+.comment-third-line .delete-button {
+    cursor: pointer;
 }

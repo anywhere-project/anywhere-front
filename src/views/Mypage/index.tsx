@@ -1,6 +1,7 @@
 import { useSignInUserStore } from 'stores';
 import './style.css';
 import { useCookies } from 'react-cookie';
+
 import { useEffect, useRef, useState } from 'react';
 import { RecommendAttraction, RecommendPost, MyRandom, Review, RecommendMission, RecommendFood } from 'types';
 import { ACCESS_TOKEN, MYPAGE_UPDATE_PATH, RECOMMEND_UPDATE_PATH, REVIEW_UPDATE_PATH } from '../../constants';
@@ -22,6 +23,7 @@ import GetRouletteListResponseDto from './../../apis/dto/response/roulette/get-r
 import AttractionsIcon from '@mui/icons-material/Attractions';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import TaskIcon from '@mui/icons-material/Task';
+import RouletteDel from 'views/RouletteDel';
 
 
 // interface: another user 정보 //
@@ -109,7 +111,6 @@ function MissionRow({ recommendMission }: Missions) {
 
 
 export default function Mypage() {
-
     //function: 네비게이터 함수 //
     const navigator = useNavigate();
 
@@ -140,6 +141,7 @@ export default function Mypage() {
     // state: 내 게시판 목록 상태 //
     const [reviewContents, setReviewContents] = useState<Review[] | null>([]);
     const [recommendAttractionContents, setRecommendAttractionContents] = useState<RecommendAttraction[]>([]);
+
     const [recommendPost, setRecommendPost] = useState<RecommendPost[]>([]);
 
     const [posts, setPosts] = useState<RecommendPost[]>([]);
@@ -154,6 +156,10 @@ export default function Mypage() {
     const [activeBoard, setActiveBoard] = useState<'review' | 'recommend' | 'roulette'>('review');
 
     const [activeGallery, setActiveGallery] = useState<'attraction' | 'food' | 'mission'>('attraction');
+
+    const [recommendContents, setRecommendContents] = useState<RecommendPost[]>([]);
+    const [activeButton, setActiveButton] = useState<'add' | 'delete' | null>(null);
+
 
     const handleBoardClick = (board: 'review' | 'recommend' | 'roulette') => {
         setActiveBoard(board);
@@ -222,24 +228,19 @@ export default function Mypage() {
 
         const recommendPosts2 = (responseBody as GetRecommendPostListResponseDto).posts || [];
 
-
         setRecommendPost(recommendPosts2);
         setPosts(recommendPosts2);
 
     };
 
 
-
     const filterMatchingRecommendIds = () => {
         const matchingContents = recommendAttractionContents.filter(attraction => {
             // recommendContents에서 matching recommendId 찾기
-            return recommendPost.some(post => post.recommendId === attraction.recommendId);
+            return recommendContents.some(post => post.recommendId === attraction.recommendId);
         });
-
-
         return matchingContents;
     };
-
 
 
 
@@ -303,6 +304,7 @@ export default function Mypage() {
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
+
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
@@ -316,7 +318,9 @@ export default function Mypage() {
 
     // function : get recommend food list response 처리 함수 //
 
+
     const getRecommendFoodCountResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
@@ -335,7 +339,9 @@ export default function Mypage() {
 
     // function : get recommend mission list response 처리 함수 //
 
+
     const getRecommendMissionCountResponse = (responseBody: GetRecommendPostListResponseDto | ResponseDto | null) => {
+
         const message = !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
                 responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
@@ -376,11 +382,11 @@ export default function Mypage() {
     const deleteMyRandomResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                    responseBody.code === 'NMR' ? '랜덤 이력이 존재하지 않습니다.' :
-                        responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
-                            responseBody.code === 'NP' ? '허가되지 않은 접근입니다.' :
-                                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NMR' ? '랜덤 이력이 존재하지 않습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
+            responseBody.code === 'NP' ? '허가되지 않은 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -392,9 +398,9 @@ export default function Mypage() {
     const getMyRandomListResponse = (responseBody: GetRouletteListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                    responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 아이디입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -499,11 +505,13 @@ export default function Mypage() {
         navigator(MYPAGE_UPDATE_PATH(signInUser.userId));
     }
 
-
     const onMyRandomDeleteClickHandler = (index: number) => {
         const randomId = myRandomList[index].randomId;
         if (!accessToken || !randomId) return;
-        deleteMyRandomRequest(index, accessToken).then(deleteMyRandomResponse);
+        const isConfirm = window.confirm("정말 삭제하시겠습니까?");
+        if (isConfirm) {
+            deleteMyRandomRequest(index, accessToken).then(deleteMyRandomResponse);
+        }
     }
     const loadMorePosts = () => {
         setIsLoading(true);
@@ -542,7 +550,10 @@ export default function Mypage() {
     }, [recommendPostCount]);
 
 
-
+    useEffect(()=>{
+        setRecommendPostCount(recommendAttractionPostCount+recommendFoodPostCount+recommendMissionPostCount);
+    },[recommendAttractionPostCount,recommendFoodPostCount,recommendMissionPostCount])
+    }, [recommendPostCount]);
 
     useEffect(() => {
         setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
@@ -550,8 +561,10 @@ export default function Mypage() {
 
     useEffect(() => {
         getReviewListRequest().then(getReviewListResponse);
-        getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
 
+        if (accessToken) {
+        getMyRandomListRequest(accessToken).then(getMyRandomListResponse);
+        }
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
@@ -574,6 +587,7 @@ export default function Mypage() {
 
 
 
+
     useEffect(() => {
         setRecommendPostCount(recommendAttractionPostCount + recommendFoodPostCount + recommendMissionPostCount);
     }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
@@ -584,6 +598,7 @@ export default function Mypage() {
         const filteredContents = filterMatchingRecommendIds();
         setFilteredRecommendContents(filteredContents);
     }, [activeBoard]);
+
 
     useEffect(() => {
         getRecommendPostListRequest("attraction").then(getRecommendAttractionCountResponse);
@@ -664,7 +679,31 @@ export default function Mypage() {
                         </div>
                     </div>
 
-                    <RouletteAdd />
+
+                    {signInUser?.isAdmin && (
+                        <div className="roulette-buttons">
+                            <button
+                                className={`roulette-button ${activeButton === 'add' ? 'active' : ''}`}
+                                onClick={() =>
+                                    setActiveButton((prev) => (prev === 'add' ? null : 'add'))
+                                }
+                            >
+                                룰렛 추가
+                            </button>
+                            <button
+                                className={`roulette-button ${activeButton === 'delete' ? 'active' : ''}`}
+                                onClick={() =>
+                                    setActiveButton((prev) => (prev === 'delete' ? null : 'delete'))
+                                }
+                            >
+                                룰렛 삭제
+                            </button>
+                        </div>
+                    )}
+
+                    {activeButton === 'add' && <RouletteAdd />}
+                    {activeButton === 'delete' && <RouletteDel />}
+
 
                     <div className="board-selector">
                         <div
@@ -835,6 +874,7 @@ export default function Mypage() {
                                     alt={`Recommend item ${index + 1}`}
                                     className="gallery-image"
                                 />
+
                                 <div className='button-overlay'>
                                     <div className="item-buttons">
                                         <button
@@ -853,6 +893,7 @@ export default function Mypage() {
                                 </div>
                             </div>
                         ))} */}
+
                     </div>
                     <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'block' : 'none' }}>
                         <table className="roulette-table">
@@ -860,9 +901,10 @@ export default function Mypage() {
                                 <tr>
                                     <th>No.</th>
                                     <th>지역</th>
-                                    <th>명소</th>
-                                    <th>음식</th>
+                                    <th>관광지</th>
+                                    <th>먹거리</th>
                                     <th>미션</th>
+                                    <th>삭제</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -878,7 +920,7 @@ export default function Mypage() {
                                                 className="random-delete-button"
                                                 onClick={() => onMyRandomDeleteClickHandler(index)}
                                             >
-                                                <Delete />
+                                                <Delete className='random-delete-icon' />
                                             </IconButton>
                                         </td>
                                     </tr>

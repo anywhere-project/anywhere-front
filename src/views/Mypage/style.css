@@ -7,7 +7,6 @@
     top: 100px;
     margin: 0 auto;
     width: 100%;
-
 }
 
 #mypage-wrapper .mypage {
@@ -258,23 +257,29 @@
 }
 
 
+
 #mypage-wrapper .roulette-table {
+
     width: 100%;
     border-collapse: collapse;
-    margin: 16px 0;
+    text-align: center; 
 }
+
 
 #mypage-wrapper .roulette-table th,
 #mypage-wrapper .roulette-table td {
     border: 1px solid #ddd;
+
     padding: 8px;
-    text-align: center;
 }
 
+
 #mypage-wrapper .roulette-table th {
+
     background-color: #f4f4f4;
-    font-weight: bold;
+    font-weight: bold; 
 }
+
 
 #mypage-wrapper .roulette-table tr:nth-child(even) {
     background-color: #f9f9f9;
@@ -289,3 +294,4 @@
     margin: 0 auto;
     font-size: 20px;
 }
+

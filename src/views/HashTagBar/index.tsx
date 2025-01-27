@@ -49,7 +49,7 @@ export default function HashTagBar() {
             <div className="hash-tag-list">
                 {hashTagList.length > 0 ? (
                     hashTagList.map((hashTag, index) => (
-                        <div key={index} className="hash-tag">{index + 1}. #{hashTag.tagName}</div>
+                        <div key={index} className="hash-tag">{index + 1}. {hashTag.tagName}</div>
                     ))
                 ) : (
                     <div className="hash-tag">해시태그가 없습니다.</div>

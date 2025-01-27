@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import './style.css';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN } from '../../constants';
-import { postAreaRequest, postAttractionRequest, postFoodRequest } from 'apis';
-import { PostAreaRequestDto, PostAttractionRequestDto, PostFoodRequestDto } from 'apis/dto/request/roulette';
+import { postAreaRequest, postAttractionRequest, postFoodRequest, postMissionRequest } from 'apis';
+import { PostAreaRequestDto, PostAttractionRequestDto, PostFoodRequestDto, PostMissionRequestDto } from 'apis/dto/request/roulette';
 import { ResponseDto } from 'apis/dto/response';
 import { GetAreaResponseDto } from 'apis/dto/response/area';
 import { getAreaListRequest } from 'apis/dto/request';
@@ -21,7 +21,7 @@ export default function RouletteAdd() {
     const [selectCategory, setSelectCategory] = useState<string | null>(null);
     const [inputValue, setInputValue] = useState<string>('');
     const [addressValue, setAddressValue] = useState<string>('');
-    const [attractionValue, setAttractionValue] = useState<string>('');
+    const [missionValue, setMissionValue] = useState<string>('');
     const [areaList, setAreaList] = useState<Area[]>([]);
     const [selectAreaId, setSelectAreaId] = useState<number | null>(null);
 
@@ -29,6 +29,8 @@ export default function RouletteAdd() {
     const categoryClickHandler = async (category: string) => {
         setSelectCategory(category);
         setInputValue('');
+        setAddressValue('');
+        setMissionValue('');
         setSelectAreaId(null);
     };
 
@@ -46,6 +48,10 @@ export default function RouletteAdd() {
     }
     const addressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddressValue(e.target.value);
+    }
+
+    const missionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMissionValue(e.target.value);
     }
 
     // function: 지역 response 함수 //
@@ -66,7 +72,8 @@ export default function RouletteAdd() {
 
     // function: 지역 ID, 이름 불러오기 함수 //
     const getAreaListResponse = (responseBody: GetAreaResponseDto | ResponseDto | null) => {
-        const message = !responseBody ? '서버에 문제가 있습니다.' :
+        const message = 
+        !responseBody ? '서버에 문제가 있습니다.' :
         responseBody.code === 'VF' ? '잘못된 접근입니다.' :
         responseBody.code === 'AF' ? '잘못된 접근입니다.' :
         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
@@ -102,9 +109,9 @@ export default function RouletteAdd() {
     const postFoodResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                    responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. 혹은 존재하는 먹거리인지 확인하세요.' : '';
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. 혹은 존재하는 먹거리인지 확인하세요.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -114,6 +121,21 @@ export default function RouletteAdd() {
         alert('성공적으로 먹거리를 저장하였습니다.');
     }
 
+    const postMissionResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. 혹은 존재하는 미션인지 확인하세요.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        alert('성공적으로 미션을 저장하였습니다.');
+    }
+
     // event handler: 추가 버튼 클릭 이벤트 핸들러 //
     const addClickHandler = async () => {
         if (!inputValue.trim()) {
@@ -121,18 +143,24 @@ export default function RouletteAdd() {
             return;
         }
 
-        if (!addressValue.trim()) {
+        if (selectCategory === '관광지' && !addressValue.trim()) {
             alert('값을 입력하세요.');
             return;
         }
 
-        if (!selectAreaId) {
+        if (selectCategory === '미션' && !missionValue.trim()) {
+            alert('값을 입력하세요.');
+            return;
+        }
+
+        if (selectCategory === '관광지' && !selectAreaId) {
             alert('지역을 선택하세요.');
             return;
         }
 
         const requestBody = { name: inputValue };
-        const AddressBody = { name: addressValue }
+        const addressBody = { name: addressValue };
+        const missionBody = { name: missionValue };
 
         switch (selectCategory) {
             case '지역':
@@ -143,14 +171,18 @@ export default function RouletteAdd() {
                 break;
 
             case '관광지':
-                const attractionRequestBody: PostAttractionRequestDto = {
-                    areaId: selectAreaId,
-                    attractionName: requestBody.name,
-                    attractionAddress: AddressBody.name,
-                };
-                console.log('Request Body:', attractionRequestBody, typeof(selectAreaId));
-                await postAttractionRequest(attractionRequestBody, selectAreaId, accessToken).then(postAttractionResponse);
+                if (selectAreaId !== null) {
+                    const attractionRequestBody: PostAttractionRequestDto = {
+                        areaId: selectAreaId,
+                        attractionName: requestBody.name,
+                        attractionAddress: addressBody.name,
+                    };
+                    await postAttractionRequest(attractionRequestBody, selectAreaId, accessToken).then(postAttractionResponse);
+                } else {
+                    alert('지역을 선택하세요.');
+                }
                 break;
+
 
             case '먹거리':
                 const foodRequestBody: PostFoodRequestDto = {
@@ -159,11 +191,22 @@ export default function RouletteAdd() {
                 await postFoodRequest(foodRequestBody, accessToken).then(postFoodResponse);
                 break;
 
+            case '미션':
+                const missionRequestBody: PostMissionRequestDto = {
+                    missionName: requestBody.name,
+                    missionContent: missionBody.name
+                };
+                await postMissionRequest(missionRequestBody, accessToken).then(postMissionResponse);
+                console.log(missionRequestBody);
+                break;
+
             default:
                 alert('카테고리를 선택하세요.');
                 return;
         }
         setInputValue('');
+        setAddressValue('');
+        setMissionValue('');
     };
 
     return (
@@ -189,17 +232,17 @@ export default function RouletteAdd() {
             <div className='input-container'>
                 {selectCategory === '관광지' && (
                     <select
-                    className='dropdown'
-                    value={selectAreaId || ''}
-                    onChange={(e) => setSelectAreaId(Number(e.target.value))}
-                >
-                    <option value=''>지역을 선택하세요</option>
-                    {areaList.map((area) => (
-                        <option key={area.areaId} value={area.areaId}>
-                            {area.areaName}
-                        </option>
-                    ))}
-                </select>
+                        className='dropdown'
+                        value={selectAreaId || ''}
+                        onChange={(e) => setSelectAreaId(Number(e.target.value))}
+                    >
+                        <option value=''>지역 선택</option>
+                        {areaList.map((area) => (
+                            <option key={area.areaId} value={area.areaId}>
+                                {area.areaName}
+                            </option>
+                        ))}
+                    </select>
                 )
                 }
                 <input
@@ -214,12 +257,21 @@ export default function RouletteAdd() {
                     disabled={!selectCategory}
                 />
                 {selectCategory === '관광지' && (
-                    <input 
-                    className='main-input'
-                    value={addressValue}
-                    onChange={addressChange}
-                    placeholder={'주소를 입력하세요.'}
-                    disabled={!selectCategory}
+                    <input
+                        className='address-input'
+                        value={addressValue}
+                        onChange={addressChange}
+                        placeholder={'주소를 입력하세요.'}
+                        disabled={!selectCategory}
+                    />
+                )}
+                {selectCategory === '미션' && (
+                    <input
+                        className='content-input'
+                        value={missionValue}
+                        onChange={missionChange}
+                        placeholder={'미션 내용을 입력하세요.'}
+                        disabled={!selectCategory}
                     />
                 )}
                 <div className='add-button' onClick={addClickHandler}>추가</div>
