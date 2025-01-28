@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { createContext, useEffect, useRef, useState } from 'react'
 import './style.css'
 import type { Review, ReviewComment } from 'types';
 import { ResponseDto } from 'apis/dto/response';
 import GetUserInfoResponseDto from 'apis/dto/response/user/get-user-info.response.dto';
-import { deleteReviewCommentRequest, getReviewCommentListRequest, getReviewListRequest, getSignInRequest, getUserInfoRequest, postReviewLikeRequest } from 'apis';
+import { deleteReviewCommentRequest, getReviewCommentListRequest, getReviewCommentRequest, getReviewListRequest, getSignInRequest, getUserInfoRequest, postReviewCommentRequest, postReviewLikeRequest } from 'apis';
 import { FaHeart, FaPencilAlt, FaRegHeart } from "react-icons/fa";
 import 'swiper/swiper-bundle.min.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,6 +15,9 @@ import { useSignInUserStore } from 'stores';
 import { GetSignInResponseDto } from 'apis/dto/response/auth';
 import { useNavigate } from 'react-router-dom';
 import GetReviewCommentListResponseDto from 'apis/dto/response/review/get-review-comment-list.response.dto';
+import { ReviewCommentWithChildren } from 'types/review-comment-children.interface';
+import { PostReviewCommentRequestDto } from 'apis/dto/request/review';
+import GetReviewCommentResponseDto from 'apis/dto/response/review/get-review-comment.dto';
 
 // interface: 후기 리스트 아이템 Properties //
 interface TableRowProps {
@@ -22,13 +25,83 @@ interface TableRowProps {
     userLoginId: string;
 }
 
-// interface: 후기 댓글 리스트 아이템 Properties //
+// interface: 후기 개별 댓글 아이템 Properties //
 interface CommentRowProps {
-    reviewComment: ReviewComment;
+    reviewComment: ReviewCommentWithChildren;
     userLoginId: string;
+    onPostComment: (category: number, activeParentId: number | null) => void;
+    onPatchComment: (category: number, activeReviewCommentId: number | null) => void;
 }
 
-function CommentRowProps({reviewComment, userLoginId}: CommentRowProps) {
+// interface: 후기 댓글 트리 아이템 Properties //
+interface CommentTreeProps {
+    comments: ReviewCommentWithChildren[];
+    onPostChildComment: (category: number, activeParentId: number | null) => void;
+    onPatchChildComment: (category: number, activeReviewCommentId: number | null) => void;
+}
+
+function CommentTree({comments, onPostChildComment, onPatchChildComment}: CommentTreeProps) {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+    const accessToken = cookies[ACCESS_TOKEN];
+
+    // state: 후기 정보 상태 //
+    const [userId, setUserId] = useState<string>('');
+    const [category, setCategory] = useState<number>(0); // 0은 댓글 작성, 1은 대댓글 작성, 2는 대댓글 수정
+    const [activeParentId, setActiveParentId] = useState<number | null>(null);
+    const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
+
+    // function: get user info response 처리 함수 //
+    const getSignInUserResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' : 
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { userId } = responseBody as GetSignInResponseDto;
+        setUserId(userId);
+    }
+
+    // function: get posted comment info 처리 함수 //
+    const getPostedCommentInfo = (category: number, activeParentId: number | null) => {
+        setCategory(category);
+        setActiveParentId(activeParentId);
+    }
+
+    // function: get patched comment info 처리 함수 //
+    const getPatchedCommentInfo = (category: number, reviewCommentId: number | null) => {
+        setCategory(category);
+        setActiveCommentId(reviewCommentId);
+    }
+
+    // effect: 후기 정보 업데이트
+    useEffect(() => {
+        getSignInRequest(accessToken).then(getSignInUserResponse);
+    }, []);
+
+    // effect: 댓글 상태가 바뀔 때 부모에게 전송
+    useEffect(() => {
+        onPostChildComment(category, activeParentId);
+        onPatchChildComment(category, activeCommentId);
+    }, [category, activeParentId, activeCommentId]);
+
+    return (
+        <div>
+            {comments.map((comment, index) => (
+            <CommentRowProps key={index} reviewComment={comment} userLoginId={userId} onPostComment={getPostedCommentInfo} onPatchComment={getPatchedCommentInfo}/>
+            ))}
+        </div>
+    );
+}
+
+function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComment}: CommentRowProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -39,6 +112,9 @@ function CommentRowProps({reviewComment, userLoginId}: CommentRowProps) {
      const [nickName, setNickName] = useState<string>('');
 
      // state: 댓글 상태 //
+     const [category, setCategory] = useState<number>(0); // 0은 댓글 작성, 1은 대댓글 작성, 2는 대댓글 수정
+     const [activeParentId, setActiveParentId] = useState<number | null>(null);
+     const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
      const [isDeleted, setIsDeleted] = useState(reviewComment.isDeleted);
 
      // function: get user info response 처리 함수 //
@@ -78,6 +154,41 @@ function CommentRowProps({reviewComment, userLoginId}: CommentRowProps) {
         setIsDeleted(true);
     }
 
+    // function: get posted comment info 처리 함수 //
+    const getPostedCommentInfo = (category: number, activeParentId: number | null) => {
+        onPostComment(category, activeParentId);
+    }
+
+    // function: get patched comment info 처리 함수 //
+    const getPatchedCommentInfo = (category: number, reviewCommentId: number | null) => {
+        onPatchComment(category, reviewCommentId);
+    }
+
+     // event handler: 후기 대댓글 작성 이벤트 처리 //
+     const handlePostParentIdButtonClick  = (parentCommentId: number) => {
+        if(category !== 1 && activeParentId === parentCommentId) {
+            setCategory(1);
+            setActiveParentId(parentCommentId);
+        } else if(category !== 1 && activeParentId !== parentCommentId){
+            setActiveParentId(parentCommentId);
+        } else {
+            setCategory(0);
+            setActiveParentId(null);
+        }
+    };
+
+    // event handler: 후기 대댓글 수정 이벤트 처리 //
+    const handlePatchParentIdButtonClick  = (CommentId: number) => {
+        if(category !== 2) {
+            setCategory(2);
+            setActiveCommentId(CommentId);
+        } else {
+            setCategory(0);
+            setActiveCommentId(null);
+        }
+        
+    };
+
     // event handler: 후기 댓글 삭제 작성 이벤트 처리 //
     const deleteReviewCommentButtonClickHandler = async () => {
         if (!accessToken || !reviewComment.reviewId) return;
@@ -94,22 +205,31 @@ function CommentRowProps({reviewComment, userLoginId}: CommentRowProps) {
         getUserInfoRequest(userId).then(getUserInfoResponse);
     }, [userId]);
 
+    // effect: 댓글 상태가 바뀔 때 부모에게 전송
+    useEffect(() => {
+        onPostComment(category, activeParentId);
+        onPatchComment(category, activeCommentId);
+    }, [category, activeParentId, activeCommentId]);
+
     return (
-        <div className='review-comment'>
+        <div className='review-comment' style={{marginLeft :`${reviewComment.depth * 20}px`}}>
             <div className='comment-first-line'>{nickName}</div>
             <div className='comment-second-line'>
                 {Boolean(reviewComment.isDeleted) ? '삭제된 댓글입니다.' : reviewComment.reviewCommentContent}
             </div>
             <div className='comment-third-line'>
                 <div className='comment-date margin-right'>{reviewComment.reviewCommentCreatedAt}</div>
-                <div className='post-comment-button margin-right'>댓글 달기</div>
-                <div className='update-button margin-right'>
+                <div className='post-comment-button margin-right' onClick={() => handlePostParentIdButtonClick(reviewComment.reviewCommentId)}>댓글 달기</div>
+                <div className='update-button margin-right' onClick={() => handlePatchParentIdButtonClick(reviewComment.reviewCommentId)}>
                     {!Boolean(reviewComment.isDeleted) && userLoginId === userId ? '댓글 수정' : ''}
                 </div>
                 <div className='delete-button' onClick={deleteReviewCommentButtonClickHandler}>
                     {!Boolean(reviewComment.isDeleted) && userLoginId === userId ? '댓글 삭제' : ''}
                 </div>
             </div>
+            { reviewComment.children && reviewComment.children.length > 0 && (
+                <CommentTree comments={reviewComment.children} onPostChildComment={getPostedCommentInfo} onPatchChildComment={getPatchedCommentInfo}/>
+            )}
         </div>
     )
 }
@@ -129,10 +249,17 @@ function TableRow({review, userLoginId}: TableRowProps) {
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [likes, setLikes] = useState<string[]>([]);
     const [isLiked, setIsLiked] = useState<boolean>(false);
-    const [comments, setComments] = useState<ReviewComment[]>([]);
+    const [reviewComment, setReviewComment] = useState("");
+    const [comments, setComments] = useState<ReviewCommentWithChildren[]>([]);
+    const [commentInput, setCommentInput] = useState("");
 
     // state: 후기 모달 팝업 상태 //
     const [commentModalOpen, setCommentModalOpen] = useState<boolean>(false);
+
+    // state: 자식한테 받은 댓글 상태 //
+    const [category, setCategory] = useState<number>(0); // 0은 댓글 작성, 1은 대댓글 작성, 2는 대댓글 수정
+    const [activeParentId, setActiveParentId] = useState<number | null>(null);
+    const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
 
     // variable: 작성자 여부 //
     const isOwner =  userLoginId=== userId;
@@ -177,7 +304,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
         setIsLiked(!isLiked);
     };
 
-    // function: get review comment response 처리 함수 //
+    // function: get review comment list response 처리 함수 //
     const getReviewCommentListResponse = (responseBody: GetReviewCommentListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
@@ -191,7 +318,85 @@ function TableRow({review, userLoginId}: TableRowProps) {
             return;
         }
         const { reviewComments } = responseBody as GetReviewCommentListResponseDto;
-        setComments(reviewComments);
+        setComments(buildCommentTree(reviewComments));
+    }
+
+    // function: review comment list 정리 함수 //
+    const buildCommentTree = (comments: ReviewComment[]) => {
+
+        const commentMap = new Map<number, ReviewCommentWithChildren>();
+
+        // 각 댓글을 Map에 저장
+        comments.forEach((comment) => {
+            commentMap.set(comment.reviewCommentId, { ...comment, children: [] });
+        });
+
+        const tree: ReviewCommentWithChildren[] = [];
+
+        // 댓글을 트리 형태로 구성
+        comments.forEach((comment) => {
+            if (comment.parentCommentId === null) {
+                // 최상위 댓글 추가
+                tree.push(commentMap.get(comment.reviewCommentId)!);
+            } else {
+                // 자식 댓글을 부모의 children 배열에 추가
+                const parent = commentMap.get(comment.parentCommentId);
+                if (parent) {
+                    parent.children.push(commentMap.get(comment.reviewCommentId)!);
+                }
+            }
+        });
+
+        return tree;
+
+    }
+
+    // function: get review comment response 처리 함수 //
+    const getReviewCommentResponse = (responseBody: GetReviewCommentResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : 
+            responseBody.code === 'NRC' ? '리뷰 댓글이 없습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        const { reviewCommentContent } = responseBody as GetReviewCommentResponseDto;
+        setReviewComment(reviewCommentContent);
+    }
+
+    // function: post review comment response 처리 함수 //
+    const postReviewCommentResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '모두 입력해주세요.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NI' ? '해당 사용자가 없습니다.' :
+            responseBody.code === 'NP' ? '해당 권한이 없습니다.' :
+            responseBody.code === 'NRV' ? '리뷰 게시글이 없습니다.' : 
+            responseBody.code === 'NPC' ? '부모 댓글이 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+        alert(message);
+        return;
+        }
+    }
+    
+    // function: 자식에서 온 댓글 작성 정보 상태 처리 함수 //
+    const handlePostSignal = (category: number, activeParentId: number | null) => {
+        setCategory(category);
+        setActiveParentId(activeParentId);
+    }
+
+    // function: 자식에서 온 댓글 수정 정보 상태 처리 함수 //
+    const handlePatchSignal = (category: number, activeReviewCommentId: number | null) => {
+        setCategory(category);
+        setActiveCommentId(activeReviewCommentId);
     }
 
     // event handler: 좋아요 변경 이벤트 처리 함수 //
@@ -209,10 +414,39 @@ function TableRow({review, userLoginId}: TableRowProps) {
         }
     }
 
-    // event handler: 후기 작성 이벤트 처리 //
+    // event handler: 후기 변경 버튼 이벤트 처리 //
     const updatePostButtonClickHandler = async () => {
         navigator(REVIEW_UPDATE_PATH(review.reviewId));
     };
+
+    // event handler: 후기 댓글창 변경 이벤트 처리 //
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCommentInput(e.target.value); // 입력값 관리
+      };
+
+    // event handler: 댓글 전송 이벤트 처리 //
+    const handleReviewCommentButtonClickHandler = async () => {
+        if(category === 0) {
+            const requestBody: PostReviewCommentRequestDto = {
+                reviewCommentContent: commentInput,
+                parentCommentId: activeParentId
+            };
+
+            postReviewCommentRequest(requestBody, review.reviewId, accessToken).then(postReviewCommentResponse).finally(()=> {setCommentInput('');});
+
+        } else if(category === 1) {
+            const requestBody: PostReviewCommentRequestDto = {
+                reviewCommentContent: commentInput,
+                parentCommentId: activeParentId
+            };
+
+
+            postReviewCommentRequest(requestBody, review.reviewId, accessToken).then(postReviewCommentResponse).finally(()=> {setCommentInput('');});
+        } else if(category === 2) {
+            
+        }
+    }; 
+    
 
     // effect: user 상태가 바뀔 때 userInfo 상태 업데이트
     useEffect(() => {
@@ -247,6 +481,15 @@ function TableRow({review, userLoginId}: TableRowProps) {
     useEffect(() => {
         getReviewCommentListRequest(review.reviewId).then(getReviewCommentListResponse);
     }, []);
+
+    useEffect(() => {
+        if(category === 2 && activeCommentId !== null) {
+            getReviewCommentRequest(review.reviewId, activeCommentId).then(getReviewCommentResponse);
+            setCommentInput(reviewComment);
+        } else {
+            setCommentInput('');
+        }
+    }, [category, activeParentId, activeCommentId]);
 
     // render : 후기 게시글 리스트 렌더링 //
     return (
@@ -308,13 +551,13 @@ function TableRow({review, userLoginId}: TableRowProps) {
                         <div className='modal-middle-comment'>
                             <div className='comment-box'>
                             {comments.map((reviewComment, index) => (
-                                <CommentRowProps key={index} reviewComment={reviewComment} userLoginId={userLoginId}/>
+                                <CommentRowProps key={index} reviewComment={reviewComment} userLoginId={userLoginId} onPostComment={handlePostSignal} onPatchComment={handlePatchSignal}/>
                             ))}
                             </div>
                         </div>
                         <div className='modal-bottom'>
-                            <input type="text" className='input-box'/>
-                            <button className='comment-button'>게시</button>
+                            <input type="text" className='input-box' value={commentInput} onChange={handleInputChange}/>
+                            <button className='comment-button' onClick={handleReviewCommentButtonClickHandler}>게시</button>
                         </div>
                     </div>
                 </div>
