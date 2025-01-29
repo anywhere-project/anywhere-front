@@ -3,7 +3,7 @@ import './style.css'
 import type { Review, ReviewComment } from 'types';
 import { ResponseDto } from 'apis/dto/response';
 import GetUserInfoResponseDto from 'apis/dto/response/user/get-user-info.response.dto';
-import { deleteReviewCommentRequest, getReviewCommentListRequest, getReviewCommentRequest, getReviewListRequest, getSignInRequest, getUserInfoRequest, postReviewCommentRequest, postReviewLikeRequest } from 'apis';
+import { deleteReviewCommentRequest, getReviewCommentListRequest, getReviewCommentRequest, getReviewListRequest, getSignInRequest, getUserInfoRequest, patchReviewCommentRequest, postReviewCommentRequest, postReviewLikeRequest } from 'apis';
 import { FaHeart, FaPencilAlt, FaRegHeart } from "react-icons/fa";
 import 'swiper/swiper-bundle.min.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -16,7 +16,7 @@ import { GetSignInResponseDto } from 'apis/dto/response/auth';
 import { useNavigate } from 'react-router-dom';
 import GetReviewCommentListResponseDto from 'apis/dto/response/review/get-review-comment-list.response.dto';
 import { ReviewCommentWithChildren } from 'types/review-comment-children.interface';
-import { PostReviewCommentRequestDto } from 'apis/dto/request/review';
+import { PatchReviewCommentRequestDto, PostReviewCommentRequestDto } from 'apis/dto/request/review';
 import GetReviewCommentResponseDto from 'apis/dto/response/review/get-review-comment.dto';
 
 // interface: 후기 리스트 아이템 Properties //
@@ -112,7 +112,7 @@ function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComm
      const [nickName, setNickName] = useState<string>('');
 
      // state: 댓글 상태 //
-     const [category, setCategory] = useState<number>(0); // 0은 댓글 작성, 1은 대댓글 작성, 2는 대댓글 수정
+     const [category, setCategory] = useState<number>(0); // 0은 댓글 작성, 1은 대댓글 작성, 2는 대댓글 수정, 3은 댓글 삭제
      const [activeParentId, setActiveParentId] = useState<number | null>(null);
      const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
      const [isDeleted, setIsDeleted] = useState(reviewComment.isDeleted);
@@ -186,7 +186,6 @@ function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComm
             setCategory(0);
             setActiveCommentId(null);
         }
-        
     };
 
     // event handler: 후기 댓글 삭제 작성 이벤트 처리 //
@@ -196,7 +195,11 @@ function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComm
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        deleteReviewCommentRequest(reviewComment.reviewId, reviewComment.reviewCommentId, accessToken).then(deleteReviewCommentResponse);
+        // deleteReviewCommentRequest(reviewComment.reviewId, reviewComment.reviewCommentId, accessToken).then(deleteReviewCommentResponse);
+
+        setCategory(3);
+        setActiveParentId(null);
+        setActiveCommentId(null);
     };
 
     // effect: user 상태가 바뀔 때 userInfo 상태 업데이트
@@ -252,6 +255,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
     const [reviewComment, setReviewComment] = useState("");
     const [comments, setComments] = useState<ReviewCommentWithChildren[]>([]);
     const [commentInput, setCommentInput] = useState("");
+    const [reload, setReload] = useState<boolean>(false);
 
     // state: 후기 모달 팝업 상태 //
     const [commentModalOpen, setCommentModalOpen] = useState<boolean>(false);
@@ -385,7 +389,30 @@ function TableRow({review, userLoginId}: TableRowProps) {
         alert(message);
         return;
         }
+        alert('작성 완료!');
+        setReload(!reload);
     }
+
+    // function: 후기 게시글 수정 요청 함수 //
+    const patchReviewCommentResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NP' ? '해당 권한이 없습니다.' :
+            responseBody.code === 'NRV' ? '리뷰 게시글이 없습니다.' : 
+            responseBody.code === 'NRC' ? '리뷰 댓글이 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        alert('수정 완료!');
+        setReload(!reload)
+    };
     
     // function: 자식에서 온 댓글 작성 정보 상태 처리 함수 //
     const handlePostSignal = (category: number, activeParentId: number | null) => {
@@ -440,10 +467,21 @@ function TableRow({review, userLoginId}: TableRowProps) {
                 parentCommentId: activeParentId
             };
 
-
             postReviewCommentRequest(requestBody, review.reviewId, accessToken).then(postReviewCommentResponse).finally(()=> {setCommentInput('');});
         } else if(category === 2) {
-            
+            if(activeCommentId == null) {
+                alert('댓글 달기 버튼을 다시 눌러주세요.')
+                return;
+            }
+
+            const requestBody: PatchReviewCommentRequestDto = {
+                reviewCommentContent: commentInput
+            };
+
+            console.log(requestBody)
+
+            patchReviewCommentRequest(requestBody, review.reviewId, activeCommentId, accessToken).then(patchReviewCommentResponse);
+            setCommentInput('');
         }
     }; 
     
@@ -480,12 +518,15 @@ function TableRow({review, userLoginId}: TableRowProps) {
     // effect: 댓글 상태가 바뀔 때 comment 상태 업데이트
     useEffect(() => {
         getReviewCommentListRequest(review.reviewId).then(getReviewCommentListResponse);
-    }, []);
+    }, [reload]);
 
+    // effect: 자식에서 받은 댓글 정보에 따른 comment 상태 업데이트
     useEffect(() => {
         if(category === 2 && activeCommentId !== null) {
             getReviewCommentRequest(review.reviewId, activeCommentId).then(getReviewCommentResponse);
             setCommentInput(reviewComment);
+        } else if(category === 3) {
+            setReload(!reload);
         } else {
             setCommentInput('');
         }

@@ -5,7 +5,7 @@ import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
-import { PostReviewCommentRequestDto, PostReviewRequestDto } from "./dto/request/review";
+import { PatchReviewCommentRequestDto, PostReviewCommentRequestDto, PostReviewRequestDto } from "./dto/request/review";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
@@ -71,6 +71,7 @@ const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
 const GET_REVIEW_COMMENT_LIST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
 const GET_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 const POST_REVIEW_COMMENT_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const UPDATE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 const DELETE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 
 const POST_AREA_API_URL  = `${ROULETTE_MODULE_URL}/area`;
@@ -483,6 +484,14 @@ export const postReviewCommentRequest = async (requestBody: PostReviewCommentReq
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+// function: 후기 게시글 수정 요청 함수 //
+export const patchReviewCommentRequest = async (requestBody: PatchReviewCommentRequestDto, reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
+    const responseBody = await axios.patch(UPDATE_REVIEW_COMMENT_API_URL(reviewId, reviewCommentId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 후기 댓글 삭제 요청 함수 //
 export const deleteReviewCommentRequest = async (reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
