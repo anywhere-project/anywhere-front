@@ -152,6 +152,9 @@ function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComm
             return;
         }
         setIsDeleted(true);
+        setCategory(3);
+        setActiveParentId(reviewComment.reviewCommentId);
+        setActiveCommentId(reviewComment.reviewCommentId);
     }
 
     // function: get posted comment info 처리 함수 //
@@ -195,11 +198,8 @@ function CommentRowProps({reviewComment, userLoginId, onPostComment, onPatchComm
         const confirm = window.confirm('정말로 삭제하시겠습니까?');
         if (!confirm) return;
 
-        // deleteReviewCommentRequest(reviewComment.reviewId, reviewComment.reviewCommentId, accessToken).then(deleteReviewCommentResponse);
+        deleteReviewCommentRequest(reviewComment.reviewId, reviewComment.reviewCommentId, accessToken).then(deleteReviewCommentResponse);
 
-        setCategory(3);
-        setActiveParentId(null);
-        setActiveCommentId(null);
     };
 
     // effect: user 상태가 바뀔 때 userInfo 상태 업데이트
@@ -255,7 +255,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
     const [reviewComment, setReviewComment] = useState("");
     const [comments, setComments] = useState<ReviewCommentWithChildren[]>([]);
     const [commentInput, setCommentInput] = useState("");
-    const [reload, setReload] = useState<boolean>(false);
+    const [reload, setReload] = useState(Date.now());
 
     // state: 후기 모달 팝업 상태 //
     const [commentModalOpen, setCommentModalOpen] = useState<boolean>(false);
@@ -390,7 +390,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
         return;
         }
         alert('작성 완료!');
-        setReload(!reload);
+        triggerReload();
     }
 
     // function: 후기 게시글 수정 요청 함수 //
@@ -411,7 +411,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
         }
 
         alert('수정 완료!');
-        setReload(!reload)
+        triggerReload();
     };
     
     // function: 자식에서 온 댓글 작성 정보 상태 처리 함수 //
@@ -425,6 +425,10 @@ function TableRow({review, userLoginId}: TableRowProps) {
         setCategory(category);
         setActiveCommentId(activeReviewCommentId);
     }
+
+    const triggerReload = () => {
+        setReload(Date.now()); // 매번 새로운 값으로 변경
+    };
 
     // event handler: 좋아요 변경 이벤트 처리 함수 //
     const onLikeButtonClickHandler = () => {
@@ -478,8 +482,6 @@ function TableRow({review, userLoginId}: TableRowProps) {
                 reviewCommentContent: commentInput
             };
 
-            console.log(requestBody)
-
             patchReviewCommentRequest(requestBody, review.reviewId, activeCommentId, accessToken).then(patchReviewCommentResponse);
             setCommentInput('');
         }
@@ -526,7 +528,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
             getReviewCommentRequest(review.reviewId, activeCommentId).then(getReviewCommentResponse);
             setCommentInput(reviewComment);
         } else if(category === 3) {
-            setReload(!reload);
+            triggerReload();
         } else {
             setCommentInput('');
         }

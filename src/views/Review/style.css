@@ -7,6 +7,10 @@
 
 .review-post .share-banner {
     background-color: #c6edf7;
+    background-image: url(https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/u1-1715838006078.jpg);
+    background-size: cover; /* 배너 크기에 맞게 자동 조절 */
+    background-position: center; /* 중앙 정렬 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
     padding: 15px;
     margin-bottom: 20px;
     width: 100%;
