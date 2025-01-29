@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ResponseDto } from 'apis/dto/response';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import axios from 'axios';
-import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest, getReviewListRequest, getMyRandomListRequest, deleteMyRandomRequest, getUserInfoRequest } from 'apis';
+import { deleteRecommendPostRequest, deleteReviewPostRequest, getRecommendAttractionListRequest, getRecommendPostListRequest, getReviewListRequest, getMyRandomListRequest, deleteMyRandomRequest, getUserInfoRequest, getRecommendFoodListRequest, getRecommendMissionListRequest } from 'apis';
 import GetRecommendPostListResponseDto from './../../apis/dto/response/recommend/get-recommend-post-list.response.dto';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import RecommendIcon from '@mui/icons-material/Recommend';
@@ -23,6 +23,11 @@ import AttractionsIcon from '@mui/icons-material/Attractions';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import TaskIcon from '@mui/icons-material/Task';
 import RouletteDel from 'views/RouletteDel';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper';
 
 
 // interface: another user 정보 //
@@ -59,11 +64,18 @@ function AttractionRow({ recommendAttraction }: Attractions) {
     }, [recommendAttraction]);
 
     return (
-
         <div className="gallery-image">
+            <Swiper
+                modules={[Navigation, Pagination]}
+                slidesPerView={1}             // 한 번에 1개만 보여줌
+                loop={attractionImages.length > 1}                  // 무한 루프 설정
+            >
             {attractionImages.map((imageUrl, index) => (
-                <img src={imageUrl} alt={`Attraction ${index}`} />
+                <SwiperSlide key={index}>
+                        <img src={imageUrl} alt={`Attraction ${index}`} style={{ width: '100%', borderRadius: '20px' }} />
+                </SwiperSlide>
             ))}
+            </Swiper>
         </div>
 
     );
@@ -78,14 +90,20 @@ function FoodRow({ recommendFood }: Foods) {
     }, [recommendFood]);
 
     return (
-        <div className="food-box">
-            <div className="food-image">
+        
+            <div className="gallery-image">
+                <Swiper
+                modules={[Navigation, Pagination]}
+                slidesPerView={1}             // 한 번에 1개만 보여줌
+                loop={foodImages.length > 1}                // 무한 루프 설정
+            >
                 {foodImages.map((imageUrl, index) => (
+                    <SwiperSlide key={index}>
                     <img src={imageUrl} alt={`Food ${index}`} />
+                    </SwiperSlide>
                 ))}
+                </Swiper>
             </div>
-
-        </div>
     );
 }
 
@@ -97,13 +115,19 @@ function MissionRow({ recommendMission }: Missions) {
     }, [recommendMission]);
 
     return (
-        <div className="mission-box">
-            <div className="mission-image">
+            <div className="gallery-image">
+                <Swiper
+                modules={[Navigation, Pagination]}
+                slidesPerView={1}             // 한 번에 1개만 보여줌
+                loop={missionImages.length > 1}                  // 무한 루프 설정
+            >
                 {missionImages.map((imageUrl, index) => (
+                        <SwiperSlide key={index}>
                     <img src={imageUrl} alt={`Mission ${index}`} />
+                    </SwiperSlide>
                 ))}
+                </Swiper>
             </div>
-        </div>
     );
 }
 
@@ -125,7 +149,6 @@ export default function Mypage() {
     const [recommendAttractionPostCount, setRecommendAttractionPostCount] = useState<number>(0);
     const [recommendFoodPostCount, setRecommendFoodPostCount] = useState<number>(0);
     const [recommendMissionPostCount, setRecommendMissionPostCount] = useState<number>(0);
-    const [filterRecommendContents, setFilteredRecommendContents] = useState<RecommendAttraction[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
     const [selectedPost, setSelectedPost] = useState<Review | null>(null);
     const [myRandomList, setMyRandomList] = useState<MyRandom[]>([]);
@@ -162,6 +185,9 @@ export default function Mypage() {
 
     const handleBoardClick = (board: 'review' | 'recommend' | 'roulette') => {
         setActiveBoard(board);
+    }
+    const handleCategoryClick = (board: 'attraction' | 'food' | 'mission') => {
+        setActiveGallery(board);
     }
 
     // variable: 작성자 여부 //
@@ -225,22 +251,10 @@ export default function Mypage() {
             return;
         }
 
-        const recommendPosts2 = (responseBody as GetRecommendPostListResponseDto).posts || [];
-
-        setRecommendPost(recommendPosts2);
-        setPosts(recommendPosts2);
+        const recommendPosts = (responseBody as GetRecommendPostListResponseDto).posts || [];
+        setPosts(recommendPosts);
 
     };
-
-
-    const filterMatchingRecommendIds = () => {
-        const matchingContents = recommendAttractionContents.filter(attraction => {
-            // recommendContents에서 matching recommendId 찾기
-            return recommendContents.some(post => post.recommendId === attraction.recommendId);
-        });
-        return matchingContents;
-    };
-
 
 
     const getRecommendAttractionListResponse = (responseBody: GetRecommendAttractionListResponseDto | ResponseDto | null) => {
@@ -460,7 +474,7 @@ export default function Mypage() {
         }
     };
 
-    const recommendHandleEditPost = (post: RecommendAttraction) => {
+    const recommendHandleEditPost = (post: RecommendPost) => {
         if (!post.recommendId) {
             alert("추천 ID를 찾을 수 없습니다.");
             return;
@@ -472,7 +486,7 @@ export default function Mypage() {
         navigator(RECOMMEND_UPDATE_PATH(post.recommendId));
     };
 
-    const recommendHandleDeletePost = (post: RecommendAttraction) => {
+    const recommendHandleDeletePost = (post: RecommendPost) => {
         const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
         if (confirmDelete) {
             if (!post.recommendId) {
@@ -500,7 +514,10 @@ export default function Mypage() {
         }
     };
     const onClickNickname = () => {
-        if (!signInUser) return;
+        if (!signInUser){ 
+            alert("로그인 해주세요")
+            return;
+        }
         navigator(MYPAGE_UPDATE_PATH(signInUser.userId));
     }
 
@@ -544,9 +561,19 @@ export default function Mypage() {
 
     useEffect(() => {
         getRecommendAttractionListRequest().then(getRecommendAttractionResponse);
+        getRecommendFoodListRequest().then(getRecommendFoodListResponse);
+        getRecommendMissionListRequest().then(getRecommendMissionListResponse);
+        if(activeGallery==="attraction"){
         getRecommendPostListRequest("attraction").then(getRecommendListResponse);
+        }
+        if(activeGallery==="food"){
+            getRecommendPostListRequest("food").then(getRecommendListResponse);
+        }
+        if(activeGallery==="mission"){
+            getRecommendPostListRequest("mission").then(getRecommendListResponse);
+        }
 
-    }, [recommendPostCount]);
+    }, [activeGallery]);
 
 
 
@@ -588,12 +615,6 @@ export default function Mypage() {
     }, [recommendAttractionPostCount, recommendFoodPostCount, recommendMissionPostCount])
 
 
-    useEffect(() => {
-        // 예시로 필터링된 값을 다른 상태에 저장할 수 있음
-        const filteredContents = filterMatchingRecommendIds();
-        setFilteredRecommendContents(filteredContents);
-    }, [activeBoard]);
-
 
     useEffect(() => {
         getRecommendPostListRequest("attraction").then(getRecommendAttractionCountResponse);
@@ -606,8 +627,8 @@ export default function Mypage() {
 
 
         getRecommendAttractionListRequest().then(getRecommendAttractionListResponse);
-        // getRecommendAttractionListRequest().then(getRecommendFoodListResponse);
-        // getRecommendAttractionListRequest().then(getRecommendMissionListResponse);
+        getRecommendFoodListRequest().then(getRecommendFoodListResponse);
+        getRecommendMissionListRequest().then(getRecommendMissionListResponse);
 
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -724,19 +745,19 @@ export default function Mypage() {
                     <div className="board-selector">
                         <div
                             className={`attraction-gallery ${activeGallery === 'attraction' ? 'active' : ''}`}
-                            onClick={() => handleBoardClick('review')}
+                            onClick={() => handleCategoryClick('attraction')}
                         >
                             <AttractionsIcon />관광지
                         </div>
                         <div
                             className={`food-gallery ${activeGallery === 'food' ? 'active' : ''}`}
-                            onClick={() => handleBoardClick('recommend')}
+                            onClick={() => handleCategoryClick('food')}
                         >
                             <LunchDiningIcon />먹거리
                         </div>
                         <div
                             className={`mission-gallery ${activeGallery === 'mission' ? 'active' : ''}`}
-                            onClick={() => handleBoardClick('roulette')}
+                            onClick={() => handleCategoryClick('mission')}
                         >
                             <TaskIcon />미션
                         </div>
@@ -800,96 +821,117 @@ export default function Mypage() {
 
 
                     <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
-
-                        {(posts || []).slice(0, visiblePosts).map((post) => {
+                        {(posts || [])
+                        .filter((post) => post.recommendWriter === userId)
+                        .slice(0, visiblePosts)
+                        .map((post) => {
                             const matchedAttractions = (filteredAttractions || []).filter(
                                 (attraction) => attraction.recommendId === post.recommendId
                             );
-                            // const matchedMissions = filteredMissions.filter(
-                            //     (mission) => mission.recommendId === post.recommendId
-                            // );
-                            // const matchedFoods = filteredFoods.filter(
-                            //     (food) => food.recommendId === post.recommendId
-                            // );
+                            const matchedMissions = (filteredMissions || []).filter(
+                                (mission) => mission.recommendId === post.recommendId
+                            );
+                            const matchedFoods = (filteredFoods || []).filter(
+                                (food) => food.recommendId === post.recommendId
+                            );
 
                             return (
                                 <div key={post.recommendId} className="gallery-item">
-
+                                    {activeBoard === 'recommend' && activeGallery ==='attraction' &&(
                                     <div className="gallery-item">
-                                        {
-                                            matchedAttractions.map((attraction, index) => (
+                                        <div className='button-overlay'>
+                                            <div className="item-buttons">
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleEditPost(post)}
+                                                >
+                                                    ✏️ 수정
+                                                </button>
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleDeletePost(post)}
+                                                >
+                                                    🗑️ 삭제
+                                                </button>
+                                            </div> 
+                                        </div>
+                                            {/* {matchedAttractions.map((attraction, index) => (
                                                 <AttractionRow
                                                     key={attraction.attractionId}
                                                     recommendAttraction={attraction}
                                                 />
                                             ))
-                                        }
-                                        {matchedAttractions.length}
+                                        } */}
+                                            {matchedAttractions.length > 0 && (
+                                                <AttractionRow
+                                                    key={matchedAttractions[0].attractionId}
+                                                    recommendAttraction={matchedAttractions[0]}
+                                                />
+                                            )}
+
                                     </div>
-
-                                    {/* <div className="mypage-recommend-mission-item">
-                                            {
-                                                matchedMissions.map((mission, index) => (
-                                                    <MissionRow
-                                                        key={mission.missionId}
-                                                        recommendMission={mission}
-                                                    />
-                                                ))
-                                            }
+                                    )}
+                                    {activeBoard === 'recommend' && activeGallery ==='food' &&(
+                                        <div className="gallery-item">
+                                        <div className='button-overlay'>
+                                            <div className="item-buttons">
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleEditPost(post)}
+                                                >
+                                                    ✏️ 수정
+                                                </button>
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleDeletePost(post)}
+                                                >
+                                                    🗑️ 삭제
+                                                </button>
+                                            </div> 
                                         </div>
-
-                                        <div className="mypage-recommend-food-item">
-                                            {
-                                                matchedFoods.map((food, index) => (
+                                            {matchedFoods.length > 0 && (
                                                     <FoodRow
-                                                        key={food.foodId}
-                                                        recommendFood={food}
+                                                        key={matchedFoods[0].foodId}
+                                                        recommendFood={matchedFoods[0]}
                                                     />
-                                                ))
-                                            }
-                                        </div> */}
+                                                )}
+                                        </div>
+                                    )}
+                                    {activeBoard === 'recommend' && activeGallery ==='mission' &&(
+                                    <div className="gallery-item">
+                                    <div className='button-overlay'>
+                                            <div className="item-buttons">
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleEditPost(post)}
+                                                >
+                                                    ✏️ 수정
+                                                </button>
+                                                <button
+                                                    className="item-button"
+                                                    onClick={() => recommendHandleDeletePost(post)}
+                                                >
+                                                    🗑️ 삭제
+                                                </button>
+                                            </div> 
+                                        </div>
+                                            {matchedMissions.length > 0 && (
+                                                    <MissionRow
+                                                        key={matchedMissions[0].missionId}
+                                                        recommendMission={matchedMissions[0]}
+                                                    />
+                                                )}
+                                        </div>
+                                    )}
+                                    
                                 </div>
                             );
                         })}
                     </div>
-
                     {isLoading && <div className="mypage-loading-spinner">Loading...</div>}
-
                     <div ref={observerRef} style={{ height: "1px" }}></div>
 
 
-
-                    <div className="gallery-recommend" style={{ display: activeBoard === 'recommend' ? 'grid' : 'none' }}>
-
-
-                        {/* {filterRecommendContents.map((post, index) => (
-                            <div key={index} className="gallery-item">
-                                <img
-                                    src={post.images?.[0]?.imageUrl || 'https://via.placeholder.com/150'}
-                                    alt={`Recommend item ${index + 1}`}
-                                    className="gallery-image"
-                                />
-
-                                <div className='button-overlay'>
-                                    <div className="item-buttons">
-                                        <button
-                                            className="item-button"
-                                            onClick={() => recommendHandleEditPost(post)}
-                                        >
-                                            ✏️ 수정
-                                        </button>
-                                        <button
-                                            className="item-button"
-                                            onClick={() => recommendHandleDeletePost(post)}
-                                        >
-                                            🗑️ 삭제
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))} */}
-
-                    </div>
                     <div className="roulette-record" style={{ display: activeBoard === 'roulette' ? 'block' : 'none' }}>
                         <table className="roulette-table">
                             <thead>

@@ -1,4 +1,4 @@
-#mypage-update {
+#mypage-update-wrapper{
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -6,114 +6,295 @@
     top: 100px;
     margin: 0 auto;
     width: 100%;
-
-}
-
-#mypage-update .mypage-update {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    top: 100px;
     
 }
 
-#mypage-update h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-}
-
-#mypage-update .form-group {
-    margin-bottom: 20px;
-}
-
-#mypage-update .form-group label {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 8px;
-}
-
-#mypage-update .form-group input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    box-sizing: border-box;
-    transition: border 0.3s ease;
-}
-
-#mypage-update .form-group input:focus {
-    border-color: #007bff;
-}
-
-#mypage-update .profile-image {
-    width: 100%;
-    height: 200px;
-    background-size: cover;
-    background-position: center;
+#mypage-update-container {
+    background-color: white;
+    padding: 20px;
     border-radius: 10px;
-    position: relative;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    cursor: pointer;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    margin: 50px auto;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    
 }
 
-#mypage-update .profile-image button {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 8px 15px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-#mypage-update .profile-image button:hover {
-    background-color: #0056b3;
-}
-
-#mypage-update button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #28a745;
+#mypage-update-container button {
+    background-color: #76C7F2; /* 하늘색 */
     color: white;
-    font-size: 18px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    padding: 14px 0px;
+    min-width: 105px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 100%;
+}
+
+#mypage-update-container .change-password-button {
+    margin-left: 0px !important;
+    width: 150px;
+    height: 50px;
+}
+#mypage-update-container .change-tel-button{
+    margin-left: 0px !important;
+    width: 150px;
+    height: 50px;
+    margin-left: 20px;
+}
+
+#mypage-update-container .label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+#mypage-update-container .input-area {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
     margin-top: 20px;
 }
 
-#mypage-update button[type="submit"]:hover {
-    background-color: #218838;
+#mypage-update-container .input-area input {
+    border: 1px solid #b0e0e6; /* 하늘색 계열 */
+    padding: 13px;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#mypage-update button[type="button"] {
-    padding: 8px 15px;
-    background-color: #007bff;
+#mypage-update-container .input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#mypage-update-container #profile-image-container {
+    width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mypage-update-container #profile-image-container .profile-image-wrapper {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+#mypage-update-container #profile-image-container .profile-image-camera {
+    background-image: url(/public/images/free-icon-upload-3580382.png);
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 80px;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(238, 238, 238, 1);
+    background-color: rgba(240, 248, 255, 1); /* 하늘색 배경 */
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 50%;
+}
+
+#mypage-update-container .input-container .button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
+    align-items: center;
+}
+
+#mypage-update-container .button-container button {
+    background-color: #76C7F2; /* 하늘색 */
     color: white;
     border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 13px 0px;
+    margin-left: 10px;
+    min-width: 105px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+#mypage-update-container .password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#mypage-update-container .password-modal-box {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 400px;
+    /* 너비 조정 가능 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+#mypage-update-container .password-modal-cancel-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #666;
+}
+
+#mypage-update-container .password-modal-input-container {
+    margin-top: 20px;
+}
+
+#mypage-update-container .password-update-button {
+    background-color: #76C7F2; /* 하늘색 */
+    color: white;
+    border: none;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    width: 400px;
+    height: 40px;
+    
 }
 
-#mypage-update button[type="button"]:hover {
-    background-color: #0056b3;
+#mypage-update-container .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+#mypage-update-container .modal-box {
+    position: relative;
+    box-sizing: border-box;
+    width: 400px;
+    padding: 24px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#mypage-update-container .modal-cancel-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+#mypage-update-container .modal-input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; 
+    margin-top: 16px;
+}
+
+#mypage-update-container .modal-input-container label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+#mypage-update-container .modal-input-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #b0e0e6; /* 하늘색 계열 */
+    border-radius: 10px;
+    outline: none;
+}
+
+#mypage-update-container .modal-input-container button {
+    padding: 13px 0;
+    font-size: 14px;
+    color: #fff;
+    background-color: #76C7F2; /* 하늘색 */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#mypage-update-container .telNumber-update-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 105px;
+    height: 40px;
+    color: #fff;
+    background-color: #76C7F2; /* 하늘색 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 40px;
+    width: 300px;
+}
+
+#mypage-update-container .button{
+    width: 100px;
+    height: 40px;
+}
+
+#mypage-update-container .button-container .update-button,
+#mypage-update-container .button-container .cancel-button{
+    width: 150px;
+    height: 50px;
+}
+
+#mypage-update-container button:hover,
+#mypage-update-container .change-password-button:hover,
+#mypage-update-container .change-tel-button:hover,
+#mypage-update-container .button-container button:hover,
+#mypage-update-container .password-update-button:hover,
+#mypage-update-container .modal-input-container button:hover,
+#mypage-update-container .telNumber-update-button:hover,
+#mypage-update-container .update-button:hover,
+#mypage-update-container .cancel-button:hover {
+    background-color: #58a6d3; /* 하늘색 변경 */
+    transform: scale(1.05); /* 크기 조금 증가 */
+    transition: background-color 0.3s, transform 0.3s ease;
+}
+
+#mypage-update-container button:active,
+#mypage-update-container .change-password-button:active,
+#mypage-update-container .change-tel-button:active,
+#mypage-update-container .button-container button:active,
+#mypage-update-container .password-update-button:active,
+#mypage-update-container .modal-input-container button:active,
+#mypage-update-container .telNumber-update-button:active,
+#mypage-update-container .update-button:active,
+#mypage-update-container .cancel-button:active {
+    transform: scale(1); /* 클릭 시 크기 원상복구 */
 }
