@@ -5,7 +5,7 @@ import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import { PatchRecommendAttractionRequestDto, PatchRecommendFoodRequestDto, PatchRecommendMissionRequestDto, PatchRecommendPostRequestDto, PostRecommendAttractionRequestDto, PostRecommendFoodRequestDto, PostRecommendMissionRequestDto, PostRecommendPostRequestDto } from "./dto/request/recommend";
 import { GetSignInResponseDto, SignInResponseDto } from "./dto/response/auth";
 import GetRecommendPostResponseDto from "./dto/response/recommend/get-recommend-post.response.dto";
-import { PostReviewRequestDto } from "./dto/request/review";
+import { PatchReviewCommentRequestDto, PostReviewCommentRequestDto, PostReviewRequestDto } from "./dto/request/review";
 import { GetRecommendAttractionListResponseDto, GetRecommendAttractionPostResponseDto, GetRecommendFoodListResponseDto, GetRecommendFoodPostResponseDto, GetRecommendMissionListResponseDto, GetRecommendMissionPostResponseDto, GetRecommendPostListResponseDto } from "./dto/response/recommend";
 import { GetHashTagListResponseDto } from "./dto/response/hashtag";
 import GetReviewPostListResponseDto from "./dto/response/review/get-review-list.response.dto";
@@ -15,6 +15,13 @@ import GetReviewResponseDto from "./dto/response/review/get-review.response.dto"
 import { PostRouletteRequestDto, PostAreaRequestDto, PostFoodRequestDto, PostAttractionRequestDto, PostMissionRequestDto } from "./dto/request/roulette";
 import { GetRouletteListResponseDto } from "./dto/response/roulette";
 import GetReviewCommentListResponseDto from "./dto/response/review/get-review-comment-list.response.dto";
+
+import PatchPasswordRequestDto from "./dto/request/user/patch-password.request.dto";
+import PatchTelAuthRequestDto from "./dto/request/user/patch-tel-auth.request.dto";
+import { PatchUserRequestDto } from "./dto/request/user";
+import PatchTelAuthCheckRequestDto from "./dto/request/user/patch-tel-auth-check.request.dto";
+import GetReviewCommentResponseDto from "./dto/response/review/get-review-comment.dto";
+
 
 const ANYWHERE_API_DOMAIN = "http://localhost:4000";
 
@@ -31,6 +38,11 @@ const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const GET_SIGN_IN_API_URL = `${MYPAGE_MODULE_URL}`;
 const GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/user/${userId}`;
+const PATCH_USER_INFO_API_URL = (userId: string) => `${MYPAGE_MODULE_URL}/update/${userId}`;
+const PATCH_MYPAGE_PASSWORD_API_URL = `${MYPAGE_MODULE_URL}/update-password`;
+const PATCH_MYPAGE_TEL_AUTH_API_URL = `${MYPAGE_MODULE_URL}/tel-auth`;
+const PATCH_MYPAGE_API_URL = `${MYPAGE_MODULE_URL}`;
+const PATCH_MYPAGE_TEL_AUTH_CHECK_API_URL = `${MYPAGE_MODULE_URL}/tel-auth-check`;
 
 const POST_RECOMMEND_POST_API_URL = `${RECOMMEND_MODULE_URL}`;
 const PATCH_RECOMMEND_POST_API_URL = (recommendId: number | string, category: string) => `${RECOMMEND_MODULE_URL}/${recommendId}/${category}`;
@@ -67,7 +79,10 @@ const GET_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_
 const PATCH_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const DELETE_REVIEW_POST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}`;
 const GET_HASH_TAG_LIST_API_URL = `${REVIEW_MODULE_URL}/hash-tag`;
-const GET_REVIEW_COMMENT_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const GET_REVIEW_COMMENT_LIST_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const GET_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
+const POST_REVIEW_COMMENT_API_URL = (reviewId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment`;
+const UPDATE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 const DELETE_REVIEW_COMMENT_API_URL = (reviewId: number | string, reviewCommentId: number | string) => `${REVIEW_MODULE_URL}/${reviewId}/comment/${reviewCommentId}`;
 
 const POST_AREA_API_URL  = `${ROULETTE_MODULE_URL}/area`;
@@ -148,6 +163,47 @@ export const getSignInRequest = async (accessToken: string) => {
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+// function: patch sign in 요청 함수 //
+export const patchUserInfoRequest = async(accessToken: string, userId: string) => {
+    const responseBody = await axios.patch(PATCH_USER_INFO_API_URL(userId), bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 유저 비밀번호 변경 요청 함수 //
+export const patchPasswordRequest = async (requestBody: PatchPasswordRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_MYPAGE_PASSWORD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 유저 전화번호 수정 요청 함수 //
+export const patchTelAuthRequest = async (requestBody: PatchTelAuthRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(TEL_AUTH_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 유저 인증번호 확인 요청 함수 //
+export const patchTelAuthCheckRequest = async (requestBody: PatchTelAuthCheckRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(TEL_AUTH_CHECK_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 유저 정보 수정 요청 함수 //
+export const patchUserRequest = async (requestBody: PatchUserRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_MYPAGE_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
 
 // function: 게시글 유저 정보 리스트 요청 함수 //
 export const getUserInfoRequest = async (userId: string) => {
@@ -459,11 +515,35 @@ export const postFoodRequest = async (requestBody: PostFoodRequestDto, accessTok
 
 // function: 후기 댓글 리스트 가져오기 요청 함수 //
 export const getReviewCommentListRequest = async (reviewId: string | number) => {
-    const responseBody = await axios.get(GET_REVIEW_COMMENT_API_URL(reviewId))
+    const responseBody = await axios.get(GET_REVIEW_COMMENT_LIST_API_URL(reviewId))
     .then(responseDataHandler<GetReviewCommentListResponseDto>)
     .catch(responseErrorHandler);
 return responseBody;
 };
+
+// function: 후기 댓글 리스트 가져오기 요청 함수 //
+export const getReviewCommentRequest = async (reviewId: string | number, reviewCommentId: string | number) => {
+    const responseBody = await axios.get(GET_REVIEW_COMMENT_API_URL(reviewId, reviewCommentId))
+    .then(responseDataHandler<GetReviewCommentResponseDto>)
+    .catch(responseErrorHandler);
+return responseBody;
+};
+
+// function: 후기 게시글 작성 요청 함수 //
+export const postReviewCommentRequest = async (requestBody: PostReviewCommentRequestDto, reviewId: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_REVIEW_COMMENT_API_URL(reviewId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: 후기 게시글 수정 요청 함수 //
+export const patchReviewCommentRequest = async (requestBody: PatchReviewCommentRequestDto, reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
+    const responseBody = await axios.patch(UPDATE_REVIEW_COMMENT_API_URL(reviewId, reviewCommentId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 후기 댓글 삭제 요청 함수 //
 export const deleteReviewCommentRequest = async (reviewId: string | number, reviewCommentId: string | number, accessToken: string) => {
