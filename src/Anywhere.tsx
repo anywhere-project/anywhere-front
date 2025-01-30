@@ -25,12 +25,14 @@ function Anywhere() {
   !location.pathname.includes(RECOMMEND_UPDATE_PATH('')) &&
   location.pathname !== RECOMMEND_WRITE_PATH && location.pathname !== REVIEW_WRITE_PATH &&
   !location.pathname.includes(MYPAGE_PATH('')) && 
+  location.pathname !== SIGN_UP_PATH &&
   location.pathname !== ROOT_PATH;
 
   const showHashTagBar = 
     !location.pathname.includes(RECOMMEND_UPDATE_PATH('')) &&
     location.pathname !== RECOMMEND_WRITE_PATH && location.pathname !== REVIEW_WRITE_PATH &&
     !location.pathname.includes(MYPAGE_PATH('')) && 
+    location.pathname !== SIGN_UP_PATH &&
     location.pathname !== ROOT_PATH;
 
   const showScrollButton = 

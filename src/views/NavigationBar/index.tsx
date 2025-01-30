@@ -161,8 +161,8 @@ function Dropdown({ onDropdownButtonClick }: { onDropdownButtonClick: () => void
             {modalOpen && (
                 <div className="modal-backdrop" onClick={onSignInCloseClickHandler}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="modal-close" onClick={onSignInCloseClickHandler}>✖</button>
-                        <h2>SIGN IN</h2>
+                        <div className="modal-close" onClick={onSignInCloseClickHandler}>✖</div>
+                        <div className='sign-in-title'>SIGN IN</div>
                         <form>
                             <div className="signin-group">
                                 <div className='signin-label'>아이디</div>
