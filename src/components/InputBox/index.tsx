@@ -16,13 +16,15 @@ interface Props {
 
 export default function InputBox({ label, type, placeholder, value, message, messageError, buttonName, onChange, onButtonClick }: Props) {
     return (
-        <div className='input-box'>
-            <div className='label'>{label}</div>
-            <div className='input-area'>
-                <input value={value} type={type} placeholder={placeholder} onChange={onChange} />
-                {buttonName && <button className='button' onClick={onButtonClick}>{buttonName}</button>}
+        <div id='input-box'>
+            <div className='input-box'>
+                <div className='label'>{label}</div>
+                <div className='input-area'>
+                    <input value={value} type={type} placeholder={placeholder} onChange={onChange} />
+                    {buttonName && <button className='button' onClick={onButtonClick}>{buttonName}</button>}
+                </div>
+                <div className={`message ${messageError ? 'error' : ''}`}>{message}</div>
             </div>
-            <div className={`message ${messageError ? 'error' : ''}`}>{message}</div>
         </div>
     )
 }
