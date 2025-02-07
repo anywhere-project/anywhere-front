@@ -10,7 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper';
 import GetReviewPostListResponseDto from 'apis/dto/response/review/get-review-list.response.dto';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, REVIEW_UPDATE_PATH } from "../../constants";
+import { ACCESS_TOKEN, REVIEW_UPDATE_PATH, REVIEW_WRITE_PATH } from "../../constants";
 import { useSignInUserStore } from 'stores';
 import { GetSignInResponseDto } from 'apis/dto/response/auth';
 import { useNavigate } from 'react-router-dom';
@@ -561,6 +561,7 @@ function TableRow({review, userLoginId}: TableRowProps) {
                     {accessToken && (
                         <div className="like-button" onClick={onLikeButtonClickHandler}>{isLiked ? <FaHeart color="red" /> : <FaRegHeart />}</div>
                     )}
+                    <div className='like-count'>좋아요 {review.reviewLikeCount}개</div>
                     <div className='hashTags'>
                         {hashTags.map((hashTag, index) => (
                             <span className='hashTag' key={index}>{hashTag}</span>
@@ -626,6 +627,9 @@ export default function ReviewList() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const observerRef = useRef(null);
 
+    // function: navigator 함수 //
+    const navigator = useNavigate();
+
     // function: get user info response 처리 함수 //
     const getSignInUserResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
         const message = 
@@ -668,6 +672,11 @@ export default function ReviewList() {
         }, 1000);
     };
 
+    // event handler: 후기 변경 버튼 이벤트 처리 //
+    const PostButtonClickHandler = async () => {
+        navigator(REVIEW_WRITE_PATH);
+    };
+
      // effect: 후기 정보 업데이트
     useEffect(() => {
 
@@ -706,6 +715,7 @@ export default function ReviewList() {
         <div className='review-post'>
             <div className='share-banner'>
                 <p>나만의 여행 루트를 다른 사람들에게 함께 공유해 보세요!</p>
+                {userId && <button className='add-write-button' onClick={PostButtonClickHandler}>글쓰기</button>}
             </div>
             <div className='get-review'>
                 {posts.slice(0, visiblePosts).map((reviewPost, index) => (
